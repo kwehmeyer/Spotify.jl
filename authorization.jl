@@ -1,10 +1,6 @@
 ## Libraries
 
-using Revise
-using HTTP
-using JSON3
-using Base64
-using Parameters
+using Revise, HTTP, JSON3, Base64, Parameters
 
 include("credentials.jl")
 import Base64.base64encode
@@ -29,9 +25,12 @@ function GetAuthorizationToken(sc::SpotifyCredentials)
     body = "grant_type=client_credentials"
     response_json = HTTP.post(URL, header, body).body |> String |> JSON3.read
     return SpotifyCredentials(client_id=sc.client_secret,
-    client_secret=sc.client_secret, encoded_credentials = sc.encoded_credentials, access_token  = response_json.access_token)
+    client_secret = sc.client_secret, encoded_credentials = sc.encoded_credentials, access_token  = response_json.access_token)
 end
-
+##
+    header = ["Authorization" => "Basic $(sc.encoded_credentials)","Content-Type" => "application/x-www-form-urlencoded"]
+    body = "grant_type=client_credentials"
+    response_json = HTTP.post(URL, header, body).body |> String |> JSON3.read
 ##
 #=
 Example of Authorization.
