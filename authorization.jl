@@ -2,22 +2,12 @@
 
 using Revise
 using HTTP
-using JSON
+using JSON3
 using Base64
 using Parameters
 
 include("credentials.jl")
 import Base64.base64encode
-
-##
-# I can't believe I lost all my work
-ENCODED_CREDS = base64encode(CLIENT_ID*":"*CLIENT_SECRET)
-
-##
-URL = "https://accounts.spotify.com/api/token"
-HEADER = ["Authorization" => "Basic $ENCODED_CREDS", "Content-Type" => "application/x-www-form-urlencoded"]
-body = "grant_type=client_credentials"
-HTTP.post(URL, HEADER, body)
 
 ##
 @with_kw struct SpotifyCredentials
@@ -26,8 +16,6 @@ HTTP.post(URL, HEADER, body)
     encoded_credentials::String = ""
     access_token::String = "" 
 end
-##
-SC = SpotifyCredentials(client_id=CLIENT_ID, client_secret=CLIENT_SECRET)
 
 ##
 function base64encode(sc::SpotifyCredentials)
@@ -36,14 +24,19 @@ function base64encode(sc::SpotifyCredentials)
 end
 
 ##
-SC = base64encode(SC)
-
-##
 function GetAuthorizationToken(sc::SpotifyCredentials)
     header = ["Authorization" => "Basic $(sc.encoded_credentials)","Content-Type" => "application/x-www-form-urlencoded"]
     body = "grant_type=client_credentials"
-    return HTTP.post(URL, header, body)
+    response_json = HTTP.post(URL, header, body).body |> String |> JSON3.read
+    return SpotifyCredentials(client_id=sc.client_secret,
+    client_secret=sc.client_secret, encoded_credentials = sc.encoded_credentials, access_token  = response_json.access_token)
 end
 
 ##
-GetAuthorizationToken(SC)
+#=
+Example of Authorization.
+
+credentials = SpotifyCredentials(client_id = CLIENT_ID, client_secret = CLIENT_SECRET)
+credentials = base64encode(credentials)
+credentials = GetAuthorizationToken(credentials)
+=#
