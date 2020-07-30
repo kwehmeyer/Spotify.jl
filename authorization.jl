@@ -37,8 +37,6 @@ end
 
 function AuthorizeSpotify(client_id, client_secret)
     sc = SpotifyCredentials(client_id = client_id, client_secret = client_secret)
-    sc = base64encode(sc)
-    sc = GetAuthorizationToken(sc)
     return sc
 end
 
@@ -51,5 +49,4 @@ credentials = base64encode(credentials)
 credentials = GetAuthorizationToken(credentials)
 =#
 ##
-credentials = SpotifyCredentials(client_id = CLIENT_ID, client_secret = CLIENT_SECRET)
-methods(base64encode)
+credentials = AuthorizeSpotify(CLIENT_ID, CLIENT_SECRET)
