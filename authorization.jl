@@ -1,10 +1,6 @@
 ## Libraries
 
-using Revise
-using HTTP
-using JSON3
-using Base64
-using Parameters
+using Revise, HTTP, JSON3, Base64, Parameters
 
 include("credentials.jl")
 import Base64.base64encode
