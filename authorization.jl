@@ -37,16 +37,16 @@ end
 
 function AuthorizeSpotify(client_id, client_secret)
     sc = SpotifyCredentials(client_id = client_id, client_secret = client_secret)
+    sc = base64encode(sc)
+    sc = GetAuthorizationToken(sc)
     return sc
 end
 
+#= 
+How to authorize
 
-#=
-Example of Authorization.
+`credentials = AuthorizeSpotify(CLIENT_ID, CLIENT_SECRET)`
 
-credentials = SpotifyCredentials(client_id = CLIENT_ID, client_secret = CLIENT_SECRET)
-credentials = base64encode(credentials)
-credentials = GetAuthorizationToken(credentials)
+Now credentials is a SpotifyCredentials object containing a .access_token string used for other HTTP calls
+
 =#
-##
-credentials = AuthorizeSpotify(CLIENT_ID, CLIENT_SECRET)
