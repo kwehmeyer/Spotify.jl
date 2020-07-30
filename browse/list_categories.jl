@@ -26,7 +26,10 @@ htpayload = HTTP.payload(resp, String)
 ##
 dict_resp = JSON.parse(htpayload) 
 ##
+dict_resp
+#= Old stinky code for making a dataframe
 cats = []
+
 for i in dict_resp["categories"]["items"]
     #println(DataFrame(i))
     push!(cats, DataFrame(i))
@@ -40,3 +43,4 @@ for i in cats
 end
 ##
 println(cats_d)
+=#
