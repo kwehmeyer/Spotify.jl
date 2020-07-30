@@ -6,37 +6,15 @@ using JSONTables
 using JSON
 
 ##
-struct SpotifyCategory 
-    name 
-    id 
-    icons 
-    href 
-end
-##
 base_url = "https://api.spotify.com/v1"
 cat_url = "/browse/categories"
 
 ##
-header_cat = ["Authorization" => "Bearer $(credentials.access_token)"]
-
-##
-resp = HTTP.get((base_url * cat_url), header_cat)
-##
-htpayload = HTTP.payload(resp, String)
-##
-dict_resp = JSON.parse(htpayload) 
-##
-cats = []
-for i in dict_resp["categories"]["items"]
-    #println(DataFrame(i))
-    push!(cats, DataFrame(i))
-    println("~"^15)
-end
-
-##
-cats_d = DataFrame()
-for i in cats 
-    append!(cats_d, i)
+function list_categories()
+    header = ["Authorization" => "Bearer $(credentials.access_token)"]
+    data = HTTP.get((base_url * cat_url), header)
+    data = HTTP.payload(data, String)
+    data = JSON.parse(data)
+    return data
 end
 ##
-println(cats_d)
