@@ -8,6 +8,7 @@ using Parameters
 
 include("credentials.jl")
 import Base64.base64encode
+auth_url = "https://accounts.spotify.com/api/token"
 
 ##
 @with_kw struct SpotifyCredentials
@@ -27,12 +28,21 @@ end
 function GetAuthorizationToken(sc::SpotifyCredentials)
     header = ["Authorization" => "Basic $(sc.encoded_credentials)","Content-Type" => "application/x-www-form-urlencoded"]
     body = "grant_type=client_credentials"
-    response_json = HTTP.post(URL, header, body).body |> String |> JSON3.read
+    response_json = HTTP.post(auth_url, header, body).body |> String |> JSON3.read
     return SpotifyCredentials(client_id=sc.client_secret,
     client_secret=sc.client_secret, encoded_credentials = sc.encoded_credentials, access_token  = response_json.access_token)
 end
 
 ##
+
+function AuthorizeSpotify(client_id, client_secret)
+    sc = SpotifyCredentials(client_id = client_id, client_secret = client_secret)
+    sc = base64encode(sc)
+    sc = GetAuthorizationToken(sc)
+    return sc
+end
+
+
 #=
 Example of Authorization.
 
@@ -40,3 +50,6 @@ credentials = SpotifyCredentials(client_id = CLIENT_ID, client_secret = CLIENT_S
 credentials = base64encode(credentials)
 credentials = GetAuthorizationToken(credentials)
 =#
+##
+credentials = SpotifyCredentials(client_id = CLIENT_ID, client_secret = CLIENT_SECRET)
+methods(base64encode)
