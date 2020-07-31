@@ -1,6 +1,6 @@
 name = "Spotify"
 uuid = "369d3230-709b-4770-b64e-2fec7152d6dc"
-authors = ["Kahlil Wehmeyer <kahlilwehmeyer@gmai.com>"]
+authors = ["Kahlil Wehmeyer", "Owen Dostie"]
 version = "0.1.0"
 
 [deps]
