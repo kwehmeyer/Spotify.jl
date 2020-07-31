@@ -18,4 +18,3 @@ function get_new_releases()
 end
 
 ##
-get_new_releases()
