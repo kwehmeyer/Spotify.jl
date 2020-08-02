@@ -2,7 +2,6 @@
 
 using Revise, HTTP, JSON3, Base64, Parameters
 
-include("credentials.jl")
 import Base64.base64encode
 auth_url = "https://accounts.spotify.com/api/token"
 
