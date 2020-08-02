@@ -25,7 +25,7 @@ function get_album(id::String; query::String="?market=US")
     return spotify_request("albums/$id$query")
 end
 
+
 response = get_album("0sNOF9WDwhWunNAHPD3Baj")
 
-
-##
+println(response["genres"])
