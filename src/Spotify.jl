@@ -20,7 +20,6 @@ export spotify_request
 
 # Browse
 include("browse/browse.jl")
-export category_get
 
 
 end # module

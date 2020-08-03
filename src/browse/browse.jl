@@ -59,10 +59,20 @@ end
 
 
 ## https://developer.spotify.com/documentation/web-api/reference/browse/get-list-featured-playlists/
-## TODO: Add timestamp
-## TODO: Not working, fix
-function category_get_featured_playlist(country="US",locale="en", limit=50, offset=0)
-    return spotify_request("browse/features-playlists?country=$country&locale=$locale&limit=$limit&offset=$offset")
+@doc """
+Get a list of Spotify featured playlists (shown, for example, on a Spotify player’s ‘Browse’ tab).\n 
+
+country: (Optional) A country: an ISO 3166-1 alpha-2 country code. Provide this parameter if you want the list of returned items to be relevant to a particular country. If omitted, the returned items will be relevant to all countries.\n 
+locale: (Optional) The maximum number of items to return. Default: 20. Minimum: 1. Maximum: 50.\n 
+offset: (Optional) The index of the first item to return. Default: 0 (the first object). Use with limit to get the next set of items.\n
+timestamp: (Optional) A timestamp in ISO 8601 format: yyyy-MM-ddTHH:mm:ss. 
+Use this parameter to specify the user’s local time to get results tailored for that specific date and time in the day.
+If not provided, the response defaults to the current UTC time. 
+Example: “2014-10-23T09:00:00” for a user whose local time is 9AM.
+If there were no featured playlists (or there is no data) at the specified time, the response will revert to the current UTC time.
+""" -> 
+function category_get_featured_playlist(country="US",locale="en", limit=50, offset=0, timestamp=string(now())[1:19])
+    return spotify_request("browse/featured-playlists?country=$country&locale=$locale&limit=$limit&offset=$offset&timestamp=$timestamp")
 end
 
 
