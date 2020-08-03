@@ -3,20 +3,24 @@ module Spotify
 using HTTP,
         Base64,
         JSON,
-        Parameters
+        Parameters,
+        Dates
 
 
 # Authorization
 include("authorization/authorization.jl")
 export AuthorizeSpotify
+include("authorization/credentials.jl")
+spotcred = AuthorizeSpotify(CLIENT_ID, CLIENT_SECRET)
+
+# Util
+include("util/utilities.jl")
+include("util/request.jl")
+export spotify_request
 
 # Browse
-include("browse/browse_category.jl")
-include("browse/catetgory_playlist.jl")
-include("browse/feautred_playlists.jl")
-include("browse/list_categories.jl")
-include("browse/list_new_releases.jl")
-include("browse/recommendations.jl")
+include("browse/browse.jl")
+export category_get
 
 
 end # module
