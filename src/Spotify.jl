@@ -24,6 +24,8 @@ include("browse.jl")
 # Tracks
 include("tracks.jl")
 
+# Shows
+include("shows.jl")
 
 
 end # module
