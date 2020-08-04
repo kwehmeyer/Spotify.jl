@@ -23,7 +23,7 @@ end
 # Get Audio Features for a Track
 **Summary**: Get audio feature information for a single track identified by it's unique Spotify ID
 
-`track_id` _Required_: The Spotify ID for the track.
+`track_id` _Required_: The Spotify ID for the track. Up to 50 tracks can be passed seperated with a comma. No whitespace.\n
 
 [Reference](https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-features/)
 """ ->
