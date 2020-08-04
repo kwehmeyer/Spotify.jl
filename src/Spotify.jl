@@ -19,7 +19,11 @@ include("util/request.jl")
 export spotify_request
 
 # Browse
-include("browse/browse.jl")
+include("browse.jl")
+
+# Tracks
+include("tracks.jl")
+
 
 
 end # module
