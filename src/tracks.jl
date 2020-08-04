@@ -46,7 +46,3 @@ end
 function tracks_get(track_id, market="US")
     return spotify_request("tracks/$track_id?market=$market")
 end
-
-
-
-
