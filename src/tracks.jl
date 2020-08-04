@@ -30,3 +30,23 @@ end
 function tracks_get_audio_features(track_id)
     return spotify_request("audio-features/$track_id")
 end
+
+
+
+## https://developer.spotify.com/documentation/web-api/reference/tracks/get-track/
+@doc """
+# Get a Track
+**Summary**: Get a spotify catalog information for a single track identified by it's unique Spotify ID
+
+`track_id` _Required_: The Spotify ID for the track. Up to 50 tracks can be passed seperated with a comma. No whitespace.\n
+`market` _Optional_: An ISO 3166=1 alpha-2 country code
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/tracks/get-track/)
+"""
+function tracks_get(track_id, market="US")
+    return spotify_request("tracks/$track_id?market=$market")
+end
+
+
+
+
