@@ -57,3 +57,13 @@ end
 function artist_top_tracks(artist_id, country="US")
     return spotify_request("artists/$artist_id/top-tracks?country=$country")
 end
+
+
+
+## https://developer.spotify.com/documentation/web-api/reference/artists/get-related-artists/
+@doc """
+
+""" ->
+function artist_get_related_artists(artist_id)
+    return spotify_request("artists/$artist_id/related-artists")
+end
