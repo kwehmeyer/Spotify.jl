@@ -45,7 +45,15 @@ end
 
 
 ## https://developer.spotify.com/documentation/web-api/reference/artists/get-artists-top-tracks/
+@doc """
+# Get an Artist's Top Tracks
+**Summary**: Get Spotify catalog information about an artist's top tracks by country.\n
 
+`artist_id` _Required_: The Spotify artist ID.\n
+`country` _Optional_: An ISO 3166-1 alpha-2 country code string. Use this to limit the response to one particular geographical market. Default "US"\n 
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/artists/get-artists-top-tracks/)
+""" ->
 function artist_top_tracks(artist_id, country="US")
     return spotify_request("artists/$artist_id/top-tracks?country=$country")
 end
