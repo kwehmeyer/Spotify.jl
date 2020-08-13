@@ -62,7 +62,12 @@ end
 
 ## https://developer.spotify.com/documentation/web-api/reference/artists/get-related-artists/
 @doc """
+# Get an Artist's Related Artists
+**Summary**: Get spotify catalog information about artists similar to a given artist. Similarity is based on analysis of the Spotify community's listening history.
 
+`artist_id` _Required_: The Spotify artist ID.\n
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/artists/get-related-artists/)
 """ ->
 function artist_get_related_artists(artist_id)
     return spotify_request("artists/$artist_id/related-artists")
