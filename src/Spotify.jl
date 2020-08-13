@@ -36,5 +36,8 @@ include("artist.jl")
 # Episodes
 include("episodes.jl")
 
+# Library
+include("library.jl")
+
 
 end # module
