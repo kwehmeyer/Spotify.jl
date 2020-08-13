@@ -27,5 +27,8 @@ include("tracks.jl")
 # Shows
 include("shows.jl")
 
+# Albums 
+include("albums.jl")
+
 
 end # module
