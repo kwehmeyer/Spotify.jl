@@ -20,7 +20,7 @@ end
 # Get an Artists Albums 
 **Summary**: Get Spotify catalog information about an artist's albums.
 
-`artist_id` _Required_: The Spotify artist ID. Up to 50 artist ID's can be passed by comma delimiting the ID's 
+`artist_id` _Required_: The Spotify artist ID. Up to 50 artist ID's can be passed by comma delimiting the ID's\n
 `include_groups` _Optional_: A comma-separated list of keywords that will be used to filter the response. If not supoplied, all album types will be returned.
 Valid values:
 * `album`
@@ -40,4 +40,12 @@ function artist_get_albums(artist_id, include_groups="None", country="US", limit
     else 
         return spotify_request("artists/$artist_id?country=$country&limit=$limit&offset=$offset")
     end
+end
+
+
+
+## https://developer.spotify.com/documentation/web-api/reference/artists/get-artists-top-tracks/
+
+function artist_top_tracks(artist_id, country="US")
+    return spotify_request("artists/$artist_id/top-tracks?country=$country")
 end
