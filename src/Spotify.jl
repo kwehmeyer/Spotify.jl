@@ -30,5 +30,8 @@ include("shows.jl")
 # Albums 
 include("albums.jl")
 
+# Artist
+include("artist.jl")
+
 
 end # module
