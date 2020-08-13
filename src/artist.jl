@@ -16,9 +16,26 @@ end
 
 
 ## https://developer.spotify.com/documentation/web-api/reference/artists/get-artists-albums/
+@doc """
+# Get an Artists Albums 
+**Summary**: Get Spotify catalog information about an artist's albums.
 
-function artist_get_albums(artist_id, include_groups="", country="US", limit=20, offset=0)
-    if length(include_groups) > 0 
+`artist_id` _Required_: The Spotify artist ID. Up to 50 artist ID's can be passed by comma delimiting the ID's 
+`include_groups` _Optional_: A comma-separated list of keywords that will be used to filter the response. If not supoplied, all album types will be returned.
+Valid values:
+* `album`
+* `single`
+* `compilation`
+* `appears_on`
+
+`country` _Optional_: An ISO 3166-1 alpha-2 country code string. Use this to limit the response to one particular geographical market. Default "US"\n 
+`limit` _Optional_: The number of album objects to return. Default 20\n 
+`offset` _Optional_: The index of the first album to return. Default 0\n
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/artists/get-artists-albums/)
+""" ->
+function artist_get_albums(artist_id, include_groups="None", country="US", limit=20, offset=0)
+    if include_groups == "None"
         return spotify_request("artists/$artist_id?include_groups=$include_groups&country=$country&limit=$limit&offset=$offset")
     else 
         return spotify_request("artists/$artist_id?country=$country&limit=$limit&offset=$offset")
