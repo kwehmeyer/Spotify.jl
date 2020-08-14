@@ -116,3 +116,23 @@ function library_remove_tracks(track_ids)
     return spotify_request("me/tracks?ids=$track_ids", method="DELETE")
 end
 
+#### PUT #####
+
+## https://developer.spotify.com/documentation/web-api/reference/library/save-albums-user/
+
+function library_save_album(album_ids)
+    return spotify_request("me/albums?ids=$album_ids", method="PUT")
+end
+
+
+## https://developer.spotify.com/documentation/web-api/reference/library/save-shows-user/
+
+function library_save_show(shows_ids)
+    return spotify_request("me/shows?ids=$show_ids", method="PUT")
+end
+
+
+## https://developer.spotify.com/documentation/web-api/reference/library/save-tracks-user/
+
+function library_save_track(track_ids)
+    return spotify_request("me/tracks?ids=$track_ids", method="PUT")
