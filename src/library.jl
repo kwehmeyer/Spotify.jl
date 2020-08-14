@@ -97,4 +97,22 @@ end
 
 ## https://developer.spotify.com/documentation/web-api/reference/library/remove-albums-user/
 
-function library_remove_albums()
+function library_remove_albums(album_ids)
+    return spotify_request("me/albums?ids=$album_ids", method="DELETE")
+end
+
+
+
+## https://developer.spotify.com/documentation/web-api/reference/library/remove-shows-user/
+
+function library_remove_shows(show_ids)
+    return spotify_request("me/shows?ids=$show_ids", method="DELETE")
+end
+
+
+## https://developer.spotify.com/documentation/web-api/reference/library/remove-tracks-user/
+
+function library_remove_tracks(track_ids)
+    return spotify_request("me/tracks?ids=$track_ids", method="DELETE")
+end
+
