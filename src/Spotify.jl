@@ -42,4 +42,7 @@ include("library.jl")
 # Personalization
 include("personalization.jl")
 
+# Playlists
+include("playlists.jl")
+
 end # module
