@@ -39,5 +39,7 @@ include("episodes.jl")
 # Library
 include("library.jl")
 
+# Personalization
+include("personalization.jl")
 
 end # module
