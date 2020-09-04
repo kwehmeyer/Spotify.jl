@@ -58,6 +58,21 @@ end
 
 [Reference](https://developer.spotify.com/documentation/web-api/reference/follow/follow-artists-users/)
 """ ->
-function follow(type, ids)
+function follow_artists_users(type, ids)
     return spotify_request("me/following?type=$type&ids=$ids", method="PUT")
 end
+
+## https://developer.spotify.com/documentation/web-api/reference/follow/follow-playlist/
+@docs """
+# Follow a Playlist
+**Summary**: Add the currend user as a follower of a playlist. \n 
+
+`playlist_id` _Required_: The Spotify ID of the playlist. Any playlist can be followed regardless of it's private/public status, as long as the ID is known.\n 
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/follow/follow-playlist/)
+""" ->
+function follow_playlist(playlist_id)
+    return spotify_request("playlists/$playlist_id/followers")
+end
+
+##
