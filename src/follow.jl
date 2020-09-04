@@ -4,7 +4,7 @@
 #### GET ####
 
 ## https://developer.spotify.com/documentation/web-api/reference/follow/check-current-user-follows/
-@docs """
+@doc """
 # Check if Current User Follows Artists or Users
 **Summary**: Check to see if the current user is following one or more artists or other Spotify Users
 
@@ -18,7 +18,7 @@ function follow_check(type, ids)
 end
 
 ## https://developer.spotify.com/documentation/web-api/reference/follow/check-user-following-playlist/
-@docs """
+@doc """
 # Check if Users Follow a Playlist
 **Summary**: Check to see if one or more Spotify users are following a specified playlist_id.\n 
 
@@ -49,7 +49,7 @@ end
 #### PUT ####
 
 ## https://developer.spotify.com/documentation/web-api/reference/follow/follow-artists-users/
-@docs """
+@doc """
 # Follow Artists or Users
 **Summary**: Add the current user as a follower of one or more artists or other Spotify users.\n 
 
@@ -63,7 +63,7 @@ function follow_artists_users(type, ids)
 end
 
 ## https://developer.spotify.com/documentation/web-api/reference/follow/follow-playlist/
-@docs """
+@doc """
 # Follow a Playlist
 **Summary**: Add the currend user as a follower of a playlist. \n 
 
@@ -72,7 +72,7 @@ end
 [Reference](https://developer.spotify.com/documentation/web-api/reference/follow/follow-playlist/)
 """ ->
 function follow_playlist(playlist_id)
-    return spotify_request("playlists/$playlist_id/followers")
+    return spotify_request("playlists/$playlist_id/followers", method="PUT")
 end
 
 #### DELETE ####
@@ -89,4 +89,17 @@ end
 """ ->
 function unfollow_artists_users(type, ids)
     return spotify_request("me/following?type=$type&ids=$ids", method="DELETE")
+end
+
+## https://developer.spotify.com/documentation/web-api/reference/follow/unfollow-playlist/
+@doc """
+# Unfollow a Playlist
+**Summary**: Remove the current user as a follower of a playlist.\n 
+
+`playlist_id` _Required_: The Spotify ID of the playlist. Any playlist can be followed regardless of it's private/public status, as long as the ID is known.\n 
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/follow/unfollow-playlist/)
+""" ->
+function unfollow_playlist(playlist_id)
+    return spotify_request("playlists/$playlist_id/followers", method="DELETE")
 end
