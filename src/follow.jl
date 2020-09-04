@@ -45,3 +45,19 @@ end
 function follow_artists(type="artist", limit=20)
     return spotify_request("me/following?type=$type")
 end
+
+#### PUT ####
+
+## https://developer.spotify.com/documentation/web-api/reference/follow/follow-artists-users/
+@docs """
+# Follow Artists or Users
+**Summary**: Add the current user as a follower of one or more artists or other Spotify users.\n 
+
+`type` _Required_: The ID type: either `artist` or `user`. \n 
+`ids` _Required_: A comma-separated list of the artists or users Spotify IDs. Maximum 50.\n 
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/follow/follow-artists-users/)
+""" ->
+function follow(type, ids)
+    return spotify_request("me/following?type=$type&ids=$ids", method="PUT")
+end
