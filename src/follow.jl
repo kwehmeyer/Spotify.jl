@@ -30,3 +30,18 @@ end
 function follow_check_playlist(playlist_id, ids)
     return spotify_request("playlists/$playlist_id/followers/contains?ids=$ids")
 end
+
+
+## https://developer.spotify.com/documentation/web-api/reference/follow/get-followed/
+@doc """
+# Get User's Followed Artists 
+**Summary**: Get the current user's followed artists.
+
+`type` _Required_: The ID type. Currently only `artist` is supported. Default `artist`.\n
+`limit` _Optional_: The maximum number of items to return. Default 20, Minimum 1, Maximum 50. \n
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/follow/get-followed/)
+""" ->
+function follow_artists(type="artist", limit=20)
+    return spotify_request("me/following?type=$type")
+end
