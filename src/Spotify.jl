@@ -42,4 +42,7 @@ include("library.jl")
 # Personalization
 include("personalization.jl")
 
+# Follow
+include("follow.jl")
+
 end # module
