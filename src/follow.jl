@@ -75,4 +75,18 @@ function follow_playlist(playlist_id)
     return spotify_request("playlists/$playlist_id/followers")
 end
 
-##
+#### DELETE ####
+
+## https://developer.spotify.com/documentation/web-api/reference/follow/unfollow-artists-users/
+@doc """
+# Unfollow Artists or Users 
+**Summary**: Remove the current user as a follower of one or more artists or other Spotify users.\n 
+
+`type` _Required_: The ID type: either `artist` or `user`. \n 
+`ids` _Required_: A comma-separated list of the artists or users Spotify IDs. Maximum 50.\n 
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/follow/unfollow-artists-users/)
+""" ->
+function unfollow_artists_users(type, ids)
+    return spotify_request("me/following?type=$type&ids=$ids", method="DELETE")
+end
