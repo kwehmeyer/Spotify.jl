@@ -40,6 +40,17 @@ end
 
 const SPOTCRED  = Ref{SpotifyCredentials}(SpotifyCredentials())
 
+"""
+These permissions are not requested until the current scope is
+insufficient, or the user calls 'get_implicit_grant()'
+
+Default requested permissions are 'client-credentials'.
+"""
+const DEFAULT_IMPLICIT_GRANT = ["user-read-private",
+                                "user-read-email",
+                                "user-follow-read",
+                                "user-library-read"]
+
 spotcred() = SPOTCRED[]
 
 # Helper types - colorful aliases for 'String'.

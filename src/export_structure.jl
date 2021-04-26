@@ -69,11 +69,9 @@ baremodule Personalization
 end
 baremodule Player
     import ..@_ie
-    @_ie show_get show_get_episodes
 end
 baremodule Playlists
     import ..@_ie
-    @_ie tracks_get_audio_analysis tracks_get_audio_features tracks_get
 end
 baremodule Search
     import ..@_ie
@@ -81,11 +79,11 @@ baremodule Search
 end
 baremodule Shows
     import ..@_ie
-    @_ie 
+    @_ie show_get show_get_episodes
 end
 baremodule Tracks
     import ..@_ie
-    @_ie tracks_get
+    @_ie tracks_get_audio_analysis tracks_get_audio_features tracks_get
 end
 baremodule UsersProfile
     import ..@_ie

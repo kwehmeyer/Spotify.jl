@@ -2,7 +2,15 @@
 # Use the access token to access the Spotify Web API
 # https://developer.spotify.com/documentation/general/guides/authorization-guide/#client-credentials-flow
 
-"Access the Spotify Web API"
+"""
+    spotify_request(url_ext::String, method::String= "GET"; scope = "client-credentials")
+     -> (r::JSON3.Object, retry_in_seconds::Int)
+
+Access the Spotify Web API.
+Error results return an empty Object. 
+Errors are written to 'stderr', expect for 'API rate limit exceeded', as 
+the output would typically occur in the middle of recursive calls.
+"""
 function spotify_request(url_ext::String, method::String= "GET"; scope = "client-credentials")
     # Not so cool, but this is how we get rid of spaces in vectors of strings:
     url_ext = replace(url_ext, ' ' => "")
@@ -13,19 +21,24 @@ function spotify_request(url_ext::String, method::String= "GET"; scope = "client
     try
         resp = HTTP.request(method, url, headers)
     catch e
-        knowntype = e isa HTTP.ExceptionRequest.StatusError && e.status == 401
-        if knowntype
+        if  e isa HTTP.ExceptionRequest.StatusError && e.status ∈ [401, 429]
             response_body = e.response.body |> String
-            @error response_body
-            return nothing
+            if e.status == 429 # API rate limit temporarily exceeded.
+                retry_in_seconds =  HTTP.header(e.response, "retry-after") 
+                return JSON3.Object(), parse(Int, retry_in_seconds)
+            else
+                @error response_body
+                return JSON3.Object(), 0
+            end
         else
             @warn "HTTP.request call: method = $method\n headers = $headers \n $url_ext"
             @error e
-            return nothing
+            @error response_body
+            return JSON3.Object(), 0
         end
     end
     response_body = resp.body |> String
-    response_body |> JSON3.read
+    response_body |> JSON3.read , 0
 end
 
 #=

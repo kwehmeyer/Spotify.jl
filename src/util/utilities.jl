@@ -7,7 +7,6 @@ function parse_response(resp)
 end
 
 function header_maker(;scope="client-credentials")
-    @info scope
     if scope == "client-credentials"
         if client_credentials_still_valid()
             return ["Authorization" => "Bearer $(spotcred().access_token)"]
@@ -26,7 +25,7 @@ function has_valid_bearer(scope)
         # No check if it has expired yet.
         spotcred().access_token != ""
     elseif has_ig_access_token()
-        @info "We just try without checking if grant includes scope $scope."
+        @info "We try the request without checking if current grant includes scope $scope." maxlog = 3
         true
     else
         @info "Starting asyncronous user authorization process. Try again later!"

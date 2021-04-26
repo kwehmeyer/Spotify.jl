@@ -13,7 +13,7 @@
 [Reference](https://developer.spotify.com/documentation/web-api/reference/library/get-users-saved-tracks/)
 """ ->
 function library_get_saved_tracks(limit=20, offset=0, market="US")
-    return spotify_request("me/tracks?market=$market&offset=$offset&limit=$limit")
+    return spotify_request("me/tracks?market=$market&offset=$offset&limit=$limit"; scope = "user-library-read")
 end
 
 ## https://developer.spotify.com/documentation/web-api/reference/library/get-users-saved-shows/
@@ -28,7 +28,7 @@ end
 [Reference](https://developer.spotify.com/documentation/web-api/reference/library/get-users-saved-shows/)
 """ ->
 function library_get_saved_shows(limit=20, offset=0)
-    return spotify_request("me/shows?limit=$limit&offset=$offset")
+    return spotify_request("me/shows?limit=$limit&offset=$offset"; scope = "user-library-read")
 end
 
 
@@ -45,7 +45,7 @@ end
 [Reference](https://developer.spotify.com/documentation/web-api/reference/library/get-users-saved-albums/)
 """ ->
 function library_get_saved_albums(limit=20, offset=0, market="US")
-    return spotify_request("me/albums?limit=$limit&offset=$offset&market=$market")
+    return spotify_request("me/albums?limit=$limit&offset=$offset&market=$market"; scope = "user-library-read")
 end
 
 
