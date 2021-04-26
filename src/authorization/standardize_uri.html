@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Malformed URI redirect</title>
+</head>
+<body>
+<p>Malformed URI redirect
+</p>
+<p id = "init">This page is replacing the fragment identifier '#' in URI from Spotify with the query identifier '?'. If javascript isn't enabled, you can do it manually, too. Afterwards, close this page.</p>
+<script>
+
+window.onload= function(){
+  orig_uri = document.URL
+  standard_uri = orig_uri.replace("#", "?")
+  if (orig_uri != standard_uri) {
+      window.location.replace(standard_uri)
+  };
+}
+</script>
+</body>
+</html>

@@ -10,7 +10,6 @@ locale: (Optional) The desired language, consisting of an ISO 639-1 language cod
 """ ->
 function category_get(category_id, country="US", locale="en")
     return spotify_request("browse/categories/$category_id?country=$country&locale=$locale")
-
 end
 
 
@@ -94,7 +93,6 @@ function recommendations_get(
     track_attributes,
     limit = 50,
     market = "US"
-
 )
     track_attributes = recommendations_dict_parser(track_attributes)
     seeds = recommendations_dict_parser(seeds)
@@ -113,3 +111,67 @@ function recommendations_dict_parser(track_attributes::Dict)
     end
     return query
 end
+
+
+
+"""
+For each tunable track attribute, a hard floor on the selected track attribute’s value can be provided. See tunable track attributes below for the list of available options. For example, min_tempo=140 would restrict results to only those tracks with a tempo of greater than 140 beats per minute.
+"""
+min_acousticness, min_danceability, min_duration_ms, min_energy, min_min_instrumentalness , min_key, 
+min_liveness, min_loudness, min_mode, min_popularity, min_speechiness, min_tempo, min_time_signature, min_valence
+
+
+"""
+For each tunable track attribute, a hard ceiling on the selected track attribute’s value can be provided. See tunable track attributes below for the list of available options. For example, max_instrumentalness=0.35 would filter out most tracks that are likely to be instrumental.
+"""
+max_acousticness, max_danceability, max_duration_ms, max_energy, max_instrumentalness, max_key, max_liveness, max_loudness, max_mode,
+max_popularity, max_speechiness, max_tempo, max_time_signature, max_valence
+
+
+"""
+For each of the tunable track attributes (below) a target value may be provided. Tracks with the attribute values nearest to the target values will be preferred. For example, you might request target_energy=0.6 and target_danceability=0.8. All target values will be weighed equally in ranking results.
+"""
+target_acousticness, target_danceability, target_duration_ms, target_energy, target_instrumentalness, target_key, target_liveness, target_loudness, target_mode, target_popularity, target_speechiness, target_tempo, target_time_signature, target_valence
+
+max_acousticness(x::Float64) = x
+max_danceability(x::Float64) = x
+max_duration_ms(x::Integer) = x
+max_energy(x::Float64) = x
+max_instrumentalness(x::Float64) = x
+max_key(x::Integer) = x
+max_liveness(x::Float64) = x
+max_loudness(x::Float64) = x
+max_mode(x::Float64) = x
+max_popularity(x::Integer) = x
+max_speechiness(x::Float64) = x
+max_tempo(x::Float64) = x
+max_time_signature(x::Integer) = x
+max_valence(x::Float64) = x
+min_acousticness(x::Float64) = x
+min_danceability(x::Float64) = x
+min_duration_ms(x::Integer) = x
+min_energy(x::Float64) = x
+min_instrumentalness(x::Float64) = x
+min_key(x::Integer) = x
+min_liveness(x::Float64) = x
+min_loudness(x::Float64) = x
+min_mode(x::Float64) = x
+min_popularity(x::Integer) = x
+min_speechiness(x::Float64) = x
+min_tempo(x::Float64) = x
+min_time_signature(x::Integer) = x
+min_valence(x::Float64) = x
+target_acousticness(x::Float64) = x
+target_danceability(x::Float64) = x
+target_duration_ms(x::Integer) = x
+target_energy(x::Float64) = x
+target_instrumentalness(x::Float64) = x
+target_key(x::Integer) = x
+target_liveness(x::Float64) = x
+target_loudness(x::Float64) = x
+target_mode(x::Integer) = x
+target_popularity(x::Integer) = x
+target_speechiness(x::Float64) = x
+target_tempo(x::Float64) = x
+target_time_signature(x::Integer) = x
+target_valence(x::Float64) = x
