@@ -13,7 +13,7 @@ If a country code is specified, only shows and episodes that are available in th
 [Reference](https://developer.spotify.com/documentation/web-api/reference/shows/get-a-show/)
 """
 function show_get(show_id, market="US")
-    return spotify_request("shows/$show_id") 
+    return spotify_request("shows/$show_id?market=$market") 
 end
 
 

@@ -14,7 +14,7 @@
 [Reference](https://developer.spotify.com/documentation/web-api/reference/follow/check-current-user-follows/)
 """ ->
 function follow_check(type, ids)
-    return spotify_request("me/following/contains?type=$type&ids=$ids")
+    return spotify_request("me/following/contains?type=$type&ids=$ids"; scope = "user-follow-read")
 end
 
 ## https://developer.spotify.com/documentation/web-api/reference/follow/check-user-following-playlist/
@@ -28,7 +28,7 @@ end
 [Reference](https://developer.spotify.com/documentation/web-api/reference/follow/check-user-following-playlist/)
 """ ->
 function follow_check_playlist(playlist_id, ids)
-    return spotify_request("playlists/$playlist_id/followers/contains?ids=$ids")
+    return spotify_request("playlists/$playlist_id/followers/contains?ids=$ids"; scope = "playlist-read-private")
 end
 
 
@@ -43,7 +43,7 @@ end
 [Reference](https://developer.spotify.com/documentation/web-api/reference/follow/get-followed/)
 """ ->
 function follow_artists(type="artist", limit=20)
-    return spotify_request("me/following?type=$type")
+    return spotify_request("me/following?type=$type"; scope = "user-follow-modify")
 end
 
 #### PUT ####
@@ -59,7 +59,7 @@ end
 [Reference](https://developer.spotify.com/documentation/web-api/reference/follow/follow-artists-users/)
 """ ->
 function follow_artists_users(type, ids)
-    return spotify_request("me/following?type=$type&ids=$ids", method="PUT")
+    return spotify_request("me/following?type=$type&ids=$ids", method="PUT"; scope = "user-follow-modify")
 end
 
 ## https://developer.spotify.com/documentation/web-api/reference/follow/follow-playlist/
@@ -72,7 +72,7 @@ end
 [Reference](https://developer.spotify.com/documentation/web-api/reference/follow/follow-playlist/)
 """ ->
 function follow_playlist(playlist_id)
-    return spotify_request("playlists/$playlist_id/followers", method="PUT")
+    return spotify_request("playlists/$playlist_id/followers", method="PUT"; scope = "user-follow-modify")
 end
 
 #### DELETE ####
@@ -88,7 +88,7 @@ end
 [Reference](https://developer.spotify.com/documentation/web-api/reference/follow/unfollow-artists-users/)
 """ ->
 function unfollow_artists_users(type, ids)
-    return spotify_request("me/following?type=$type&ids=$ids", method="DELETE")
+    return spotify_request("me/following?type=$type&ids=$ids", method="DELETE"; scope = "user-follow-modify")
 end
 
 ## https://developer.spotify.com/documentation/web-api/reference/follow/unfollow-playlist/
@@ -101,5 +101,5 @@ end
 [Reference](https://developer.spotify.com/documentation/web-api/reference/follow/unfollow-playlist/)
 """ ->
 function unfollow_playlist(playlist_id)
-    return spotify_request("playlists/$playlist_id/followers", method="DELETE")
+    return spotify_request("playlists/$playlist_id/followers", method="DELETE"; scope = "playlist-modify-private")
 end
