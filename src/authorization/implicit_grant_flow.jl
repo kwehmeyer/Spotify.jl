@@ -67,10 +67,7 @@ end
 
 
 function launch_a_browser_that_asks_for_implicit_grant()
-    vs =["user-read-private",
-        "user-read-email",
-        "user-follow-read"]
-    scopes = join(vs, "%20")
+    scopes = join(DEFAULT_IMPLICIT_GRANT, "%20")
     uri = OAUTH_AUTHORIZE_URL * "?" *
             "client_id=" * spotcred().client_id *
             "&redirect_uri=" * replace(spotcred().redirect, "/" => "%2F") *

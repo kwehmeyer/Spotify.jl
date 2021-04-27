@@ -18,13 +18,13 @@
 :library_save_show,  :library_save_track,
 #= 34-35 Personalization 2 functions =#
 :top_tracks,  :top_artists,
-#= 36-37 Player 2 functions =#
-:show_get,  :show_get_episodes,
-#= 38-40 Playlists 3 functions =#
-:tracks_get_audio_analysis,  :tracks_get_audio_features,  :tracks_get
+#= Player =#
+#= Playlists =#
 #= Search =#
-#= Shows =#
-#= Tracks =#
+#= 36-37 Shows 2 functions =#
+:show_get,  :show_get_episodes,
+#= 38-40 Tracks 3 functions =#
+:tracks_get_audio_analysis, :tracks_get_audio_features, :tracks_get
 #= UsersProfile =#
 #= Objects =#
 ]

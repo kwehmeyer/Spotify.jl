@@ -4,13 +4,18 @@ include("generalize_calls.jl")
 
 is_loaded(foo) = isdefined(Main, foo)
 
+# This menu needs to be updated quite manually, together with 
+# verb_vec.jl and 'export_structure.jl. It would
+# be nice if we could easily read which methods are loaded,
+# but that would require some elaborate Core.eval...
+# This 'problem' goes away when the list is complete!
 function pick_modules(;verb_vec = verb_vec)
     !isdefined(Main, :Spotify) && return "-> using Spotify"
     submods = [:Albums, :Artists, :Browse, :Episodes, 
         :Follow, :Library, #:Markets,# 
-        :Personalization, :Player, :Playlists,
-        :Search, :Shows, :Tracks, 
-        :UsersProfile, :Objects]
+        :Personalization, #:Player, :Playlists, #:Search,
+        :Shows, :Tracks #, :UsersProfile, :Objects
+    ]
 
     foodi = Dict{Int, UnitRange}(
             1 => 1:2,
@@ -75,7 +80,7 @@ function pick_function(;verb_vec = verb_vec)
         print("Now calling:\n\t  ")
         show_default_call(no)
         t0 = now()
-        r = make_default_call(no)
+        r = make_default_call(no)[1] # Disregard the second output, which is how many seconds to wait...
         t1 = now()
         display(r)
         println()
