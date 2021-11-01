@@ -95,6 +95,8 @@ include("by_reference_doc/follow.jl")
 # Export structure
 include("export_structure.jl")
 
+# Playlists
+include("by_reference_doc/playlists.jl")
 
 function __init__()
     authorize()
