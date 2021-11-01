@@ -21,11 +21,16 @@ function spotify_request(url_ext::String, method::String= "GET"; scope = "client
     try
         resp = HTTP.request(method, url, headers)
     catch e
-        if  e isa HTTP.ExceptionRequest.StatusError && e.status ∈ [401, 429]
+        if  e isa HTTP.ExceptionRequest.StatusError && e.status ∈ [401, 404, 429]
             response_body = e.response.body |> String
             if e.status == 429 # API rate limit temporarily exceeded.
                 retry_in_seconds =  HTTP.header(e.response, "retry-after") 
                 return JSON3.Object(), parse(Int, retry_in_seconds)
+
+            elseif e.status == 404 # Not found, e.g. when a track/playlist/album ID is incorrect
+                @info "404 Not Found - Check if input arguments are okay"
+                return JSON3.Object(), 0
+
             else
                 @error response_body
                 return JSON3.Object(), 0
