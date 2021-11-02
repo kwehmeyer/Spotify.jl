@@ -31,7 +31,9 @@ using Spotify
 
     @test shortp(spuserid)[1] == '\e'
     @test longp(spuserid)[1] == '\e'
-    #@test shortp_bw(spuserid)[1] == 'S'
+
+    # This test case depends on the user ID info from .ini file
+    #@test shortp_bw(spuserid)[1] == 'S' 
     @test longp_bw(spuserid)[1] == '"'
 
     @test shortp(spurl)[1] == '\e'
