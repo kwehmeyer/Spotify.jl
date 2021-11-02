@@ -223,3 +223,31 @@ function playlist_get_category(category_id::String; country::String="US", limit:
     return Spotify.spotify_request(url1 * url2)
 
 end
+
+
+## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-playlist-cover
+
+"""
+    playlist_get_cover_image(playlist_id::String)
+
+**Summary**: Get the current image associated with a specific playlist.
+
+# Arguments
+- `playlist_id::String` : Alphanumeric ID of the playlist
+
+# Example
+```julia-repl
+julia> Spotify.playlist_get_cover_image("37i9dQZF1E4vUblDJbCkV3")[1]
+1-element JSON3.Array{JSON3.Object, Base.CodeUnits{UInt8, String}, Vector{UInt64}}:
+ {
+   "height": nothing,
+      "url": "https://seeded-session-images.scdn.co/v1/img/artist/6ltzsmQQbmdoHHbLZ4ZN25/en",
+    "width": nothing
+}
+```
+"""
+function playlist_get_cover_image(playlist_id::String)
+
+    return Spotify.spotify_request("playlists/$playlist_id/images")
+
+end
