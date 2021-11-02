@@ -189,3 +189,37 @@ function playlist_get_featured(;country::String="US", limit::Int64=20, locale::S
     return Spotify.spotify_request(url1*url2)
 
 end
+
+
+## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-categories-playlists
+
+"""
+    playlist_get_category(category_id::String; country::String="US", limit::Int64=20, offset::Int64=0)
+
+**Summary**: Get a list of Spotify playlists tagged with a particular category.
+
+# Arguments
+- `category_id::String` : The unique string identifying the Spotify category, e.g. "dinner", "party" etc.
+
+# Optional keywords
+- `country::String` : An ISO 3166-1 alpha-2 country code. Provide this parameter if you want 
+                      the list of returned items to be relevant to a particular country.
+                      Default is set to "US".
+- `limit::Int64` : Maximum number of items to return, default is set to 20
+- `offset::Int64` : Index of the first item to return, default is set to 0
+
+# Example
+```julia-repl
+julia> Spotify.playlist_get_category("party")[1]
+JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
+  :playlists => {…
+```    
+"""
+function playlist_get_category(category_id::String; country::String="US", limit::Int64=20, offset::Int64=0)
+
+    url1 = "browse/categories/$category_id/playlists?country=$country"
+    url2 = "&limit=$limit&offset=$offset"
+
+    return Spotify.spotify_request(url1 * url2)
+
+end
