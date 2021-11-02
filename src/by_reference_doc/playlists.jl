@@ -148,3 +148,44 @@ function playlist_get_user(user_id::String; limit::Int64=20, offset::Int64=0)
     return Spotify.spotify_request("users/$user_id/playlists?limit=$limit&offset=$offset")
 
 end
+
+
+## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-featured-playlists
+
+"""
+    playlist_get_featured(;country::String="US", limit::Int64=20, locale::String="en_US", 
+                               offset::Int64=0, timestamp::String="$(Dates.now())")
+
+**Summary**: Get a list of Spotify featured playlists (shown, for example, on a Spotify player's 'Browse' tab).
+
+# Optional keywords
+- `country::String` : An ISO 3166-1 alpha-2 country code. Provide this parameter if you want 
+                      the list of returned items to be relevant to a particular country.
+                      Default is set to "US".
+- `limit::Int64` : Maximum number of items to return, default is set to 20
+- `locale::String` : The desired language, consisting of a lowercase ISO 639-1 language code and an uppercase 
+                     ISO 3166-1 alpha-2 country code, joined by an underscore. For example: es_MX, meaning "Spanish (Mexico)". 
+                     Provide this parameter if you want the results returned in a particular language (where available).
+                     Default is set to "en_US".
+- `offset::Int64` : Index of the first item to return, default is set to 0
+- `timestamp::String` : A timestamp in ISO 8601 format: yyyy-MM-ddTHH:mm:ss. Use this parameter to specify the user's local time 
+                        to get results tailored for that specific date and time in the day.
+                        Default is set to user's current time.    
+
+# Example
+```julia-repl
+julia> Spotify.playlist_get_featured(locale="en_UK")[1]
+JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 2 entries:
+  :message   => "Tuesday jams"
+  :playlists => {…
+```    
+"""
+function playlist_get_featured(;country::String="US", limit::Int64=20, locale::String="en_US", 
+                               offset::Int64=0, timestamp::String="$(Dates.now())")
+
+    url1 = "browse/featured-playlists?country=$country&limit=$limit"
+    url2 = "&locale=$locale&offset=$offset&timestamp=$timestamp"
+
+    return Spotify.spotify_request(url1*url2)
+
+end
