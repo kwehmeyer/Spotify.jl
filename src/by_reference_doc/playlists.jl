@@ -101,16 +101,50 @@ end
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-list-of-current-users-playlists
 
 """
-    playlist_get_user(limit::Int64=20, offset::Int64=0)
+    playlist_get_current_user(limit::Int64=20, offset::Int64=0)
 
 **Summary**: Get a list of the playlists owned or followed by the current Spotify user.
 
-# Arguments
+# Optional keywords
 - `limit::Int64` : Maximum number of items to return, default is set to 20
 - `offset::Int64` : Index of the first item to return, default is set to 0
 """
-function playlist_get_user(limit::Int64=20, offset::Int64=0)
+function playlist_get_current_user(;limit::Int64=20, offset::Int64=0)
 
     return Spotify.spotify_request("me/playlists?limit=$limit&offset=$offset")
+
+end
+
+
+## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-list-users-playlists
+
+"""
+    playlist_get_user(user_id::String; limit::Int64=20, offset::Int64=0)
+
+**Summary**: Get a list of the playlists owned or followed by a Spotify user.
+
+# Arguments
+- `user_id::String` : Alphanumeric ID of the user or name (e.g. "smedjan")
+
+# Optional keywords
+- `limit::Int64` : Maximum number of items to return, default is set to 20
+- `offset::Int64` : Index of the first item to return, default is set to 0
+
+# Example
+```julia-repl
+julia> Spotify.playlist_get_user("smedjan")[1]
+JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
+  :href     => "https://api.spotify.com/v1/users/smedjan/playlists?offset=0&limit=20"
+  :items    => JSON3.Object[{…
+  :limit    => 20
+  :next     => "https://api.spotify.com/v1/users/smedjan/playlists?offset=20&limit=20"
+  :offset   => 0
+  :previous => nothing
+  :total    => 98
+```    
+"""
+function playlist_get_user(user_id::String; limit::Int64=20, offset::Int64=0)
+
+    return Spotify.spotify_request("users/$user_id/playlists?limit=$limit&offset=$offset")
 
 end
