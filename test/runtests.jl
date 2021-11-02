@@ -31,15 +31,17 @@ using Spotify
 
     @test shortp(spuserid)[1] == '\e'
     @test longp(spuserid)[1] == '\e'
-    @test shortp_bw(spuserid)[1] == 'S'
+    #@test shortp_bw(spuserid)[1] == 'S'
     @test longp_bw(spuserid)[1] == '"'
 
     @test shortp(spurl)[1] == '\e'
     @test longp(spurl)[1] == '\e'
-    @test shortp_bw(spurl)[1] == 's'
+    @test shortp_bw(spurl)[1] == 'h'
     @test longp_bw(spurl)[1] == '"'
 
-    @test "AA$(spidvec)BB" ==  "AA|6rqhFgbbKwnb9MLmUQDhG6,6rqhFgbbKwnb9MLmUQDhG6|BB"
+    @test "AA|$(spidvec)|BB" ==  "AA|6rqhFgbbKwnb9MLmUQDhG6, 6rqhFgbbKwnb9MLmUQDhG6|BB"
 end
 
 include("generalize_calls.jl")
+
+include("test_playlists.jl")
