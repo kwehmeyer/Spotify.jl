@@ -40,7 +40,7 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 15 entries:
   :uri           => "spotify:playlist:37i9dQZF1E4vUblDJbCkV3"
 ``` 
 """
-function playlist_get(playlist_id::String; additional_types::String="track", fields::String="",
+function playlist_get(playlist_id; additional_types::String="track", fields::String="",
                       market::String="US")
 
     url1 = "playlists/$(playlist_id)?additional_types=$additional_types"
@@ -87,7 +87,7 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
   :total    => 50
 ```    
 """
-function playlist_get_tracks(playlist_id::String; additional_types::String="track", fields::String="",
+function playlist_get_tracks(playlist_id; additional_types::String="track", fields::String="",
                              limit::Int64=20, offset::Int64=0, market::String="US")
 
     url1 = "playlists/$(playlist_id)/tracks?additional_types=$additional_types"
@@ -143,7 +143,7 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
   :total    => 98
 ```    
 """
-function playlist_get_user(user_id::String; limit::Int64=20, offset::Int64=0)
+function playlist_get_user(user_id; limit::Int64=20, offset::Int64=0)
 
     return Spotify.spotify_request("users/$user_id/playlists?limit=$limit&offset=$offset")
 
@@ -215,7 +215,7 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
   :playlists => {…
 ```    
 """
-function playlist_get_category(category_id::String; country::String="US", limit::Int64=20, offset::Int64=0)
+function playlist_get_category(category_id; country::String="US", limit::Int64=20, offset::Int64=0)
 
     url1 = "browse/categories/$category_id/playlists?country=$country"
     url2 = "&limit=$limit&offset=$offset"
@@ -246,7 +246,7 @@ julia> Spotify.playlist_get_cover_image("37i9dQZF1E4vUblDJbCkV3")[1]
 }
 ```
 """
-function playlist_get_cover_image(playlist_id::String)
+function playlist_get_cover_image(playlist_id)
 
     return Spotify.spotify_request("playlists/$playlist_id/images")
 
