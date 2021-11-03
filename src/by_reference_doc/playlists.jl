@@ -46,7 +46,7 @@ function playlist_get(playlist_id; additional_types::String="track", fields::Str
     url1 = "playlists/$(playlist_id)?additional_types=$additional_types"
     url2 = "&fields=$fields&market=$market"
 
-    return Spotify.spotify_request(url1*url2)
+    return Spotify.spotify_request(url1 * url2)
 
 end
 
@@ -93,7 +93,7 @@ function playlist_get_tracks(playlist_id; additional_types::String="track", fiel
     url1 = "playlists/$(playlist_id)/tracks?additional_types=$additional_types"
     url2 = "&fields=$fields&limit=$limit&offset=$offset&market=$market"
 
-    return Spotify.spotify_request(url1*url2)
+    return Spotify.spotify_request(url1 * url2)
 
 end
 
@@ -186,7 +186,7 @@ function playlist_get_featured(;country::String="US", limit::Int64=20, locale::S
     url1 = "browse/featured-playlists?country=$country&limit=$limit"
     url2 = "&locale=$locale&offset=$offset&timestamp=$timestamp"
 
-    return Spotify.spotify_request(url1*url2)
+    return Spotify.spotify_request(url1 * url2)
 
 end
 

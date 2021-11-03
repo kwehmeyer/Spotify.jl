@@ -93,8 +93,9 @@ show(io::IO, ::MIME"text/plain", s::SpPlaylistId) =     printstyled(io, '"' * s.
 show(io::IO, v::Vector{SpUri}) =        show_vector(io, v, "", "")
 show(io::IO, v::Vector{SpId}) =         show_vector(io, v, "", "")
 show(io::IO, v::Vector{SpCategoryId}) = show_vector(io, v, "", "")
-show(io::IO, v::Vector{SpUrl}) =         show_vector(io, v, "", "")
-show(io::IO, v::Vector{SpUserId}) =         show_vector(io, v, "", "")
+show(io::IO, v::Vector{SpUrl}) =        show_vector(io, v, "", "")
+show(io::IO, v::Vector{SpUserId}) =     show_vector(io, v, "", "")
+show(io::IO, v::Vector{SpPlaylistId}) = show_vector(io, v, "", "")
 
 typeinfo_implicit(::Type{SpUri}) = true
 typeinfo_implicit(::Type{SpId}) = true
