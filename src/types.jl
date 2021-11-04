@@ -1,4 +1,4 @@
-export SpUri, SpId, SpCategoryId, SpUserId, SpUrl
+export SpUri, SpId, SpCategoryId, SpUserId, SpUrl, SpPlaylistId
 """
 All web API arguments are strings, but types 
 `SpUri`, `SpId`, `CategoryId`, `SpUserId`, `SpUrl` 
@@ -28,22 +28,25 @@ SpUrl       |An HTML link that opens a track, album, app, playlist or other |
             | account settings at play.spotify.com. |   track/6rqhFgbbKwnb9MLmUQDhG6
         
 """
-SpUri, SpId, SpCategoryId, SpUserId, SpUrl
+SpUri, SpId, SpCategoryId, SpUserId, SpUrl, SpPlaylistId
 
 mutable struct SpUri
     s::String
     SpUri(s) = isuri(s) ? new(s) : error("must be 'spotify:track:<base 62 string>")
 end
 SpUri() = SpUri("spotify:track:6rqhFgbbKwnb9MLmUQDhG6")
+
 mutable struct SpId
     s::String
     SpId(s) =  isid(s) ? new(s) : error("must be <base 62 string>")
 end
 SpId() = SpId("6rqhFgbbKwnb9MLmUQDhG6")
+
 mutable struct SpCategoryId
     s::String
 end
 SpCategoryId() = SpCategoryId("party")
+
 mutable struct SpUserId
     s::String
 end
@@ -54,9 +57,18 @@ mutable struct SpUrl
     SpUrl(s) = isurl(s) ? new(s) : error("must be an url")
 end
 SpUrl() =  SpUrl("http://open.spotify.com/track/6rqhFgbbKwnb9MLmUQDhG6")
+
+mutable struct SpPlaylistId
+    s::String
+    SpPlaylistId(s) = isid(s) ? new(s) : error("must be <base 62 string> playlist ID")
+end
+SpPlaylistId() = SpPlaylistId("37i9dQZF1E4vUblDJbCkV3")
+
+# Verify if the url, id and uri have the correct structure
 isurl(s) = !isnothing(match(r"(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)", s))
 isid(s) = !isnothing(match(r"\b[a-zA-Z0-9]{22}", s))
 isuri(s) = count(==( ':'), s) == 2 && length(s) - findlast(':', s) == 22
+
 # These types should work with string interpolation using $. 
 # So we need to alter their undecorated representations.
 # For argument inspection, we don't want to hide them not 
@@ -68,24 +80,29 @@ show(io::IO, s::SpId) =         printstyled(io, s.s; color = 176)
 show(io::IO, s::SpCategoryId) = printstyled(io, s.s; color = 172)
 show(io::IO, s::SpUrl) =        printstyled(io, s.s; color = :blue, bold = true)
 show(io::IO, s::SpUserId) =     printstyled(io, s.s; color = :green)
-# 
+show(io::IO, s::SpPlaylistId) =     printstyled(io, s.s; color = :light_red)
+
+# Add quotes "" around the String representation
 show(io::IO,  ::MIME"text/plain", s::SpUri) =       printstyled(io, '"' * s.s * '"'; color = :blue)
 show(io::IO, ::MIME"text/plain", s::SpId) =         printstyled(io, '"' * s.s * '"'; color = 176)
 show(io::IO, ::MIME"text/plain", s::SpCategoryId) = printstyled(io, '"' * s.s * '"'; color = 172)
 show(io::IO, ::MIME"text/plain", s::SpUrl) =        printstyled(io, '"' * s.s * '"'; color = :blue, bold = true)
 show(io::IO, ::MIME"text/plain", s::SpUserId) =     printstyled(io, '"' * s.s * '"'; color = :green)
+show(io::IO, ::MIME"text/plain", s::SpPlaylistId) =     printstyled(io, '"' * s.s * '"'; color = :light_red)
 
 show(io::IO, v::Vector{SpUri}) =        show_vector(io, v, "", "")
 show(io::IO, v::Vector{SpId}) =         show_vector(io, v, "", "")
 show(io::IO, v::Vector{SpCategoryId}) = show_vector(io, v, "", "")
-show(io::IO, v::Vector{SpUrl}) =         show_vector(io, v, "", "")
-show(io::IO, v::Vector{SpUserId}) =         show_vector(io, v, "", "")
+show(io::IO, v::Vector{SpUrl}) =        show_vector(io, v, "", "")
+show(io::IO, v::Vector{SpUserId}) =     show_vector(io, v, "", "")
+show(io::IO, v::Vector{SpPlaylistId}) = show_vector(io, v, "", "")
 
 typeinfo_implicit(::Type{SpUri}) = true
 typeinfo_implicit(::Type{SpId}) = true
 typeinfo_implicit(::Type{SpCategoryId}) = true
 typeinfo_implicit(::Type{SpUrl}) = true
 typeinfo_implicit(::Type{SpUserId}) = true
+typeinfo_implicit(::Type{SpPlaylistId}) = true
 
 
 
