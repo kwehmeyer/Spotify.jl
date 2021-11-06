@@ -2,9 +2,15 @@
 
 @testset verbose = true "GET-request endpoints for search" begin
 
-    for query in ["Coldplay", "Greenday", "Adele"]
+    @testset "For query = $(query)" for query in ["Coldplay", "Greenday", "Adele"]
 
         @test ~isempty(Spotify.search_get(;q = "$query", item_type = "album")[1])
+
+    end
+
+    @testset "For item type = $(item_type)" for item_type in ["album", "playlist", "track"]
+
+        @test ~isempty(Spotify.search_get(;q = "Hans Zimmer", item_type = "$item_type")[1])
 
     end
 
