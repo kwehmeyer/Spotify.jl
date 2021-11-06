@@ -1,49 +1,82 @@
-# follow.jl
-## https://developer.spotify.com/documentation/web-api/reference/follow/
+# Also see related functions in users.jl and personalization.jl
 
 #### GET ####
 
-## https://developer.spotify.com/documentation/web-api/reference/follow/check-current-user-follows/
-@doc """
-# Check if Current User Follows Artists or Users
-**Summary**: Check to see if the current user is following one or more artists or other Spotify Users
+## https://developer.spotify.com/documentation/web-api/reference/#/operations/check-current-user-follows
+"""
+    follow_check(item_type, ids)
 
-`type` _Required_: The ID type, either `artist` or `user`.\n 
-`ids` _Required_: A comma separated list of the artist or user Spotify IDS to check. Maximum 50.\n 
+**Summary**: Check to see if the current user is following one or more artists or other Spotify users.
 
-[Reference](https://developer.spotify.com/documentation/web-api/reference/follow/check-current-user-follows/)
-""" ->
-function follow_check(type, ids)
-    return spotify_request("me/following/contains?type=$type&ids=$ids"; scope = "user-follow-read")
+# Arguments
+- `item_type::String` _Required_: The ID type, either `artist` or `user`.\n 
+- `ids::String` _Required_: A comma separated list of the artist or user Spotify IDs to check. Maximum 50.\n 
+
+# Example
+```julia-repl
+julia> Spotify.follow_check("artist", "7fxBPUc2bTUgl7GLuqjajk")[1]
+[ Info: We try the request without checking if current grant includes scope user-follow-read.
+1-element JSON3.Array{Bool, Base.CodeUnits{UInt8, String}, Vector{UInt64}}:
+ 1
+```
+"""
+function follow_check(item_type::String, ids::String)
+
+    return spotify_request("me/following/contains?type=$item_type&ids=$ids"; scope = "user-follow-read")
+
 end
 
-## https://developer.spotify.com/documentation/web-api/reference/follow/check-user-following-playlist/
-@doc """
-# Check if Users Follow a Playlist
+## https://developer.spotify.com/documentation/web-api/reference/#/operations/check-if-user-follows-playlist
+"""
+    follow_check_playlist(playlist_id::String, user_id::String)
+
 **Summary**: Check to see if one or more Spotify users are following a specified playlist_id.\n 
 
-`playlist_id` _Required_: The Spotify ID of the playlist.\n 
-`ids` _Required_: A comma separated list of the user Spotify IDS to check. Maximum 5.\n 
+# Arguments
+- `playlist_id::String` _Required_: The Spotify ID of the playlist.\n 
+- `user_id::String` _Required_: A comma separated list of the user Spotify IDS to check. Maximum 5.\n 
 
-[Reference](https://developer.spotify.com/documentation/web-api/reference/follow/check-user-following-playlist/)
-""" ->
-function follow_check_playlist(playlist_id, ids)
-    return spotify_request("playlists/$playlist_id/followers/contains?ids=$ids"; scope = "playlist-read-private")
+# Example
+```julia-repl
+julia> Spotify.follow_check_playlist("37i9dQZF1DZ06evO3Khq6I", user_id)[1]
+1-element JSON3.Array{Bool, Base.CodeUnits{UInt8, String}, Vector{UInt64}}:
+ 0
+```
+"""
+function follow_check_playlist(playlist_id::String, user_id::String)
+
+    return spotify_request("playlists/$playlist_id/followers/contains?ids=$user_id"; scope = "playlist-read-private")
+
 end
 
 
-## https://developer.spotify.com/documentation/web-api/reference/follow/get-followed/
-@doc """
-# Get User's Followed Artists 
+## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-followed
+"""
+    follow_artists(item_type::String="artist", limit::Int64=20)
+ 
 **Summary**: Get the current user's followed artists.
 
-`type` _Required_: The ID type. Currently only `artist` is supported. Default `artist`.\n
-`limit` _Optional_: The maximum number of items to return. Default 20, Minimum 1, Maximum 50. \n
+# Arguments
+- `item_type::String` _Required_: The ID type. Currently only `artist` is supported. Default `artist`.\n
+- `limit::Int64` _Optional_: The maximum number of items to return. Default 20, Minimum 1, Maximum 50. \n
 
-[Reference](https://developer.spotify.com/documentation/web-api/reference/follow/get-followed/)
-""" ->
-function follow_artists(type="artist", limit=20)
-    return spotify_request("me/following?type=$type"; scope = "user-follow-modify")
+# Example
+```julia-repl
+julia> Spotify.follow_artists()[1]["artists"]
+[ Info: We try the request without checking if current grant includes scope user-follow-modify.
+JSON3.Object{Base.CodeUnits{UInt8, String}, SubArray{UInt64, 1, Vector{UInt64}, Tuple{UnitRange{Int64}}, true}} with 6 entries:
+  :items   => JSON3.Object[{…
+  :next    => nothing
+  :total   => 2
+  :cursors => {…
+  :limit   => 20
+  :href    => "https://api.spotify.com/v1/me/following?type=artist&limit=20"
+```
+"""
+function follow_artists(item_type::String="artist", limit::Int64=20)
+
+    return spotify_request("me/following?type=$item_type&limit=$limit"; scope = "user-follow-modify")
+
 end
 
 #### PUT ####

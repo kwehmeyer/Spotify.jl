@@ -107,6 +107,9 @@ include("by_reference_doc/markets.jl")
 # Genres
 include("by_reference_doc/genres.jl")
 
+# Users
+include("by_reference_doc/users.jl")
+
 function __init__()
     authorize()
 end

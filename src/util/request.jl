@@ -21,7 +21,7 @@ function spotify_request(url_ext::String, method::String= "GET"; scope = "client
     try
         resp = HTTP.request(method, url, headers)
     catch e
-        if  e isa HTTP.ExceptionRequest.StatusError && e.status ∈ [400, 401, 404, 429]
+        if  e isa HTTP.ExceptionRequest.StatusError && e.status ∈ [400, 401, 403, 404, 429]
             response_body = e.response.body |> String
             if e.status == 429 # API rate limit temporarily exceeded.
                 retry_in_seconds =  HTTP.header(e.response, "retry-after") 
@@ -29,6 +29,10 @@ function spotify_request(url_ext::String, method::String= "GET"; scope = "client
 
             elseif e.status == 404 # Not found, e.g. when a track/playlist/album ID is incorrect
                 @info "404 Not Found - Check if input arguments are okay"
+                return JSON3.Object(), 0
+
+            elseif e.status == 403 
+                @info "403 - Bad OAuth request (wrong consumer key, bad nonce, expired timestamp...)"
                 return JSON3.Object(), 0
 
             elseif e.status == 400 # e.g. when a search query is empty
