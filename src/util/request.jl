@@ -21,7 +21,7 @@ function spotify_request(url_ext::String, method::String= "GET"; scope = "client
     try
         resp = HTTP.request(method, url, headers)
     catch e
-        if  e isa HTTP.ExceptionRequest.StatusError && e.status ∈ [401, 404, 429]
+        if  e isa HTTP.ExceptionRequest.StatusError && e.status ∈ [400, 401, 404, 429]
             response_body = e.response.body |> String
             if e.status == 429 # API rate limit temporarily exceeded.
                 retry_in_seconds =  HTTP.header(e.response, "retry-after") 
@@ -31,7 +31,12 @@ function spotify_request(url_ext::String, method::String= "GET"; scope = "client
                 @info "404 Not Found - Check if input arguments are okay"
                 return JSON3.Object(), 0
 
+            elseif e.status == 400 # e.g. when a search query is empty
+                @info "Check if the search query is present"
+                return JSON3.Object(), 0
+
             else
+                @info "You should try to re-authenticate the user"
                 @error response_body
                 return JSON3.Object(), 0
             end

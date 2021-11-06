@@ -98,6 +98,9 @@ include("export_structure.jl")
 # Playlists
 include("by_reference_doc/playlists.jl")
 
+# Search
+include("by_reference_doc/search.jl")
+
 function __init__()
     authorize()
 end
