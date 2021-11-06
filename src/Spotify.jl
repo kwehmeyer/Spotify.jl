@@ -101,6 +101,12 @@ include("by_reference_doc/playlists.jl")
 # Search
 include("by_reference_doc/search.jl")
 
+# Markets
+include("by_reference_doc/markets.jl")
+
+# Genres
+include("by_reference_doc/genres.jl")
+
 function __init__()
     authorize()
 end
