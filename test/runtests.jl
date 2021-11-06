@@ -55,3 +55,5 @@ include("test_users.jl")
 include("test_search.jl")
 
 include("test_markets.jl")
+
+include("test_genres.jl")

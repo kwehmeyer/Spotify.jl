@@ -14,13 +14,16 @@
     # Start test blocks
     @test ~isempty(Spotify.playlist_get(playlist_id)[1])
 
+    # Does not run first time
+    @test_throws BoundsError ~isempty(Spotify.playlist_get_current_user(; offset = 0)[1])
+
     @testset "For offset = $(num_offset)" for num_offset in offsets
 
         @test ~isempty(Spotify.playlist_get_tracks(playlist_id; offset = num_offset)[1])
         @test ~isempty(Spotify.playlist_get_user(user_id; offset = num_offset)[1])
 
-        # Shows 401 error with my user credentials, might work for someone else
-        # @test ~isempty(Spotify.playlist_get_current_user(; offset = num_offset)[1])
+        # Works okay second time
+        @test ~isempty(Spotify.playlist_get_current_user(; offset = num_offset)[1])
     end
 
     @testset "For country = $(country_id)" for country_id in countries

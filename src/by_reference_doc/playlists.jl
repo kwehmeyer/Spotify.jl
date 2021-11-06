@@ -108,10 +108,24 @@ end
 # Optional keywords
 - `limit::Int64` : Maximum number of items to return, default is set to 20
 - `offset::Int64` : Index of the first item to return, default is set to 0
+
+# Example
+```julia-repl
+julia> Spotify.playlist_get_current_user()[1]
+[ Info: We try the request without checking if current grant includes scope playlist-read-private.
+JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
+  :href     => "https://api.spotify.com/v1/users/your_user_id/playlists?offset=0&limit=20"
+  :items    => JSON3.Object[{…
+  :limit    => 20
+  :next     => nothing
+  :offset   => 0
+  :previous => nothing
+  :total    => 2
+```
 """
 function playlist_get_current_user(;limit::Int64=20, offset::Int64=0)
 
-    return Spotify.spotify_request("me/playlists?limit=$limit&offset=$offset")
+    return Spotify.spotify_request("me/playlists?limit=$limit&offset=$offset"; scope = "playlist-read-private")
 
 end
 

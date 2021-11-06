@@ -9,10 +9,7 @@
     playlist_id = SpPlaylistId()
     user_id = SpUserId()
 
-    # Get current user's profile does not run first time
-    @test_throws BoundsError ~isempty(Spotify.user_get_current_profile()[1])
-
-    # Get current user's profile works second time
+    # Get current user's profile 
     @test ~isempty(Spotify.user_get_current_profile()[1])
     
     # Get user's top items
