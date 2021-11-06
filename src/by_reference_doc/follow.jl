@@ -43,7 +43,7 @@ julia> Spotify.follow_check_playlist("37i9dQZF1DZ06evO3Khq6I", user_id)[1]
  0
 ```
 """
-function follow_check_playlist(playlist_id::String, user_id::String)
+function follow_check_playlist(playlist_id, user_id)
 
     return spotify_request("playlists/$playlist_id/followers/contains?ids=$user_id"; scope = "playlist-read-private")
 

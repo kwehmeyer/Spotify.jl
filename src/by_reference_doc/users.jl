@@ -63,7 +63,7 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 8 entries:
   :uri           => "spotify:user:smedjan"
 ```
 """
-function user_get_profile(user_id::String)
+function user_get_profile(user_id)
 
     return Spotify.spotify_request("users/$user_id")
 

@@ -88,6 +88,11 @@ function launch_a_browser_that_asks_for_implicit_grant()
         #if browsercmd != ``
         printstyled("\tTrying to launch browser candidate: $(BROWSERS[COUNTBROWSER.value + 1])\n"; color = :green)
         success, browser = open_a_browser(url= uri)
+
+        # Added delay so that user can authorize via browser window while running unit tests
+        @info "Waiting for 15 seconds"
+        sleep(15)
+        
         #else
         #    printstyled("\tBrowser command from .ini-file: $browsercmd\n"; color = :green)
         #    @async run(browsercmd)
