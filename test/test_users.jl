@@ -14,8 +14,9 @@
     
     # Get user's top items
     # Currently show 403 error, implemented in personalization.jl
-    # top_tracks(offset=0, limit=20, time_range="medium")
-    # top_artists(offset=0, limit=20, time_range="medium")
+    # @test_skip will not execute the test but report it as "Broken"
+    @test_skip ~isempty(Spotify.top_tracks()[1])
+    @test_skip ~isempty(Spotify.top_artists()[1])
 
     # Get user's profile
     @test ~isempty(Spotify.user_get_profile(user_id)[1])
