@@ -57,3 +57,5 @@ include("test_search.jl")
 include("test_markets.jl")
 
 include("test_genres.jl")
+
+include("test_player.jl")
