@@ -1,4 +1,8 @@
 # Spotify.jl
+
+[![Documentation Status](https://readthedocs.org/projects/spotifyjl/badge/?version=latest)](https://spotifyjl.readthedocs.io/en/latest/?badge=latest)
+      
+
 An open-source interface for using the Spotify web API in Julia. 
 
 ## Progress...
