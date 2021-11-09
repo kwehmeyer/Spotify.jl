@@ -49,7 +49,9 @@ Default requested permissions are 'client-credentials'.
 const DEFAULT_IMPLICIT_GRANT = ["user-read-private",
                                 "user-read-email",
                                 "user-follow-read",
-                                "user-library-read"]
+                                "user-library-read",
+                                "user-read-playback-state",
+                                "user-read-recently-played"]
 
 spotcred() = SPOTCRED[]
 
@@ -109,6 +111,9 @@ include("by_reference_doc/genres.jl")
 
 # Users
 include("by_reference_doc/users.jl")
+
+# Player
+include("by_reference_doc/player.jl")
 
 function __init__()
     authorize()
