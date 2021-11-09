@@ -1,6 +1,33 @@
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-information-about-the-users-current-playback
 
 """
+    player_get_state(;additional_types::String="track", market::String="US")
+
+**Summary**: Get information about the user’s current playback state, including track or episode, 
+             progress, and active device.
+
+# Optional keywords
+- `additional_types::String` : "track" (default) or "episode"
+- `market::String` : An ISO 3166-1 alpha-2 country code. If a country code is specified, 
+                     only episodes that are available in that market will be returned. 
+                     Default is set to "US".
+
+# Example
+```julia-repl
+julia> Spotify.player_get_state()[1]
+[ Info: We try the request without checking if current grant includes scope user-read-playback-state.
+JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 10 entries:
+  :device                 => {…
+  :shuffle_state          => false
+  :repeat_state           => "off"
+  :timestamp              => 1636493367689
+  :context                => {…
+  :progress_ms            => 66454
+  :item                   => {…
+  :currently_playing_type => "track"
+  :actions                => {…
+  :is_playing             => true
+```
 """
 function player_get_state(;additional_types::String="track", market::String="US")
 
