@@ -59,3 +59,5 @@ include("test_markets.jl")
 include("test_genres.jl")
 
 include("test_player.jl")
+
+include("test_albums.jl")
