@@ -117,7 +117,7 @@ end
 """
 For each tunable track attribute, a hard floor on the selected track attribute’s value can be provided. See tunable track attributes below for the list of available options. For example, min_tempo=140 would restrict results to only those tracks with a tempo of greater than 140 beats per minute.
 """
-min_acousticness, min_danceability, min_duration_ms, min_energy, min_min_instrumentalness , min_key, 
+min_acousticness, min_danceability, min_duration_ms, min_energy, min_instrumentalness , min_key, 
 min_liveness, min_loudness, min_mode, min_popularity, min_speechiness, min_tempo, min_time_signature, min_valence
 
 
