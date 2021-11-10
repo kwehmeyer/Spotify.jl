@@ -164,7 +164,8 @@ julia> # Yes, I follow this artist
 
 # To Do
 * Inline Documentation needs to be completed
-* Wiki
-* Write tests
-* Set up CI
-* Register the package  
+* [x] Wiki 
+* [ ] Write tests
+* [ ] Set up CI
+* [x] Register the package  
+
