@@ -3,3 +3,5 @@ src/authorization/implicitgrant.jl
 Manifest.toml
 
 docs/build/
+
+.DS_Store
