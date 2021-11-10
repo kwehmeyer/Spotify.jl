@@ -1,3 +1,5 @@
 credentials.jl
 src/authorization/implicitgrant.jl
 Manifest.toml
+
+docs/build/
