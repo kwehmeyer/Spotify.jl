@@ -4,11 +4,13 @@
 
 An open-source interface for using the Spotify web API in Julia. 
 
+[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://kwehmeyer.github.io/Spotify.jl/dev/)
+
 ## Progress...
 Right now, 40 API functions have been written, roughly tested and organized by sub-modules as defined in Spotify's [documentation](https://developer.spotify.com/documentation/general/):
 
 * Albums, Artists, Browse, Episodes, Follow, Library
-* Markets, Personalization, ~~Player~~, Playlists, Search
+* Markets, Personalization, Player, Playlists, Search
 * Shows, Tracks, UsersProfile, ~~(Objects)~~
 
 Help wanted in adding the still-missing functions!
@@ -165,7 +167,7 @@ julia> # Yes, I follow this artist
 # To Do
 * Inline Documentation needs to be completed
 * [x] Wiki 
-* [ ] Write tests
+* [ ] Write tests --> In progress
 * [ ] Set up CI
 * [x] Register the package  
 

@@ -26,14 +26,3 @@
     @test ~isempty(Spotify.artist_get_related_artists(artist_id)[1])
 
 end
-
-
-
-    
-
-
-
-
-
-
-
