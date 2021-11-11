@@ -1,40 +1,62 @@
-# artist.jl
-## https://developer.spotify.com/documentation/web-api/reference/artists/
+## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-artist
 
-## https://developer.spotify.com/documentation/web-api/reference/artists/get-artist/
-@doc """
-# Get an Artist
+"""
+    artist_get(artist_id)
+
 **Summary**: Get Spotify catalog information for a single artist identified by their unique Spotify ID. 
 
-`artist_id` _Required_: The Spotify artist ID. Up to 50 artist ID's can be passed by comma delimiting the ID's 
+# Arguments
+- `artist_id` : The Spotify artist ID.
 
-[Reference](https://developer.spotify.com/documentation/web-api/reference/artists/get-artist/)
-""" ->
+# Example
+```julia-repl
+julia> Spotify.artist_get("0YC192cP3KPCRWx8zr8MfZ")[1]
+JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 10 entries:
+  :external_urls => {…
+  :followers     => {…
+  :genres        => ["german soundtrack", "soundtrack"]
+  :href          => "https://api.spotify.com/v1/artists/0YC192cP3KPCRWx8zr8MfZ"
+```
+"""
 function artist_get(artist_id)
     return spotify_request("artists/$artist_id")
 end
 
 
-## https://developer.spotify.com/documentation/web-api/reference/artists/get-artists-albums/
-@doc """
-# Get an Artists Albums 
+## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-artists-albums
+
+"""
+    artist_get_albums(artist_id; include_groups="None", country="US", limit=20, offset=0) 
+
 **Summary**: Get Spotify catalog information about an artist's albums.
 
-`artist_id` _Required_: The Spotify artist ID. Up to 50 artist ID's can be passed by comma delimiting the ID's\n
-`include_groups` _Optional_: A comma-separated list of keywords that will be used to filter the response. If not supoplied, all album types will be returned.
-Valid values:
-* `album`
-* `single`
-* `compilation`
-* `appears_on`
+# Arguments
+- `artist_id` : The Spotify ID of the artist
 
-`country` _Optional_: An ISO 3166-1 alpha-2 country code string. Use this to limit the response to one particular geographical market. Default "US"\n 
-`limit` _Optional_: The number of album objects to return. Default 20\n 
-`offset` _Optional_: The index of the first album to return. Default 0\n
+# Optional keywords
+- `include_groups` : A comma-separated list of keywords that will be used to filter the response. 
+                     If not supplied, all album types will be returned.
+                     Valid values are:
+                     * `album`
+                     * `single`
+                     * `compilation`
+                     * `appears_on`
+- `country` : An ISO 3166-1 alpha-2 country code string. Use this to limit the response to one particular 
+              geographical market. Default is set to "US".
+- `limit` : The maximum number of tracks to return. Default is set to 20.
+- `offset` : The index of the first track to return. Default is 0.
 
-[Reference](https://developer.spotify.com/documentation/web-api/reference/artists/get-artists-albums/)
-""" ->
-function artist_get_albums(artist_id, include_groups="None", country="US", limit=20, offset=0)
+# Example
+```julia-repl
+julia> Spotify.artist_get_albums("0YC192cP3KPCRWx8zr8MfZ")[1]
+JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 10 entries:
+  :external_urls => {…
+  :followers     => {…
+  :genres        => ["german soundtrack", "soundtrack"]
+  :href          => "https://api.spotify.com/v1/artists/0YC192cP3KPCRWx8zr8MfZ"
+```
+"""
+function artist_get_albums(artist_id; include_groups="None", country="US", limit=20, offset=0)
     if include_groups == "None"
         return spotify_request("artists/$artist_id?include_groups=$include_groups&country=$country&limit=$limit&offset=$offset")
     else 
@@ -43,32 +65,49 @@ function artist_get_albums(artist_id, include_groups="None", country="US", limit
 end
 
 
+## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-artists-top-tracks
 
-## https://developer.spotify.com/documentation/web-api/reference/artists/get-artists-top-tracks/
-@doc """
-# Get an Artist's Top Tracks
-**Summary**: Get Spotify catalog information about an artist's top tracks by country.\n
+"""
+    artist_top_tracks(artist_id; country="US")
 
-`artist_id` _Required_: The Spotify artist ID.\n
-`country` _Optional_: An ISO 3166-1 alpha-2 country code string. Use this to limit the response to one particular geographical market. Default "US"\n 
+**Summary**: Get Spotify catalog information about an artist's top tracks by country.
 
-[Reference](https://developer.spotify.com/documentation/web-api/reference/artists/get-artists-top-tracks/)
-""" ->
-function artist_top_tracks(artist_id, country="US")
+# Arguments
+- `artist_id` : The Spotify ID of the artist
+
+# Optional keywords
+- `country` : An ISO 3166-1 alpha-2 country code string. Use this to limit the response to one particular 
+              geographical market. Default is set to "US".
+
+# Example
+```julia-repl
+julia> Spotify.artist_top_tracks("0YC192cP3KPCRWx8zr8MfZ")[1]
+JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
+  :tracks => JSON3.Object[{…
+```
+"""
+function artist_top_tracks(artist_id; country="US")
     return spotify_request("artists/$artist_id/top-tracks?country=$country")
 end
 
 
+## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-artists-related-artists
+"""
+    artist_get_related_artists(artist_id)
 
-## https://developer.spotify.com/documentation/web-api/reference/artists/get-related-artists/
-@doc """
-# Get an Artist's Related Artists
-**Summary**: Get spotify catalog information about artists similar to a given artist. Similarity is based on analysis of the Spotify community's listening history.
+**Summary**: Get spotify catalog information about artists similar to a given artist. 
+             Similarity is based on analysis of the Spotify community's listening history.
 
-`artist_id` _Required_: The Spotify artist ID.\n
+# Arguments
+- `artist_id` : The Spotify ID of the artist
 
-[Reference](https://developer.spotify.com/documentation/web-api/reference/artists/get-related-artists/)
-""" ->
+# Example
+```julia-repl
+julia> Spotify.artist_get_related_artists("0YC192cP3KPCRWx8zr8MfZ")[1]
+JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
+  :artists => JSON3.Object[{…
+```
+"""
 function artist_get_related_artists(artist_id)
     return spotify_request("artists/$artist_id/related-artists")
 end
