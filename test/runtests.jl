@@ -63,3 +63,5 @@ include("test_player.jl")
 include("test_albums.jl")
 
 include("test_artist.jl")
+
+include("test_tracks.jl")
