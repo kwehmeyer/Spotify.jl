@@ -90,8 +90,8 @@ function launch_a_browser_that_asks_for_implicit_grant()
         success, browser = open_a_browser(url= uri)
 
         # Added delay so that user can authorize via browser window while running unit tests
-        @info "Waiting for 15 seconds"
-        sleep(15)
+        @info "Waiting for 10 seconds"
+        sleep(10)
         
         #else
         #    printstyled("\tBrowser command from .ini-file: $browsercmd\n"; color = :green)
