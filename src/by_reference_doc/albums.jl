@@ -13,7 +13,7 @@
 
 # Example
 ```julia-repl
-ulia> Spotify.album_get("5XgEM5g3xWEwL4Zr6UjoLo")[1]
+julia> Spotify.album_get("5XgEM5g3xWEwL4Zr6UjoLo")[1]
 JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 18 entries:
   :album_type             => "album"
   :artists                => JSON3.Object[{…

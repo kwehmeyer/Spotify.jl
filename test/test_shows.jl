@@ -25,12 +25,3 @@
     @test_skip ~isempty(Spotify.show_get_contains("2MAi0BvDc6GTFvKFPXnkCL")[1])
 
 end
-
-
-
-
-
-
-
-
-
