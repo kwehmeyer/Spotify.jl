@@ -84,3 +84,45 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
 function show_get_episodes(show_id; market::String="US", limit::Int64=20, offset::Int64=0)
     return spotify_request("shows/$show_id/episodes?market=$market&limit=$limit&offset=$offset")
 end
+
+
+## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-saved-shows
+
+"""
+    show_get_saved(;limit::Int64=20, offset::Int64=0)
+
+**Summary**: Get a list of shows saved in the current Spotify user's library. Optional parameters can 
+             be used to limit the number of shows returned. 
+             
+# Optional keywords
+- `limit::Int64` : Maximum number of items to return, default is set to 20. (0 < limit <= 50)
+- `offset::Int64` : Index of the first item to return, default is set to 0
+
+# Example
+```julia-repl
+julia> Spotify.show_get_saved()[1]
+[ Info: We try the request without checking if current grant includes scope user-library-read.
+JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
+  :href     => "https://api.spotify.com/v1/me/shows?offset=0&limit=20"
+  :items    => Union{}[]
+  :limit    => 20
+```
+"""
+function show_get_saved(;limit::Int64=20, offset::Int64=0)
+    return spotify_request("me/shows?limit=$limit&offset=$offset"; scope = "user-library-read")
+end
+
+
+## https://developer.spotify.com/documentation/web-api/reference/#/operations/check-users-saved-shows
+
+"""
+    show_get_contains(ids)
+
+**Summary**: Check if one or more shows is already saved in the current Spotify user's library.
+
+# Arguments
+- `ids` : A comma-separated list of the Spotify IDs for the shows. Maximum: 50 IDs.
+"""
+function show_get_contains(ids)
+    return spotify_request("me/shows/contains?ids=$ids"; scope = "user-library-read")
+end

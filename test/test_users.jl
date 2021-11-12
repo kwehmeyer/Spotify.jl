@@ -13,7 +13,7 @@
     @test ~isempty(Spotify.user_get_current_profile()[1])
     
     # Get user's top items
-    # Currently show 403 error, implemented in personalization.jl
+    # Currently shows 403 error, implemented in personalization.jl
     # @test_skip will not execute the test but report it as "Broken"
     @test_skip ~isempty(Spotify.top_tracks()[1])
     @test_skip ~isempty(Spotify.top_artists()[1])
