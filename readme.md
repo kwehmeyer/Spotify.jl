@@ -1,5 +1,4 @@
-# Spotify.jl
-
+![](/docs/src/assets/logo.png)
       
 
 An open-source interface for using the Spotify web API in Julia. 
