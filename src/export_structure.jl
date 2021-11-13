@@ -59,7 +59,8 @@ baremodule Library
     @_ie library_remove_tracks library_save_album library_save_show library_save_track
 end
 baremodule Markets
-    import ..@_ie
+    import ..@_ie 
+    @_ie markets_get
     @_ie 
 end
 
@@ -69,13 +70,16 @@ baremodule Personalization
 end
 baremodule Player
     import ..@_ie
+    @_ie player_get_state player_get_devices player_get_current_track player_get_recent_tracks
 end
 baremodule Playlists
     import ..@_ie
+    @_ie playlist_get playlist_get_tracks playlist_get_current_user playlist_get_user playlist_get_featured
+    @_ie playlist_get_category playlist_get_cover_image
 end
 baremodule Search
     import ..@_ie
-    @_ie 
+    @_ie search_get
 end
 baremodule Shows
     import ..@_ie
@@ -83,7 +87,8 @@ baremodule Shows
 end
 baremodule Tracks
     import ..@_ie
-    @_ie tracks_get_audio_analysis tracks_get_audio_features tracks_get_single
+    @_ie tracks_get_audio_analysis tracks_get_audio_features tracks_get_single tracks_get_multiple
+    @_ie tracks_get_saved tracks_get_contains
 end
 baremodule UsersProfile
     import ..@_ie
@@ -91,5 +96,5 @@ baremodule UsersProfile
 end
 baremodule Objects
     import ..@_ie
-    @_ie 
+    @_ie user_get_current_profile user_get_profile
 end
