@@ -79,7 +79,7 @@ baremodule Search
 end
 baremodule Shows
     import ..@_ie
-    @_ie show_get_single show_get_episodes
+    @_ie show_get_single show_get_multiple show_get_episodes show_get_saved show_get_contains
 end
 baremodule Tracks
     import ..@_ie
