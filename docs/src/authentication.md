@@ -1,5 +1,14 @@
 # First Steps
 
+## Installing the package
+
+You can install the package from the Julia registry
+```@example
+using Pkg
+Pkg.add("Spotify")
+```
+
+
 ## Obtaining API Keys 
 
 Visit [the Spotify developer website](https://developer.spotify.com) and login/register.
