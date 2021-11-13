@@ -1,4 +1,5 @@
 [deps]
+Coverage = "a2441757-f6aa-5fb2-8edb-039e3f45d037"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 IniFile = "83e8ac13-25f8-5344-8a64-a9f2b223428f"
