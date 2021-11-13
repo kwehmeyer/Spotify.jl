@@ -60,7 +60,6 @@ baremodule Library
 end
 baremodule Markets
     import ..@_ie 
-    @_ie markets_get
     @_ie 
 end
 
@@ -92,7 +91,7 @@ baremodule Tracks
 end
 baremodule UsersProfile
     import ..@_ie
-    @_ie 
+    @_ie user_get_profile user_get_current_profile
 end
 baremodule Objects
     import ..@_ie
