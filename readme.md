@@ -3,7 +3,7 @@
 
 An open-source interface for using the Spotify web API in Julia. 
 
-[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://kwehmeyer.github.io/Spotify.jl/dev/)
+[![Docs](https://github.com/kwehmeyer/Spotify.jl/actions/workflows/builddoc.yml/badge.svg)](https://github.com/kwehmeyer/Spotify.jl/actions/workflows/builddoc.yml)
 ![example workflow](https://github.com/kwehmeyer/Spotify.jl/actions/workflows/CI.yaml/badge.svg)
 
 ## Progress...
