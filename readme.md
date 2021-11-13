@@ -4,6 +4,7 @@
 An open-source interface for using the Spotify web API in Julia. 
 
 [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://kwehmeyer.github.io/Spotify.jl/dev/)
+![example workflow](https://github.com/kwehmeyer/Spotify.jl/actions/workflows/CI.yaml/badge.svg)
 
 ## Progress...
 Right now, 40 API functions have been written, roughly tested and organized by sub-modules as defined in Spotify's [documentation](https://developer.spotify.com/documentation/general/):
