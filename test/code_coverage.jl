@@ -6,6 +6,8 @@ function print_rgb(r, g, b, t)
 end
 
 # Generate .cov files by running the test suite
+
+# WARNING: Tests in test_player.jl will pass only when the Spotify player is actively playing something
 using Pkg
 Pkg.test("Spotify"; coverage=true)
 
@@ -33,5 +35,3 @@ LCOV.writefile(filename, coverage)
 
 # Clean up .cov files
 clean_folder(pwd())
-
-
