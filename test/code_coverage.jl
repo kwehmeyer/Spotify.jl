@@ -9,8 +9,6 @@ end
 
 # WARNING: Tests in test_player.jl will pass only when the Spotify player is actively playing something
 using Pkg
-Pkg.activate(pwd())
-Pkg.instantiate()
 Pkg.test("Spotify"; coverage=true)
 
 # Process .cov files in Spotify.jl folder using Coverage.jl
@@ -39,3 +37,7 @@ LCOV.writefile(filename, coverage)
 
 # Clean up .cov files
 clean_folder(pwd())
+
+# Switch back to Spotify.jl environment
+Pkg.activate(pwd())
+Pkg.instantiate()
