@@ -1,5 +1,8 @@
 ##### Execute this file in the REPL from current Spotify.jl branch directory #####
 
+# Note: lcov is required for generating HTML output. You can install it via:
+# Debian/Ubuntu: sudo apt install lcov
+
 # Load package environment from "test" folder
 using Pkg
 Pkg.activate("test")
@@ -33,8 +36,3 @@ try
 catch e
     error_message(e, "clean up")
 end
-
-
-
-
-
