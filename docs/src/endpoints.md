@@ -85,7 +85,7 @@ Filter = t -> contains(String(Symbol(t)), "markets") == true
 Private = true
 ```
 
-## Personlization
+## Personalization
 
 
 ```@autodocs

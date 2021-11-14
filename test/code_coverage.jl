@@ -14,8 +14,10 @@ Pkg.test("Spotify"; coverage=true)
 # Process .cov files in Spotify.jl folder using Coverage.jl
 # Note that Coverage.jl is added to test folder Project.toml, and will therefore be only
 # used when running this file
+Pkg.activate("test")
+Pkg.instantiate()
 using Coverage
-coverage = process_folder(pwd())
+coverage = process_folder("src")
 
 # Get total coverage for all Julia files
 covered_lines, total_lines = get_summary(coverage)
@@ -35,3 +37,7 @@ LCOV.writefile(filename, coverage)
 
 # Clean up .cov files
 clean_folder(pwd())
+
+# Switch back to Spotify.jl environment
+Pkg.activate(pwd())
+Pkg.instantiate()
