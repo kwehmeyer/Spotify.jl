@@ -26,3 +26,5 @@ include("test_artist.jl")
 include("test_tracks.jl")
 
 include("test_shows.jl")
+
+include("test_browse.jl")

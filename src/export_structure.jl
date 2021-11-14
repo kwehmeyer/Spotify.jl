@@ -30,8 +30,8 @@ baremodule Artists
 end
 baremodule Browse
     import ..@_ie
-    @_ie category_get    category_get_playlist    category_get_several   
-    @_ie category_get_new_releases    category_get_featured_playlist  
+    @_ie category_get_single category_get_multiple  
+    @_ie category_get_new_releases   
     @_ie recommendations_get  recommendations_dict_parser
     # single parameter validation - integer or float
     @_ie min_acousticness  min_danceability  min_duration_ms  min_energy  min_instrumentalness
