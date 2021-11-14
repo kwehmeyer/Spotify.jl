@@ -1,0 +1,214 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - on branch Code_coverage_html - src/types.jl</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">src</a> - types.jl<span style="font-size: 80%;"> (source / <a href="types.jl.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">on branch Code_coverage_html</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">37</td>
+            <td class="headerCovTableEntry">57</td>
+            <td class="headerCovTableEntryLo">64.9 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2021-11-14 18:56:17</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : export SpUri, SpId, SpCategoryId, SpUserId, SpUrl, SpPlaylistId, SpAlbumId, SpArtistId, SpShowId</a>
+<span class="lineNum">       2 </span>            : &quot;&quot;&quot;
+<span class="lineNum">       3 </span>            : All web API arguments are strings, but types 
+<span class="lineNum">       4 </span>            : `SpUri`, `SpId`, `CategoryId`, `SpUserId`, `SpUrl` 
+<span class="lineNum">       5 </span>            : aids in picking default values. [format](
+<span class="lineNum">       6 </span>            : https://developer.spotify.com/documentation/web-api/#spotify-uris-and-ids)
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            : PARAMETER  | DESCRIPTION | VALUE 
+<span class="lineNum">      10 </span>            : :----------:| :---------- |:------------:
+<span class="lineNum">      11 </span>            : SpUri       |The resource identifier that you can enter, for example, in the |
+<span class="lineNum">      12 </span>            :             | Spotify Desktop client’s search box to locate an artist,| 
+<span class="lineNum">      13 </span>            :             | album, or track. To find a Spotify URI simply right-|
+<span class="lineNum">      14 </span>            :             | click (on Windows) or Ctrl-Click (on a Mac) on |spotify:track:
+<span class="lineNum">      15 </span>            :             | the artist’s or album’s or track’s name.| 6rqhFgbbKwnb9MLmUQDhG6|
+<span class="lineNum">      16 </span>            : SpId        |The base-62 identifier that you can find at the end of the |
+<span class="lineNum">      17 </span>            :             | Spotify URI (see above) for an artist, track, album, |
+<span class="lineNum">      18 </span>            :             | playlist, etc. Unlike a Spotify URI, a Spotify ID does| 
+<span class="lineNum">      19 </span>            :             | not clearly identify the type of resource; that information is | 
+<span class="lineNum">      20 </span>            :             | provided elsewhere in the call.| 6rqhFgbbKwnb9MLmUQDhG6
+<span class="lineNum">      21 </span>            : SpCategoryId|The unique string identifying the Spotify category.| party|
+<span class="lineNum">      22 </span>            : SpUserId    |The unique string identifying the Spotify user that you can |
+<span class="lineNum">      23 </span>            :             | find at the end of the Spotify URI for the user. The ID | 
+<span class="lineNum">      24 </span>            :             | of the current user can be obtained via the Web API endpoint.| wizzler
+<span class="lineNum">      25 </span>            : SpUrl       |An HTML link that opens a track, album, app, playlist or other |
+<span class="lineNum">      26 </span>            :             | Spotify resource in a Spotify client (which  client |
+<span class="lineNum">      27 </span>            :             | is determined by the user’s device and |  http://open.spotify.com/
+<span class="lineNum">      28 </span>            :             | account settings at play.spotify.com. |   track/6rqhFgbbKwnb9MLmUQDhG6
+<span class="lineNum">      29 </span>            :         
+<span class="lineNum">      30 </span>            : &quot;&quot;&quot;
+<span class="lineNum">      31 </span>            : SpUri, SpId, SpCategoryId, SpUserId, SpUrl, SpPlaylistId, SpAlbumId, SpArtistId, SpShowId
+<span class="lineNum">      32 </span>            : 
+<span class="lineNum">      33 </span>            : mutable struct SpUri
+<span class="lineNum">      34 </span>            :     s::String
+<span class="lineNum">      35 </span><span class="lineCov">          1 :     SpUri(s) = isuri(s) ? new(s) : error(&quot;must be 'spotify:track:&lt;base 62 string&gt;&quot;)</span>
+<span class="lineNum">      36 </span>            : end
+<span class="lineNum">      37 </span><span class="lineCov">          1 : SpUri() = SpUri(&quot;spotify:track:6rqhFgbbKwnb9MLmUQDhG6&quot;)</span>
+<span class="lineNum">      38 </span>            : 
+<span class="lineNum">      39 </span>            : mutable struct SpId
+<span class="lineNum">      40 </span>            :     s::String
+<span class="lineNum">      41 </span><span class="lineCov">         24 :     SpId(s) =  isid(s) ? new(s) : error(&quot;must be &lt;base 62 string&gt;&quot;)</span>
+<span class="lineNum">      42 </span>            : end
+<span class="lineNum">      43 </span><span class="lineCov">          4 : SpId() = SpId(&quot;6rqhFgbbKwnb9MLmUQDhG6&quot;)</span>
+<span class="lineNum">      44 </span>            : 
+<span class="lineNum">      45 </span>            : mutable struct SpCategoryId
+<span class="lineNum">      46 </span><span class="lineCov">          4 :     s::String</span>
+<span class="lineNum">      47 </span>            : end
+<span class="lineNum">      48 </span><span class="lineCov">          3 : SpCategoryId() = SpCategoryId(&quot;party&quot;)</span>
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span>            : mutable struct SpUserId
+<span class="lineNum">      51 </span><span class="lineCov">          3 :     s::String</span>
+<span class="lineNum">      52 </span>            : end
+<span class="lineNum">      53 </span><span class="lineCov">          3 : SpUserId() = get_user_name() == &quot;&quot; ? throw(&quot;.ini file has no user name&quot;) : SpUserId(get_user_name())</span>
+<span class="lineNum">      54 </span>            : 
+<span class="lineNum">      55 </span>            : mutable struct SpUrl
+<span class="lineNum">      56 </span>            :     s::String
+<span class="lineNum">      57 </span><span class="lineCov">          1 :     SpUrl(s) = isurl(s) ? new(s) : error(&quot;must be an url&quot;)</span>
+<span class="lineNum">      58 </span>            : end
+<span class="lineNum">      59 </span><span class="lineCov">          1 : SpUrl() =  SpUrl(&quot;http://open.spotify.com/track/6rqhFgbbKwnb9MLmUQDhG6&quot;)</span>
+<span class="lineNum">      60 </span>            : 
+<span class="lineNum">      61 </span>            : mutable struct SpPlaylistId
+<span class="lineNum">      62 </span>            :     s::String
+<span class="lineNum">      63 </span><span class="lineCov">          2 :     SpPlaylistId(s) = isid(s) ? new(s) : error(&quot;must be &lt;base 62 string&gt; playlist ID&quot;)</span>
+<span class="lineNum">      64 </span>            : end
+<span class="lineNum">      65 </span><span class="lineCov">          2 : SpPlaylistId() = SpPlaylistId(&quot;37i9dQZF1E4vUblDJbCkV3&quot;)</span>
+<span class="lineNum">      66 </span>            : 
+<span class="lineNum">      67 </span>            : mutable struct SpAlbumId
+<span class="lineNum">      68 </span>            :     s::String
+<span class="lineNum">      69 </span><span class="lineCov">          1 :     SpAlbumId(s) = isid(s) ? new(s) : error(&quot;must be &lt;base 62 string&gt; album ID&quot;)</span>
+<span class="lineNum">      70 </span>            : end
+<span class="lineNum">      71 </span><span class="lineCov">          1 : SpAlbumId() = SpAlbumId(&quot;5XgEM5g3xWEwL4Zr6UjoLo&quot;)</span>
+<span class="lineNum">      72 </span>            : 
+<span class="lineNum">      73 </span>            : mutable struct SpArtistId
+<span class="lineNum">      74 </span>            :     s::String
+<span class="lineNum">      75 </span><span class="lineCov">          1 :     SpArtistId(s) = isid(s) ? new(s) : error(&quot;must be &lt;base 62 string&gt; album ID&quot;)</span>
+<span class="lineNum">      76 </span>            : end
+<span class="lineNum">      77 </span><span class="lineCov">          1 : SpArtistId() = SpArtistId(&quot;0YC192cP3KPCRWx8zr8MfZ&quot;)</span>
+<span class="lineNum">      78 </span>            : 
+<span class="lineNum">      79 </span>            : mutable struct SpShowId
+<span class="lineNum">      80 </span>            :     s::String
+<span class="lineNum">      81 </span><span class="lineCov">          1 :     SpShowId(s) = isid(s) ? new(s) : error(&quot;must be &lt;base 62 string&gt; album ID&quot;)</span>
+<span class="lineNum">      82 </span>            : end
+<span class="lineNum">      83 </span><span class="lineCov">          1 : SpShowId() = SpShowId(&quot;2MAi0BvDc6GTFvKFPXnkCL&quot;)</span>
+<span class="lineNum">      84 </span>            : 
+<span class="lineNum">      85 </span>            : # Verify if the url, id and uri have the correct structure
+<span class="lineNum">      86 </span><span class="lineCov">          2 : isurl(s) = !isnothing(match(r&quot;(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&amp;//=]*)&quot;, s))</span>
+<span class="lineNum">      87 </span><span class="lineCov">         58 : isid(s) = !isnothing(match(r&quot;\b[a-zA-Z0-9]{22}&quot;, s))</span>
+<span class="lineNum">      88 </span><span class="lineCov">          1 : isuri(s) = count(==( ':'), s) == 2 &amp;&amp; length(s) - findlast(':', s) == 22</span>
+<span class="lineNum">      89 </span>            : 
+<span class="lineNum">      90 </span>            : # These types should work with string interpolation using $. 
+<span class="lineNum">      91 </span>            : # So we need to alter their undecorated representations.
+<span class="lineNum">      92 </span>            : # For argument inspection, we don't want to hide them not 
+<span class="lineNum">      93 </span>            : # being ordinary strings, so we add color. The color will
+<span class="lineNum">      94 </span>            : # not be used in contexts which can't display color (i.e. 
+<span class="lineNum">      95 </span>            : # when used as an url)
+<span class="lineNum">      96 </span><span class="lineCov">          2 : show(io::IO, s::SpUri) =        printstyled(io, s.s; color = :blue)</span>
+<span class="lineNum">      97 </span><span class="lineCov">         10 : show(io::IO, s::SpId) =         printstyled(io, s.s; color = 176)</span>
+<span class="lineNum">      98 </span><span class="lineCov">          8 : show(io::IO, s::SpCategoryId) = printstyled(io, s.s; color = 172)</span>
+<span class="lineNum">      99 </span><span class="lineCov">          2 : show(io::IO, s::SpUrl) =        printstyled(io, s.s; color = :blue, bold = true)</span>
+<span class="lineNum">     100 </span><span class="lineCov">          5 : show(io::IO, s::SpUserId) =     printstyled(io, s.s; color = :green)</span>
+<span class="lineNum">     101 </span><span class="lineCov">          5 : show(io::IO, s::SpPlaylistId) =     printstyled(io, s.s; color = :light_red)</span>
+<span class="lineNum">     102 </span><span class="lineCov">          8 : show(io::IO, s::SpAlbumId) =     printstyled(io, s.s; color = :light_yellow)</span>
+<span class="lineNum">     103 </span><span class="lineCov">         11 : show(io::IO, s::SpArtistId) =     printstyled(io, s.s; color = :light_magenta)</span>
+<span class="lineNum">     104 </span><span class="lineCov">          9 : show(io::IO, s::SpShowId) =     printstyled(io, s.s; color = :light_cyan)</span>
+<span class="lineNum">     105 </span>            : 
+<span class="lineNum">     106 </span>            : # Add quotes &quot;&quot; around the String representation
+<span class="lineNum">     107 </span><span class="lineCov">          2 : show(io::IO,  ::MIME&quot;text/plain&quot;, s::SpUri) =       printstyled(io, '&quot;' * s.s * '&quot;'; color = :blue)</span>
+<span class="lineNum">     108 </span><span class="lineCov">          2 : show(io::IO, ::MIME&quot;text/plain&quot;, s::SpId) =         printstyled(io, '&quot;' * s.s * '&quot;'; color = 176)</span>
+<span class="lineNum">     109 </span><span class="lineCov">          2 : show(io::IO, ::MIME&quot;text/plain&quot;, s::SpCategoryId) = printstyled(io, '&quot;' * s.s * '&quot;'; color = 172)</span>
+<span class="lineNum">     110 </span><span class="lineCov">          2 : show(io::IO, ::MIME&quot;text/plain&quot;, s::SpUrl) =        printstyled(io, '&quot;' * s.s * '&quot;'; color = :blue, bold = true)</span>
+<span class="lineNum">     111 </span><span class="lineCov">          2 : show(io::IO, ::MIME&quot;text/plain&quot;, s::SpUserId) =     printstyled(io, '&quot;' * s.s * '&quot;'; color = :green)</span>
+<span class="lineNum">     112 </span><span class="lineNoCov">          0 : show(io::IO, ::MIME&quot;text/plain&quot;, s::SpPlaylistId) =     printstyled(io, '&quot;' * s.s * '&quot;'; color = :light_red)</span>
+<span class="lineNum">     113 </span><span class="lineNoCov">          0 : show(io::IO, ::MIME&quot;text/plain&quot;, s::SpAlbumId) =     printstyled(io, '&quot;' * s.s * '&quot;'; color = :light_yellow)</span>
+<span class="lineNum">     114 </span><span class="lineNoCov">          0 : show(io::IO, ::MIME&quot;text/plain&quot;, s::SpArtistId) =     printstyled(io, '&quot;' * s.s * '&quot;'; color = :light_magenta)</span>
+<span class="lineNum">     115 </span><span class="lineNoCov">          0 : show(io::IO, ::MIME&quot;text/plain&quot;, s::SpShowId) =     printstyled(io, '&quot;' * s.s * '&quot;'; color = :light_cyan)</span>
+<span class="lineNum">     116 </span>            : 
+<span class="lineNum">     117 </span><span class="lineNoCov">          0 : show(io::IO, v::Vector{SpUri}) =        show_vector(io, v, &quot;&quot;, &quot;&quot;)</span>
+<span class="lineNum">     118 </span><span class="lineCov">          1 : show(io::IO, v::Vector{SpId}) =         show_vector(io, v, &quot;&quot;, &quot;&quot;)</span>
+<span class="lineNum">     119 </span><span class="lineNoCov">          0 : show(io::IO, v::Vector{SpCategoryId}) = show_vector(io, v, &quot;&quot;, &quot;&quot;)</span>
+<span class="lineNum">     120 </span><span class="lineNoCov">          0 : show(io::IO, v::Vector{SpUrl}) =        show_vector(io, v, &quot;&quot;, &quot;&quot;)</span>
+<span class="lineNum">     121 </span><span class="lineNoCov">          0 : show(io::IO, v::Vector{SpUserId}) =     show_vector(io, v, &quot;&quot;, &quot;&quot;)</span>
+<span class="lineNum">     122 </span><span class="lineNoCov">          0 : show(io::IO, v::Vector{SpPlaylistId}) = show_vector(io, v, &quot;&quot;, &quot;&quot;)</span>
+<span class="lineNum">     123 </span><span class="lineNoCov">          0 : show(io::IO, v::Vector{SpAlbumId}) =    show_vector(io, v, &quot;&quot;, &quot;&quot;)</span>
+<span class="lineNum">     124 </span><span class="lineNoCov">          0 : show(io::IO, v::Vector{SpArtistId}) =   show_vector(io, v, &quot;&quot;, &quot;&quot;)</span>
+<span class="lineNum">     125 </span><span class="lineNoCov">          0 : show(io::IO, v::Vector{SpShowId}) =     show_vector(io, v, &quot;&quot;, &quot;&quot;)</span>
+<span class="lineNum">     126 </span>            : 
+<span class="lineNum">     127 </span><span class="lineNoCov">          0 : typeinfo_implicit(::Type{SpUri}) = true</span>
+<span class="lineNum">     128 </span><span class="lineCov">          1 : typeinfo_implicit(::Type{SpId}) = true</span>
+<span class="lineNum">     129 </span><span class="lineNoCov">          0 : typeinfo_implicit(::Type{SpCategoryId}) = true</span>
+<span class="lineNum">     130 </span><span class="lineNoCov">          0 : typeinfo_implicit(::Type{SpUrl}) = true</span>
+<span class="lineNum">     131 </span><span class="lineNoCov">          0 : typeinfo_implicit(::Type{SpUserId}) = true</span>
+<span class="lineNum">     132 </span><span class="lineNoCov">          0 : typeinfo_implicit(::Type{SpPlaylistId}) = true</span>
+<span class="lineNum">     133 </span><span class="lineNoCov">          0 : typeinfo_implicit(::Type{SpAlbumId}) = true</span>
+<span class="lineNum">     134 </span><span class="lineNoCov">          0 : typeinfo_implicit(::Type{SpArtistId}) = true</span>
+<span class="lineNum">     135 </span><span class="lineNoCov">          0 : typeinfo_implicit(::Type{SpShowId}) = true</span>
+<span class="lineNum">     136 </span>            : 
+<span class="lineNum">     137 </span>            : 
+<span class="lineNum">     138 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

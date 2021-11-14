@@ -1,0 +1,242 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - on branch Code_coverage_html - src/by_reference_doc/tracks.jl</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">src/by_reference_doc</a> - tracks.jl<span style="font-size: 80%;"> (source / <a href="tracks.jl.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">on branch Code_coverage_html</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2021-11-14 18:56:17</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-audio-analysis</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : &quot;&quot;&quot;
+<span class="lineNum">       4 </span>            :     tracks_get_audio_analysis(track_id)
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : **Summary**: Get a detailed audio analysis for a single track identified by it's unique Spotify ID.
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : # Arguments
+<span class="lineNum">       9 </span>            : - `track_id`: The Spotify ID for the track
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : # Example
+<span class="lineNum">      12 </span>            : ```julia-repl
+<span class="lineNum">      13 </span>            : julia&gt; Spotify.tracks_get_audio_analysis(&quot;6rqhFgbbKwnb9MLmUQDhG6&quot;)[1]
+<span class="lineNum">      14 </span>            : JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
+<span class="lineNum">      15 </span>            :   :meta     =&gt; {…
+<span class="lineNum">      16 </span>            :   :track    =&gt; {…
+<span class="lineNum">      17 </span>            :   :bars     =&gt; JSON3.Object[{…
+<span class="lineNum">      18 </span>            :   :beats    =&gt; JSON3.Object[{…
+<span class="lineNum">      19 </span>            : ```
+<span class="lineNum">      20 </span>            : &quot;&quot;&quot;
+<span class="lineNum">      21 </span>            : function tracks_get_audio_analysis(track_id)
+<span class="lineNum">      22 </span><span class="lineCov">          1 :     return spotify_request(&quot;audio-analysis/$track_id&quot;)</span>
+<span class="lineNum">      23 </span>            : end
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            : ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-audio-features
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : &quot;&quot;&quot;
+<span class="lineNum">      29 </span>            :     tracks_get_audio_features(track_id)
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : **Summary**: Get audio feature information for a single track identified by it's unique Spotify ID.
+<span class="lineNum">      32 </span>            : 
+<span class="lineNum">      33 </span>            : # Arguments
+<span class="lineNum">      34 </span>            : - `track_id`: The Spotify ID for the track
+<span class="lineNum">      35 </span>            : 
+<span class="lineNum">      36 </span>            : # Example
+<span class="lineNum">      37 </span>            : ```julia-repl
+<span class="lineNum">      38 </span>            : julia&gt; Spotify.tracks_get_audio_features(&quot;6rqhFgbbKwnb9MLmUQDhG6&quot;)[1]
+<span class="lineNum">      39 </span>            : JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 18 entries:
+<span class="lineNum">      40 </span>            :   :danceability     =&gt; 0.592
+<span class="lineNum">      41 </span>            :   :energy           =&gt; 0.0196
+<span class="lineNum">      42 </span>            :   :key              =&gt; 1
+<span class="lineNum">      43 </span>            :   :loudness         =&gt; -33.35
+<span class="lineNum">      44 </span>            :   :mode             =&gt; 1
+<span class="lineNum">      45 </span>            :   :speechiness      =&gt; 0.0358
+<span class="lineNum">      46 </span>            :   :acousticness     =&gt; 0.362
+<span class="lineNum">      47 </span>            :   :instrumentalness =&gt; 0.854
+<span class="lineNum">      48 </span>            : ```
+<span class="lineNum">      49 </span>            : &quot;&quot;&quot;
+<span class="lineNum">      50 </span>            : function tracks_get_audio_features(track_id)
+<span class="lineNum">      51 </span><span class="lineCov">          1 :     return spotify_request(&quot;audio-features/$track_id&quot;)</span>
+<span class="lineNum">      52 </span>            : end
+<span class="lineNum">      53 </span>            : 
+<span class="lineNum">      54 </span>            : 
+<span class="lineNum">      55 </span>            : ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-track
+<span class="lineNum">      56 </span>            : 
+<span class="lineNum">      57 </span>            : &quot;&quot;&quot;
+<span class="lineNum">      58 </span>            :     tracks_get(track_id; market=&quot;US&quot;)
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span>            : **Summary**: Get a spotify catalog information for a single track identified by it's unique Spotify ID.
+<span class="lineNum">      61 </span>            : 
+<span class="lineNum">      62 </span>            : # Arguments
+<span class="lineNum">      63 </span>            : - `track_id` : The Spotify ID for the track.
+<span class="lineNum">      64 </span>            : 
+<span class="lineNum">      65 </span>            : # Optional keywords
+<span class="lineNum">      66 </span>            : - `market::String` : An ISO 3166-1 alpha-2 country code. If a country code is specified, 
+<span class="lineNum">      67 </span>            :                      only episodes that are available in that market will be returned. 
+<span class="lineNum">      68 </span>            :                      Default is set to &quot;US&quot;.
+<span class="lineNum">      69 </span>            : 
+<span class="lineNum">      70 </span>            : # Example
+<span class="lineNum">      71 </span>            : ```julia-repl
+<span class="lineNum">      72 </span>            : julia&gt; Spotify.tracks_get(&quot;6rqhFgbbKwnb9MLmUQDhG6&quot;)[1]
+<span class="lineNum">      73 </span>            : JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 18 entries:
+<span class="lineNum">      74 </span>            :   :album         =&gt; {…
+<span class="lineNum">      75 </span>            :   :artists       =&gt; JSON3.Object[{…
+<span class="lineNum">      76 </span>            :   :disc_number   =&gt; 1
+<span class="lineNum">      77 </span>            :   :duration_ms   =&gt; 65314
+<span class="lineNum">      78 </span>            :   :explicit      =&gt; true
+<span class="lineNum">      79 </span>            :   :external_ids  =&gt; {…
+<span class="lineNum">      80 </span>            :   :external_urls =&gt; {…
+<span class="lineNum">      81 </span>            : ```
+<span class="lineNum">      82 </span>            : &quot;&quot;&quot;
+<span class="lineNum">      83 </span>            : function tracks_get_single(track_id; market::String=&quot;US&quot;)
+<span class="lineNum">      84 </span><span class="lineCov">          6 :     return spotify_request(&quot;tracks/$track_id?market=$market&quot;)</span>
+<span class="lineNum">      85 </span>            : end
+<span class="lineNum">      86 </span>            : 
+<span class="lineNum">      87 </span>            : 
+<span class="lineNum">      88 </span>            : ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-several-tracks
+<span class="lineNum">      89 </span>            : 
+<span class="lineNum">      90 </span>            : &quot;&quot;&quot;
+<span class="lineNum">      91 </span>            :     tracks_get_multiple(ids::String; market::String=&quot;US&quot;)
+<span class="lineNum">      92 </span>            : 
+<span class="lineNum">      93 </span>            : **Summary**: Get Spotify catalog information for multiple tracks based on their Spotify IDs.
+<span class="lineNum">      94 </span>            : 
+<span class="lineNum">      95 </span>            : # Arguments
+<span class="lineNum">      96 </span>            : - `ids` : A comma-separated list of the Spotify IDs. 
+<span class="lineNum">      97 </span>            : 
+<span class="lineNum">      98 </span>            : # Optional keywords
+<span class="lineNum">      99 </span>            : - `market::String` : An ISO 3166-1 alpha-2 country code. If a country code is specified, 
+<span class="lineNum">     100 </span>            :                      only episodes that are available in that market will be returned. 
+<span class="lineNum">     101 </span>            :                      Default is set to &quot;US&quot;.
+<span class="lineNum">     102 </span>            : 
+<span class="lineNum">     103 </span>            : # Example
+<span class="lineNum">     104 </span>            : ```julia-repl
+<span class="lineNum">     105 </span>            : julia&gt; Spotify.tracks_get_multiple(&quot;4iV5W9uYEdYUVa79Axb7Rh,1301WleyT98MSxVHPZCA6&quot;)[1]
+<span class="lineNum">     106 </span>            : JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
+<span class="lineNum">     107 </span>            :   :tracks =&gt; Union{Nothing, JSON3.Object}[{…
+<span class="lineNum">     108 </span>            : ```
+<span class="lineNum">     109 </span>            : &quot;&quot;&quot;
+<span class="lineNum">     110 </span>            : function tracks_get_multiple(ids; market::String=&quot;US&quot;)
+<span class="lineNum">     111 </span><span class="lineCov">          6 :     return spotify_request(&quot;tracks?ids=$ids&amp;market=$market&quot;)</span>
+<span class="lineNum">     112 </span>            : end
+<span class="lineNum">     113 </span>            : 
+<span class="lineNum">     114 </span>            : 
+<span class="lineNum">     115 </span>            : ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-saved-tracks
+<span class="lineNum">     116 </span>            : 
+<span class="lineNum">     117 </span>            : &quot;&quot;&quot;
+<span class="lineNum">     118 </span>            :     tracks_get_saved(;limit::Int64=20, market::String=&quot;US&quot;, offset::Int64=0)
+<span class="lineNum">     119 </span>            : 
+<span class="lineNum">     120 </span>            : **Summary**: Get a list of the songs saved in the current Spotify user's 'Your Music' library.
+<span class="lineNum">     121 </span>            : 
+<span class="lineNum">     122 </span>            : # Optional keywords
+<span class="lineNum">     123 </span>            : - `limit::Int64` : Maximum number of items to return, default is set to 20
+<span class="lineNum">     124 </span>            : - `market::String` : An ISO 3166-1 alpha-2 country code. If a country code is specified, 
+<span class="lineNum">     125 </span>            :                      only episodes that are available in that market will be returned. 
+<span class="lineNum">     126 </span>            :                      Default is set to &quot;US&quot;.
+<span class="lineNum">     127 </span>            : - `offset::Int64` : Index of the first item to return, default is set to 0
+<span class="lineNum">     128 </span>            : 
+<span class="lineNum">     129 </span>            : # Example
+<span class="lineNum">     130 </span>            : ```julia-repl
+<span class="lineNum">     131 </span>            : julia&gt; Spotify.tracks_get_saved()[1]
+<span class="lineNum">     132 </span>            : [ Info: We try the request without checking if current grant includes scope user-library-read.
+<span class="lineNum">     133 </span>            : JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
+<span class="lineNum">     134 </span>            :   :href     =&gt; &quot;https://api.spotify.com/v1/me/tracks?offset=0&amp;limit=20&amp;market=US&quot;
+<span class="lineNum">     135 </span>            :   :items    =&gt; JSON3.Object[{…
+<span class="lineNum">     136 </span>            :   :limit    =&gt; 20
+<span class="lineNum">     137 </span>            :   :next     =&gt; &quot;https://api.spotify.com/v1/me/tracks?offset=20&amp;limit=20&amp;market=US&quot;
+<span class="lineNum">     138 </span>            : ```
+<span class="lineNum">     139 </span>            : &quot;&quot;&quot;
+<span class="lineNum">     140 </span>            : function tracks_get_saved(;limit::Int64=20, market::String=&quot;US&quot;, offset::Int64=0)
+<span class="lineNum">     141 </span><span class="lineCov">          6 :     return spotify_request(&quot;me/tracks?limit=$limit&amp;market=$market&amp;offset=$offset&quot;; </span>
+<span class="lineNum">     142 </span>            :                            scope = &quot;user-library-read&quot;)
+<span class="lineNum">     143 </span>            : end
+<span class="lineNum">     144 </span>            : 
+<span class="lineNum">     145 </span>            : 
+<span class="lineNum">     146 </span>            : ## https://developer.spotify.com/documentation/web-api/reference/#/operations/check-users-saved-tracks
+<span class="lineNum">     147 </span>            : 
+<span class="lineNum">     148 </span>            : &quot;&quot;&quot;
+<span class="lineNum">     149 </span>            :     tracks_get_contains(ids)
+<span class="lineNum">     150 </span>            : 
+<span class="lineNum">     151 </span>            : **Summary**: Check if one or more tracks is already saved in the current Spotify user's 'Your Music' library.
+<span class="lineNum">     152 </span>            : 
+<span class="lineNum">     153 </span>            : # Arguments
+<span class="lineNum">     154 </span>            : - `ids` : A comma-separated list of the Spotify track IDs.
+<span class="lineNum">     155 </span>            : 
+<span class="lineNum">     156 </span>            : # Example
+<span class="lineNum">     157 </span>            : ```julia-repl
+<span class="lineNum">     158 </span>            : julia&gt; Spotify.tracks_get_contains(&quot;4iV5W9uYEdYUVa79Axb7Rh, 4VqPOruhp5EdPBeR92t6lQ&quot;)[1]
+<span class="lineNum">     159 </span>            : 2-element JSON3.Array{Bool, Base.CodeUnits{UInt8, String}, Vector{UInt64}}:
+<span class="lineNum">     160 </span>            :  0
+<span class="lineNum">     161 </span>            :  0
+<span class="lineNum">     162 </span>            : ```
+<span class="lineNum">     163 </span>            : &quot;&quot;&quot;
+<span class="lineNum">     164 </span>            : function tracks_get_contains(ids)
+<span class="lineNum">     165 </span><span class="lineCov">          1 :     return spotify_request(&quot;me/tracks/contains?ids=$ids&quot;; scope = &quot;user-library-read&quot;)</span>
+<span class="lineNum">     166 </span>            : end
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>
