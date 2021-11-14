@@ -9,13 +9,17 @@ end
 
 # WARNING: Tests in test_player.jl will pass only when the Spotify player is actively playing something
 using Pkg
+Pkg.activate(pwd())
+Pkg.instantiate()
 Pkg.test("Spotify"; coverage=true)
 
 # Process .cov files in Spotify.jl folder using Coverage.jl
 # Note that Coverage.jl is added to test folder Project.toml, and will therefore be only
 # used when running this file
+Pkg.activate("test")
+Pkg.instantiate()
 using Coverage
-coverage = process_folder(pwd())
+coverage = process_folder("src")
 
 # Get total coverage for all Julia files
 covered_lines, total_lines = get_summary(coverage)
