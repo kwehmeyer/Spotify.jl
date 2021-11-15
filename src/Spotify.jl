@@ -60,7 +60,6 @@ include("types.jl")
 
 # Authorization
 include("authorization/client_credentials.jl")
-include("authorization/open_a_browser.jl")
 include("authorization/implicit_grant_flow.jl")
 
 # Util

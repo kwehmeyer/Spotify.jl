@@ -76,40 +76,17 @@ function launch_a_browser_that_asks_for_implicit_grant()
             "&response_type=token" *
             "&state=987"
     println("\tLaunching a browser at: $uri")
-    success = false
-    #=
-    browsercmd = get_working_browser_cmd()
-    if browsercmd != ``
-        @info "Browser command from .ini-file: $browsercmd"
+    if Sys.isapple()
+        run(`open $uri`)
     end
-    =#
-    browser = ""
-    while !success && COUNTBROWSER.value < length(BROWSERS)
-        #if browsercmd != ``
-        printstyled("\tTrying to launch browser candidate: $(BROWSERS[COUNTBROWSER.value + 1])\n"; color = :green)
-        success, browser = open_a_browser(url= uri)
+    if Sys.iswindows()
+        run(`explorer $uri`)
+    end
 
         # Added delay so that user can authorize via browser window while running unit tests
-        @info "Waiting for 10 seconds"
-        sleep(10)
-        
-        #else
-        #    printstyled("\tBrowser command from .ini-file: $browsercmd\n"; color = :green)
-        #    @async run(browsercmd)
-        #    break
-        #end
-    end
-    # Reset browser picker
-    COUNTBROWSER.value = 0
-    #=
-    if browsercmd == "" && COUNTBROWSER.value <= length(BROWSERS)
-        browsercmd = launch_command(browser; url = uri)
-    end
-    if browsercmd != ``
-        printstyled("\tStoring browser command:$(browsercmd)\n", color = :green)
-        set_working_browser_cmd(browsercmd)
-    end
-    =#
+    @info "Waiting for 10 seconds"
+    sleep(10)
+    @info "Try running that command again, you should be authorized now"
 end
 
 """
