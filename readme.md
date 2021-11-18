@@ -31,7 +31,7 @@ The latest build can be installed via the registry
 (@v1.6) pkg> add Spotify
 ```
 
-    using Julia
+    using Spotify
 
 This creates 'spotify_credentials.ini' in your `homedir()`, along with brief instructions on how to configure your 'client credentials'.
 
