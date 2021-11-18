@@ -76,14 +76,19 @@ function launch_a_browser_that_asks_for_implicit_grant()
             "&response_type=token" *
             "&state=987"
     println("\tLaunching a browser at: $uri")
+
+    # Try opening a browser window based on OS type
     if Sys.isapple()
         run(`open $uri`)
     end
     if Sys.iswindows()
         run(`explorer $uri`)
     end
+    if Sys.islinux()
+        run(`xdg-open $uri`)
+    end
 
-        # Added delay so that user can authorize via browser window while running unit tests
+    # Added delay so that user can authorize via browser window while running unit tests
     @info "Waiting for 10 seconds"
     sleep(10)
     @info "Try running that command again, you should be authorized now"
