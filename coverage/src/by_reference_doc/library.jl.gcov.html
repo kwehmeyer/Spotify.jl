@@ -1,0 +1,257 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - on branch Move_code_cov_files - src/by_reference_doc/library.jl</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">src/by_reference_doc</a> - library.jl<span style="font-size: 80%;"> (source / <a href="library.jl.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">on branch Move_code_cov_files</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">36</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2021-11-19 17:08:14</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : # library.jl</a>
+<span class="lineNum">       2 </span>            : ## https://developer.spotify.com/documentation/web-api/reference/library/
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : ## https://developer.spotify.com/documentation/web-api/reference/library/get-users-saved-tracks/
+<span class="lineNum">       5 </span>            : @doc &quot;&quot;&quot;
+<span class="lineNum">       6 </span>            : # Get a User's Saved Tracks
+<span class="lineNum">       7 </span>            : **Summary**: Get a list of the songs saved in the current Spotify user's 'Your Music' library.\n 
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            : `limit` _Optional_: The maximum number of objects to return. Default 20. Minimum 1. Maximum 50. \n
+<span class="lineNum">      10 </span>            : `offset` _Optional_: The index of the first object to return. Default 0.\n
+<span class="lineNum">      11 </span>            : `market` _Optional_: An ISO 3166-1 alpha-2 country code.
+<span class="lineNum">      12 </span>            : 
+<span class="lineNum">      13 </span>            : [Reference](https://developer.spotify.com/documentation/web-api/reference/library/get-users-saved-tracks/)
+<span class="lineNum">      14 </span><span class="lineNoCov">          0 : &quot;&quot;&quot; -&gt;</span>
+<span class="lineNum">      15 </span><span class="lineNoCov">          0 : function library_get_saved_tracks(limit=20, offset=0, market=&quot;US&quot;)</span>
+<span class="lineNum">      16 </span><span class="lineNoCov">          0 :     return spotify_request(&quot;me/tracks?market=$market&amp;offset=$offset&amp;limit=$limit&quot;; scope = &quot;user-library-read&quot;)</span>
+<span class="lineNum">      17 </span>            : end
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : ## https://developer.spotify.com/documentation/web-api/reference/library/get-users-saved-shows/
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : @doc &quot;&quot;&quot;
+<span class="lineNum">      22 </span>            : # Get a User's Saved Shows
+<span class="lineNum">      23 </span>            : **Summary**: Get a list of the songs saved in the current Spotify user's 'Your Music' library.\n 
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span>            : `limit` _Optional_: The maximum number of objects to return. Default 20. Minimum 1. Maximum 50. \n
+<span class="lineNum">      26 </span>            : `offset` _Optional_: The index of the first object to return. Default 0.\n
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : [Reference](https://developer.spotify.com/documentation/web-api/reference/library/get-users-saved-shows/)
+<span class="lineNum">      29 </span><span class="lineNoCov">          0 : &quot;&quot;&quot; -&gt;</span>
+<span class="lineNum">      30 </span><span class="lineNoCov">          0 : function library_get_saved_shows(limit=20, offset=0)</span>
+<span class="lineNum">      31 </span><span class="lineNoCov">          0 :     return spotify_request(&quot;me/shows?limit=$limit&amp;offset=$offset&quot;; scope = &quot;user-library-read&quot;)</span>
+<span class="lineNum">      32 </span>            : end
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span>            : 
+<span class="lineNum">      35 </span>            : 
+<span class="lineNum">      36 </span>            : ## https://developer.spotify.com/documentation/web-api/reference/library/get-users-saved-albums/
+<span class="lineNum">      37 </span>            : @doc &quot;&quot;&quot;
+<span class="lineNum">      38 </span>            : # Get a User's Saved Albums
+<span class="lineNum">      39 </span>            : **Summary**: Get a list of the albums saved in the current Spotify user's 'Your Music' library.\n 
+<span class="lineNum">      40 </span>            : 
+<span class="lineNum">      41 </span>            : `limit` _Optional_: The maximum number of objects to return. Default 20. Minimum 1. Maximum 50. \n
+<span class="lineNum">      42 </span>            : `offset` _Optional_: The index of the first object to return. Default 0.\n
+<span class="lineNum">      43 </span>            : `market` _Optional_: An ISO 3166-1 alpha-2 country code.
+<span class="lineNum">      44 </span>            : 
+<span class="lineNum">      45 </span>            : [Reference](https://developer.spotify.com/documentation/web-api/reference/library/get-users-saved-albums/)
+<span class="lineNum">      46 </span><span class="lineNoCov">          0 : &quot;&quot;&quot; -&gt;</span>
+<span class="lineNum">      47 </span><span class="lineNoCov">          0 : function library_get_saved_albums(limit=20, offset=0, market=&quot;US&quot;)</span>
+<span class="lineNum">      48 </span><span class="lineNoCov">          0 :     return spotify_request(&quot;me/albums?limit=$limit&amp;offset=$offset&amp;market=$market&quot;; scope = &quot;user-library-read&quot;)</span>
+<span class="lineNum">      49 </span>            : end
+<span class="lineNum">      50 </span>            : 
+<span class="lineNum">      51 </span>            : 
+<span class="lineNum">      52 </span>            : 
+<span class="lineNum">      53 </span>            : ## https://developer.spotify.com/documentation/web-api/reference/library/check-users-saved-tracks/
+<span class="lineNum">      54 </span>            : @doc &quot;&quot;&quot;
+<span class="lineNum">      55 </span>            : # Check User's Saved Tracks
+<span class="lineNum">      56 </span>            : **Summary**: Check if one or more tracks is already saved in the current Spotify user's 'Your Music' library.\n 
+<span class="lineNum">      57 </span>            : 
+<span class="lineNum">      58 </span>            : `track_ids` _Required_: A comma-separated list of the Spotify IDs for the tracks. Maximum 50.\n 
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span>            : [Reference](https://developer.spotify.com/documentation/web-api/reference/library/check-users-saved-tracks/)
+<span class="lineNum">      61 </span><span class="lineNoCov">          0 : &quot;&quot;&quot; -&gt; </span>
+<span class="lineNum">      62 </span><span class="lineNoCov">          0 : function library_check_saved_tracks(track_ids)</span>
+<span class="lineNum">      63 </span><span class="lineNoCov">          0 :     return  spotify_request(&quot;me/tracks/contains?ids=$track_ids&quot;)</span>
+<span class="lineNum">      64 </span>            : end
+<span class="lineNum">      65 </span>            : 
+<span class="lineNum">      66 </span>            : 
+<span class="lineNum">      67 </span>            : ## https://developer.spotify.com/documentation/web-api/reference/library/check-users-saved-shows/
+<span class="lineNum">      68 </span>            : @doc &quot;&quot;&quot;
+<span class="lineNum">      69 </span>            : # Check User's Saved Shows
+<span class="lineNum">      70 </span>            : **Summary**: Check if one or more shows is already saved in the current Spotify user's library.\n 
+<span class="lineNum">      71 </span>            : 
+<span class="lineNum">      72 </span>            : `show_ids` _Required_: A comma separated list of the Spotify IDs for the shows. Maximum 50\n
+<span class="lineNum">      73 </span>            : 
+<span class="lineNum">      74 </span>            : [Reference](https://developer.spotify.com/documentation/web-api/reference/library/check-users-saved-shows/)
+<span class="lineNum">      75 </span><span class="lineNoCov">          0 : &quot;&quot;&quot; -&gt;</span>
+<span class="lineNum">      76 </span><span class="lineNoCov">          0 : function library_check_saved_shows(show_ids)</span>
+<span class="lineNum">      77 </span><span class="lineNoCov">          0 :     return spotify_request(&quot;me/shows/contains?ids=$show_ids&quot;)</span>
+<span class="lineNum">      78 </span>            : end
+<span class="lineNum">      79 </span>            : 
+<span class="lineNum">      80 </span>            : 
+<span class="lineNum">      81 </span>            : 
+<span class="lineNum">      82 </span>            : ## https://developer.spotify.com/documentation/web-api/reference/library/check-users-saved-albums/
+<span class="lineNum">      83 </span>            : @doc &quot;&quot;&quot;
+<span class="lineNum">      84 </span>            : # Check User's Saved Albums
+<span class="lineNum">      85 </span>            : **Summary**: Check if one or more albums is already saved in the current Spotify user's 'Your Music' library.\n 
+<span class="lineNum">      86 </span>            : 
+<span class="lineNum">      87 </span>            : `album_ids` _Required_: A comma separated list of the Spotify IDs for the albums. Max 50.\n 
+<span class="lineNum">      88 </span>            : 
+<span class="lineNum">      89 </span>            : [Required](https://developer.spotify.com/documentation/web-api/reference/library/check-users-saved-albums/)
+<span class="lineNum">      90 </span><span class="lineNoCov">          0 : &quot;&quot;&quot; -&gt;</span>
+<span class="lineNum">      91 </span><span class="lineNoCov">          0 : function library_check_saved_albums(album_ids)</span>
+<span class="lineNum">      92 </span><span class="lineNoCov">          0 :     return spotify_request(&quot;me/albums/contains?ids=$album_ids&quot;)</span>
+<span class="lineNum">      93 </span>            : end
+<span class="lineNum">      94 </span>            : 
+<span class="lineNum">      95 </span>            : 
+<span class="lineNum">      96 </span>            : #### DELETE ####
+<span class="lineNum">      97 </span>            : 
+<span class="lineNum">      98 </span>            : ## https://developer.spotify.com/documentation/web-api/reference/library/remove-albums-user/
+<span class="lineNum">      99 </span>            : @doc &quot;&quot;&quot;
+<span class="lineNum">     100 </span>            : # Remove Albums for Current User
+<span class="lineNum">     101 </span>            : **Summary**: Remove one or more albums for the current user's 'Your Music' library.\n 
+<span class="lineNum">     102 </span>            : 
+<span class="lineNum">     103 </span>            : `album_ids` _Required_: A comma-separated list of the Spotify IDs. Maximum 50.\n
+<span class="lineNum">     104 </span>            : 
+<span class="lineNum">     105 </span>            : [Reference](https://developer.spotify.com/documentation/web-api/reference/library/remove-albums-user/)
+<span class="lineNum">     106 </span><span class="lineNoCov">          0 : &quot;&quot;&quot; -&gt;</span>
+<span class="lineNum">     107 </span><span class="lineNoCov">          0 : function library_remove_albums(album_ids)</span>
+<span class="lineNum">     108 </span><span class="lineNoCov">          0 :     return spotify_request(&quot;me/albums?ids=$album_ids&quot;, method=&quot;DELETE&quot;)</span>
+<span class="lineNum">     109 </span>            : end
+<span class="lineNum">     110 </span>            : 
+<span class="lineNum">     111 </span>            : 
+<span class="lineNum">     112 </span>            : 
+<span class="lineNum">     113 </span>            : ## https://developer.spotify.com/documentation/web-api/reference/library/remove-shows-user/
+<span class="lineNum">     114 </span>            : @doc &quot;&quot;&quot;
+<span class="lineNum">     115 </span>            : # Remove Shows for Current User
+<span class="lineNum">     116 </span>            : **Summary**: Remove one or more shows for the current user's library.\n 
+<span class="lineNum">     117 </span>            : 
+<span class="lineNum">     118 </span>            : `show_ids` _Required_: A comma-separated list of the Spotify IDs. Maximum 50.\n
+<span class="lineNum">     119 </span>            : 
+<span class="lineNum">     120 </span>            : [Reference](https://developer.spotify.com/documentation/web-api/reference/library/remove-shows-user/)
+<span class="lineNum">     121 </span><span class="lineNoCov">          0 : &quot;&quot;&quot; -&gt;</span>
+<span class="lineNum">     122 </span><span class="lineNoCov">          0 : function library_remove_shows(show_ids)</span>
+<span class="lineNum">     123 </span><span class="lineNoCov">          0 :     return spotify_request(&quot;me/shows?ids=$show_ids&quot;, method=&quot;DELETE&quot;)</span>
+<span class="lineNum">     124 </span>            : end
+<span class="lineNum">     125 </span>            : 
+<span class="lineNum">     126 </span>            : 
+<span class="lineNum">     127 </span>            : ## https://developer.spotify.com/documentation/web-api/reference/library/remove-tracks-user/
+<span class="lineNum">     128 </span>            : @doc &quot;&quot;&quot;
+<span class="lineNum">     129 </span>            : # Remove Tracks for Current User
+<span class="lineNum">     130 </span>            : **Summary**: Remove one or more tracks for the current user's 'Your Music' library.\n 
+<span class="lineNum">     131 </span>            : 
+<span class="lineNum">     132 </span>            : `track_ids` _Required_: A comma-separated list of the Spotify IDs. Maximum 50.\n
+<span class="lineNum">     133 </span>            : 
+<span class="lineNum">     134 </span>            : [Reference](https://developer.spotify.com/documentation/web-api/reference/library/remove-tracks-user/)
+<span class="lineNum">     135 </span><span class="lineNoCov">          0 : &quot;&quot;&quot; -&gt;</span>
+<span class="lineNum">     136 </span><span class="lineNoCov">          0 : function library_remove_tracks(track_ids)</span>
+<span class="lineNum">     137 </span><span class="lineNoCov">          0 :     return spotify_request(&quot;me/tracks?ids=$track_ids&quot;, method=&quot;DELETE&quot;)</span>
+<span class="lineNum">     138 </span>            : end
+<span class="lineNum">     139 </span>            : 
+<span class="lineNum">     140 </span>            : #### PUT #####
+<span class="lineNum">     141 </span>            : 
+<span class="lineNum">     142 </span>            : ## https://developer.spotify.com/documentation/web-api/reference/library/save-albums-user/
+<span class="lineNum">     143 </span>            : @doc &quot;&quot;&quot;
+<span class="lineNum">     144 </span>            : # Save Albums for Current User
+<span class="lineNum">     145 </span>            : ** Summary**: Save one or more albums to the current user's 'Your Music' library.\n 
+<span class="lineNum">     146 </span>            : 
+<span class="lineNum">     147 </span>            : `album_ids` _Required_: A comma-separated list of Spotify IDs. Maximum 50. \n
+<span class="lineNum">     148 </span>            : 
+<span class="lineNum">     149 </span>            : [Reference](https://developer.spotify.com/documentation/web-api/reference/library/save-albums-user/)
+<span class="lineNum">     150 </span><span class="lineNoCov">          0 : &quot;&quot;&quot; -&gt;</span>
+<span class="lineNum">     151 </span><span class="lineNoCov">          0 : function library_save_album(album_ids)</span>
+<span class="lineNum">     152 </span><span class="lineNoCov">          0 :     return spotify_request(&quot;me/albums?ids=$album_ids&quot;, method=&quot;PUT&quot;)</span>
+<span class="lineNum">     153 </span>            : end
+<span class="lineNum">     154 </span>            : 
+<span class="lineNum">     155 </span>            : 
+<span class="lineNum">     156 </span>            : ## https://developer.spotify.com/documentation/web-api/reference/library/save-shows-user/
+<span class="lineNum">     157 </span>            : @doc &quot;&quot;&quot;
+<span class="lineNum">     158 </span>            : # Save Shows for Current User
+<span class="lineNum">     159 </span>            : ** Summary**: Save one or more shows to the current user's library.\n 
+<span class="lineNum">     160 </span>            : 
+<span class="lineNum">     161 </span>            : `shows_ids` _Required_: A comma-separated list of Spotify IDs. Maximum 50. \n
+<span class="lineNum">     162 </span>            : 
+<span class="lineNum">     163 </span>            : [Reference](https://developer.spotify.com/documentation/web-api/reference/library/save-shows-user/)
+<span class="lineNum">     164 </span><span class="lineNoCov">          0 : &quot;&quot;&quot; -&gt;</span>
+<span class="lineNum">     165 </span><span class="lineNoCov">          0 : function library_save_show(shows_ids)</span>
+<span class="lineNum">     166 </span><span class="lineNoCov">          0 :     return spotify_request(&quot;me/shows?ids=$show_ids&quot;, method=&quot;PUT&quot;)</span>
+<span class="lineNum">     167 </span>            : end
+<span class="lineNum">     168 </span>            : 
+<span class="lineNum">     169 </span>            : 
+<span class="lineNum">     170 </span>            : ## https://developer.spotify.com/documentation/web-api/reference/library/save-tracks-user/
+<span class="lineNum">     171 </span>            : @doc &quot;&quot;&quot;
+<span class="lineNum">     172 </span>            : # Save Tracks for Current User
+<span class="lineNum">     173 </span>            : ** Summary**: Save one or more tracks to the current user's 'Your Music' library.\n 
+<span class="lineNum">     174 </span>            : 
+<span class="lineNum">     175 </span>            : `track_ids` _Required_: A comma-separated list of Spotify IDs. Maximum 50. \n
+<span class="lineNum">     176 </span>            : 
+<span class="lineNum">     177 </span>            : [Reference](https://developer.spotify.com/documentation/web-api/reference/library/save-tracks-user/)
+<span class="lineNum">     178 </span><span class="lineNoCov">          0 : &quot;&quot;&quot; -&gt;</span>
+<span class="lineNum">     179 </span><span class="lineNoCov">          0 : function library_save_track(track_ids)</span>
+<span class="lineNum">     180 </span><span class="lineNoCov">          0 :     return spotify_request(&quot;me/tracks?ids=$track_ids&quot;, method=&quot;PUT&quot;)</span>
+<span class="lineNum">     181 </span>            : end
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>
