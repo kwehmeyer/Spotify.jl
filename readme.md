@@ -5,7 +5,7 @@
  [![Docs](https://github.com/kwehmeyer/Spotify.jl/actions/workflows/builddoc.yml/badge.svg)](https://github.com/kwehmeyer/Spotify.jl/actions/workflows/builddoc.yml) 
 ![example workflow](https://github.com/kwehmeyer/Spotify.jl/actions/workflows/CI.yaml/badge.svg) 
 
-[Code coverage report](https://htmlpreview.github.io/?https://github.com/vnegi10/Spotify.jl/blob/Code_coverage_html/coverage/index.html)
+[Code coverage report](https://htmlpreview.github.io/?https://github.com/vnegi10/Spotify.jl/blob/gh-pages/coverage/index.html)
 
 # An open-source interface for using the Spotify web API in Julia. 
 
