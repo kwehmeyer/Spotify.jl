@@ -1,0 +1,222 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - on branch Move_code_cov_files - src/by_reference_doc/player.jl</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">src/by_reference_doc</a> - player.jl<span style="font-size: 80%;"> (source / <a href="player.jl.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">on branch Move_code_cov_files</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">9</td>
+            <td class="headerCovTableEntry">9</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2021-11-19 17:08:14</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-information-about-the-users-current-playback</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : &quot;&quot;&quot;
+<span class="lineNum">       4 </span>            :     player_get_state(;additional_types::String=&quot;track&quot;, market::String=&quot;US&quot;)
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : **Summary**: Get information about the user’s current playback state, including track or episode, 
+<span class="lineNum">       7 </span>            :              progress, and active device.
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            : # Optional keywords
+<span class="lineNum">      10 </span>            : - `additional_types::String` : &quot;track&quot; (default) or &quot;episode&quot;
+<span class="lineNum">      11 </span>            : - `market::String` : An ISO 3166-1 alpha-2 country code. If a country code is specified, 
+<span class="lineNum">      12 </span>            :                      only episodes that are available in that market will be returned. 
+<span class="lineNum">      13 </span>            :                      Default is set to &quot;US&quot;.
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : # Example
+<span class="lineNum">      16 </span>            : ```julia-repl
+<span class="lineNum">      17 </span>            : julia&gt; Spotify.player_get_state()[1]
+<span class="lineNum">      18 </span>            : [ Info: We try the request without checking if current grant includes scope user-read-playback-state.
+<span class="lineNum">      19 </span>            : JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 10 entries:
+<span class="lineNum">      20 </span>            :   :device                 =&gt; {…
+<span class="lineNum">      21 </span>            :   :shuffle_state          =&gt; false
+<span class="lineNum">      22 </span>            :   :repeat_state           =&gt; &quot;off&quot;
+<span class="lineNum">      23 </span>            :   :timestamp              =&gt; 1636493367689
+<span class="lineNum">      24 </span>            :   :context                =&gt; {…
+<span class="lineNum">      25 </span>            :   :progress_ms            =&gt; 66454
+<span class="lineNum">      26 </span>            :   :item                   =&gt; {…
+<span class="lineNum">      27 </span>            :   :currently_playing_type =&gt; &quot;track&quot;
+<span class="lineNum">      28 </span>            :   :actions                =&gt; {…
+<span class="lineNum">      29 </span>            :   :is_playing             =&gt; true
+<span class="lineNum">      30 </span>            : ```
+<span class="lineNum">      31 </span>            : &quot;&quot;&quot;
+<span class="lineNum">      32 </span>            : function player_get_state(;additional_types::String=&quot;track&quot;, market::String=&quot;US&quot;)
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span><span class="lineCov">          2 :     url = &quot;me/player?additional_types=$additional_types&amp;market=$market&quot;</span>
+<span class="lineNum">      35 </span>            : 
+<span class="lineNum">      36 </span><span class="lineCov">          1 :     return Spotify.spotify_request(url; scope = &quot;user-read-playback-state&quot;)</span>
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span>            : end
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span>            : 
+<span class="lineNum">      41 </span>            : ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-users-available-devices
+<span class="lineNum">      42 </span>            : 
+<span class="lineNum">      43 </span>            : &quot;&quot;&quot;
+<span class="lineNum">      44 </span>            :     player_get_devices()
+<span class="lineNum">      45 </span>            : 
+<span class="lineNum">      46 </span>            : **Summary**: Get information about a user’s available devices.
+<span class="lineNum">      47 </span>            : 
+<span class="lineNum">      48 </span>            : # Example
+<span class="lineNum">      49 </span>            : ```julia-repl
+<span class="lineNum">      50 </span>            : julia&gt; Spotify.player_get_devices()[1][&quot;devices&quot;]
+<span class="lineNum">      51 </span>            : 2-element JSON3.Array{JSON3.Object, Base.CodeUnits{UInt8, String}, SubArray{UInt64, 1, Vector{UInt64}, Tuple{UnitRange{Int64}}, true}}:
+<span class="lineNum">      52 </span>            : {
+<span class="lineNum">      53 </span>            :                    &quot;id&quot;: &quot;your_device_id&quot;,
+<span class="lineNum">      54 </span>            :             &quot;is_active&quot;: false,
+<span class="lineNum">      55 </span>            :    &quot;is_private_session&quot;: false,
+<span class="lineNum">      56 </span>            :         &quot;is_restricted&quot;: false,
+<span class="lineNum">      57 </span>            :                  &quot;name&quot;: &quot;Web Player (Chrome)&quot;,
+<span class="lineNum">      58 </span>            :                  &quot;type&quot;: &quot;Computer&quot;,
+<span class="lineNum">      59 </span>            :        &quot;volume_percent&quot;: 100
+<span class="lineNum">      60 </span>            : }
+<span class="lineNum">      61 </span>            : ```
+<span class="lineNum">      62 </span>            : &quot;&quot;&quot;
+<span class="lineNum">      63 </span>            : function player_get_devices()
+<span class="lineNum">      64 </span>            : 
+<span class="lineNum">      65 </span><span class="lineCov">          1 :     return Spotify.spotify_request(&quot;me/player/devices&quot;; scope = &quot;user-read-playback-state&quot;)</span>
+<span class="lineNum">      66 </span>            : 
+<span class="lineNum">      67 </span>            : end
+<span class="lineNum">      68 </span>            : 
+<span class="lineNum">      69 </span>            : 
+<span class="lineNum">      70 </span>            : ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-the-users-currently-playing-track
+<span class="lineNum">      71 </span>            : 
+<span class="lineNum">      72 </span>            : &quot;&quot;&quot;
+<span class="lineNum">      73 </span>            :     player_get_current_track(;additional_types::String=&quot;track&quot;, market::String=&quot;US&quot;)
+<span class="lineNum">      74 </span>            : 
+<span class="lineNum">      75 </span>            : **Summary**: Get the object currently being played on the user's Spotify account.
+<span class="lineNum">      76 </span>            : 
+<span class="lineNum">      77 </span>            : # Optional keywords
+<span class="lineNum">      78 </span>            : - `additional_types::String` : &quot;track&quot; (default) or &quot;episode&quot;
+<span class="lineNum">      79 </span>            : - `market::String` : An ISO 3166-1 alpha-2 country code. If a country code is specified, 
+<span class="lineNum">      80 </span>            :                      only episodes that are available in that market will be returned. 
+<span class="lineNum">      81 </span>            :                      Default is set to &quot;US&quot;.
+<span class="lineNum">      82 </span>            : 
+<span class="lineNum">      83 </span>            : # Example
+<span class="lineNum">      84 </span>            : ```julia-repl
+<span class="lineNum">      85 </span>            : julia&gt; Spotify.player_get_current_track()[1]
+<span class="lineNum">      86 </span>            : [ Info: We try the request without checking if current grant includes scope user-read-playback-state.
+<span class="lineNum">      87 </span>            : JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
+<span class="lineNum">      88 </span>            :   :timestamp              =&gt; 1636491068506
+<span class="lineNum">      89 </span>            :   :context                =&gt; {…
+<span class="lineNum">      90 </span>            :   :progress_ms            =&gt; 5265
+<span class="lineNum">      91 </span>            :   :item                   =&gt; {…
+<span class="lineNum">      92 </span>            :   :currently_playing_type =&gt; &quot;track&quot;
+<span class="lineNum">      93 </span>            :   :actions                =&gt; {…
+<span class="lineNum">      94 </span>            :   :is_playing             =&gt; true
+<span class="lineNum">      95 </span>            : ```
+<span class="lineNum">      96 </span>            : &quot;&quot;&quot;
+<span class="lineNum">      97 </span>            : function player_get_current_track(;additional_types::String=&quot;track&quot;, market::String=&quot;US&quot;)
+<span class="lineNum">      98 </span>            : 
+<span class="lineNum">      99 </span><span class="lineCov">          2 :     url = &quot;me/player/currently-playing?additional_types=$additional_types&amp;market=$market&quot;</span>
+<span class="lineNum">     100 </span>            : 
+<span class="lineNum">     101 </span><span class="lineCov">          1 :     return Spotify.spotify_request(url; scope = &quot;user-read-playback-state&quot;)</span>
+<span class="lineNum">     102 </span>            : 
+<span class="lineNum">     103 </span>            : end
+<span class="lineNum">     104 </span>            : 
+<span class="lineNum">     105 </span>            : 
+<span class="lineNum">     106 </span>            : ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-recently-played
+<span class="lineNum">     107 </span>            : 
+<span class="lineNum">     108 </span>            : &quot;&quot;&quot;
+<span class="lineNum">     109 </span>            :     player_get_recent_tracks(;duration::Int64=1, limit::Int64=20)
+<span class="lineNum">     110 </span>            : 
+<span class="lineNum">     111 </span>            : **Summary**: Get current user's recently played tracks.
+<span class="lineNum">     112 </span>            : 
+<span class="lineNum">     113 </span>            : # Optional keywords
+<span class="lineNum">     114 </span>            : - `duration::Int64` : Number of days to look in the past, default is set to 1
+<span class="lineNum">     115 </span>            : - `limit::Int64` : Maximum number of items to return, default is set to 20
+<span class="lineNum">     116 </span>            : 
+<span class="lineNum">     117 </span>            : # Example
+<span class="lineNum">     118 </span>            : ```julia-repl
+<span class="lineNum">     119 </span>            : julia&gt; Spotify.player_get_recent_tracks()[1]
+<span class="lineNum">     120 </span>            : [ Info: We try the request without checking if current grant includes scope user-read-recently-played.
+<span class="lineNum">     121 </span>            : JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 5 entries:
+<span class="lineNum">     122 </span>            :   :items   =&gt; JSON3.Object[{…
+<span class="lineNum">     123 </span>            :   :next    =&gt; &quot;https://api.spotify.com/v1/me/player/recently-played?after=1636123644988&amp;limit=20&quot;
+<span class="lineNum">     124 </span>            :   :cursors =&gt; {…
+<span class="lineNum">     125 </span>            :   :limit   =&gt; 20
+<span class="lineNum">     126 </span>            :   :href    =&gt; &quot;https://api.spotify.com/v1/me/player/recently-played?after=1636410050&amp;limit=20&quot;
+<span class="lineNum">     127 </span>            : ```
+<span class="lineNum">     128 </span>            : &quot;&quot;&quot;
+<span class="lineNum">     129 </span>            : function player_get_recent_tracks(;duration::Int64=1, limit::Int64=20)
+<span class="lineNum">     130 </span>            : 
+<span class="lineNum">     131 </span>            :     # Subtract duration from current date and convert to Int64
+<span class="lineNum">     132 </span><span class="lineCov">          6 :     starting_date = Dates.datetime2unix(Dates.now() - Dates.Day(duration))</span>
+<span class="lineNum">     133 </span><span class="lineCov">          3 :     after = round(Int64, starting_date)</span>
+<span class="lineNum">     134 </span>            : 
+<span class="lineNum">     135 </span><span class="lineCov">          3 :     url = &quot;me/player/recently-played?after=$after&amp;limit=$limit&quot;</span>
+<span class="lineNum">     136 </span>            : 
+<span class="lineNum">     137 </span><span class="lineCov">          3 :     return Spotify.spotify_request(url; scope = &quot;user-read-recently-played&quot;)</span>
+<span class="lineNum">     138 </span>            : 
+<span class="lineNum">     139 </span>            : end
+<span class="lineNum">     140 </span>            : 
+<span class="lineNum">     141 </span>            : 
+<span class="lineNum">     142 </span>            : 
+<span class="lineNum">     143 </span>            : 
+<span class="lineNum">     144 </span>            : 
+<span class="lineNum">     145 </span>            : 
+<span class="lineNum">     146 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>
