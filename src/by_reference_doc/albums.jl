@@ -9,7 +9,7 @@
 - `album_id` : The Spotify ID for the album.
 
 # Optional keywords                         
-`market` : An ISO 3166-1 alpha-2 country code. Default is set to "US".
+- `market` : An ISO 3166-1 alpha-2 country code. Default is set to "US".
 
 # Example
 ```julia-repl

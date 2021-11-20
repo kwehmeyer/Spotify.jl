@@ -24,6 +24,6 @@ using Spotify.Shows
     @test ~isempty(show_get_saved()[1])
 
     # Currently shows 403 error, implemented in shows.jl
-    @test_skip ~isempty(show_get_contains("2MAi0BvDc6GTFvKFPXnkCL")[1])
+    @test_broken ~isempty(show_get_contains("2MAi0BvDc6GTFvKFPXnkCL")[1])
 
 end
