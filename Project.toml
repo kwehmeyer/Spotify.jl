@@ -17,9 +17,9 @@ TerminalMenus = "dc548174-15c3-5faf-af27-7997cfbde655"
 URIs = "5c2747f8-b7ea-4ff2-ba2e-563bfd36b1d4"
 
 [compat]
+HTTP = "0.9.16"
 IniFile = "0.5"
 JSON3 = "1.9.2"
-HTTP = "0.9.16"
 Parameters = "0.12.3"
 StructTypes = "1.8.1"
 TerminalMenus = "0.1.0"

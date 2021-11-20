@@ -1,97 +1,26 @@
-# library.jl
-## https://developer.spotify.com/documentation/web-api/reference/library/
+# Same as tracks_get_saved in tracks.jl
+# library_get_saved_tracks(limit=20, offset=0, market="US")
+    
 
-## https://developer.spotify.com/documentation/web-api/reference/library/get-users-saved-tracks/
-@doc """
-# Get a User's Saved Tracks
-**Summary**: Get a list of the songs saved in the current Spotify user's 'Your Music' library.\n 
-
-`limit` _Optional_: The maximum number of objects to return. Default 20. Minimum 1. Maximum 50. \n
-`offset` _Optional_: The index of the first object to return. Default 0.\n
-`market` _Optional_: An ISO 3166-1 alpha-2 country code.
-
-[Reference](https://developer.spotify.com/documentation/web-api/reference/library/get-users-saved-tracks/)
-""" ->
-function library_get_saved_tracks(limit=20, offset=0, market="US")
-    return spotify_request("me/tracks?market=$market&offset=$offset&limit=$limit"; scope = "user-library-read")
-end
-
-## https://developer.spotify.com/documentation/web-api/reference/library/get-users-saved-shows/
-
-@doc """
-# Get a User's Saved Shows
-**Summary**: Get a list of the songs saved in the current Spotify user's 'Your Music' library.\n 
-
-`limit` _Optional_: The maximum number of objects to return. Default 20. Minimum 1. Maximum 50. \n
-`offset` _Optional_: The index of the first object to return. Default 0.\n
-
-[Reference](https://developer.spotify.com/documentation/web-api/reference/library/get-users-saved-shows/)
-""" ->
-function library_get_saved_shows(limit=20, offset=0)
-    return spotify_request("me/shows?limit=$limit&offset=$offset"; scope = "user-library-read")
-end
+# Same as show_get_saved in shows.jl
+# library_get_saved_shows(limit=20, offset=0)    
 
 
+# Same as album_get_saved in albums.jl
+# library_get_saved_albums(limit=20, offset=0, market="US")
+    
 
-## https://developer.spotify.com/documentation/web-api/reference/library/get-users-saved-albums/
-@doc """
-# Get a User's Saved Albums
-**Summary**: Get a list of the albums saved in the current Spotify user's 'Your Music' library.\n 
+# Same as tracks_get_contains in tracks.jl
+# library_check_saved_tracks(track_ids)
+    
 
-`limit` _Optional_: The maximum number of objects to return. Default 20. Minimum 1. Maximum 50. \n
-`offset` _Optional_: The index of the first object to return. Default 0.\n
-`market` _Optional_: An ISO 3166-1 alpha-2 country code.
-
-[Reference](https://developer.spotify.com/documentation/web-api/reference/library/get-users-saved-albums/)
-""" ->
-function library_get_saved_albums(limit=20, offset=0, market="US")
-    return spotify_request("me/albums?limit=$limit&offset=$offset&market=$market"; scope = "user-library-read")
-end
+# Same as show_get_contains in shows.jl
+# library_check_saved_shows(show_ids)
 
 
-
-## https://developer.spotify.com/documentation/web-api/reference/library/check-users-saved-tracks/
-@doc """
-# Check User's Saved Tracks
-**Summary**: Check if one or more tracks is already saved in the current Spotify user's 'Your Music' library.\n 
-
-`track_ids` _Required_: A comma-separated list of the Spotify IDs for the tracks. Maximum 50.\n 
-
-[Reference](https://developer.spotify.com/documentation/web-api/reference/library/check-users-saved-tracks/)
-""" -> 
-function library_check_saved_tracks(track_ids)
-    return  spotify_request("me/tracks/contains?ids=$track_ids")
-end
-
-
-## https://developer.spotify.com/documentation/web-api/reference/library/check-users-saved-shows/
-@doc """
-# Check User's Saved Shows
-**Summary**: Check if one or more shows is already saved in the current Spotify user's library.\n 
-
-`show_ids` _Required_: A comma separated list of the Spotify IDs for the shows. Maximum 50\n
-
-[Reference](https://developer.spotify.com/documentation/web-api/reference/library/check-users-saved-shows/)
-""" ->
-function library_check_saved_shows(show_ids)
-    return spotify_request("me/shows/contains?ids=$show_ids")
-end
-
-
-
-## https://developer.spotify.com/documentation/web-api/reference/library/check-users-saved-albums/
-@doc """
-# Check User's Saved Albums
-**Summary**: Check if one or more albums is already saved in the current Spotify user's 'Your Music' library.\n 
-
-`album_ids` _Required_: A comma separated list of the Spotify IDs for the albums. Max 50.\n 
-
-[Required](https://developer.spotify.com/documentation/web-api/reference/library/check-users-saved-albums/)
-""" ->
-function library_check_saved_albums(album_ids)
-    return spotify_request("me/albums/contains?ids=$album_ids")
-end
-
+# Same as album_get_contains in albums.jl
+# library_check_saved_albums(album_ids)
+    
 
 #### DELETE ####
 

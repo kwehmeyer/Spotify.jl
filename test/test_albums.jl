@@ -13,8 +13,10 @@ using Spotify.Albums
 
     @testset "For market = $(market_id)" for market_id in markets
 
-        @test ~isempty(album_get(album_id, market = market_id )[1])
+        @test ~isempty(album_get_single(album_id, market = market_id )[1])
         @test ~isempty(album_get_tracks(album_id, market = market_id)[1])
+        @test ~isempty(album_get_multiple("$(album_id),5XgEM5g3xWEwL4Zr6UjoLo,2rpT0freJsmUmmPluVWqg5",
+                                          market = market_id))
 
     end
 
@@ -22,6 +24,10 @@ using Spotify.Albums
 
         @test ~isempty(album_get_tracks(album_id, offset = num_offset)[1])
 
-    end
+        @test ~isempty(album_get_saved(offset = num_offset)[1])
+
+    end    
+
+    @test ~isempty(album_get_contains("$(album_id),5XgEM5g3xWEwL4Zr6UjoLo"))
 
 end
