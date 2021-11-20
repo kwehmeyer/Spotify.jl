@@ -30,7 +30,7 @@ Spotify.refresh_spotify_credentials()
 
 println("Running full test suite:")
 
-for file in all_tests
+@time for file in all_tests
     try
         include(file)
         println("\t\033[1m\033[32mPASSED\033[0m: $(file)")
