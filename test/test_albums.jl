@@ -24,8 +24,10 @@ using Spotify.Albums
 
         @test ~isempty(album_get_tracks(album_id, offset = num_offset)[1])
 
-    end
+        @test ~isempty(album_get_saved(offset = num_offset)[1])
 
-    @test ~isempty(album_get_saved())
+    end    
+
+    @test ~isempty(album_get_contains("$(album_id),5XgEM5g3xWEwL4Zr6UjoLo"))
 
 end

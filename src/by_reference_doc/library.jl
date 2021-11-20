@@ -18,19 +18,9 @@
 # library_check_saved_shows(show_ids)
 
 
-## https://developer.spotify.com/documentation/web-api/reference/library/check-users-saved-albums/
-@doc """
-# Check User's Saved Albums
-**Summary**: Check if one or more albums is already saved in the current Spotify user's 'Your Music' library.\n 
-
-`album_ids` _Required_: A comma separated list of the Spotify IDs for the albums. Max 50.\n 
-
-[Required](https://developer.spotify.com/documentation/web-api/reference/library/check-users-saved-albums/)
-""" ->
-function library_check_saved_albums(album_ids)
-    return spotify_request("me/albums/contains?ids=$album_ids")
-end
-
+# Same as album_get_contains in albums.jl
+# library_check_saved_albums(album_ids)
+    
 
 #### DELETE ####
 

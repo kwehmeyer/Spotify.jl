@@ -114,3 +114,27 @@ function album_get_saved(;limit::Int64=20, market::String="US", offset::Int64=0)
     scope = "user-library-read")
 
 end
+
+
+## https://developer.spotify.com/documentation/web-api/reference/#/operations/check-users-saved-albums
+
+"""
+    album_get_contains(ids)
+
+**Summary**: Check if one or more albums is already saved in the current Spotify user's 'Your Music' library.
+
+# Arguments
+- `ids` : A comma-separated list of the Spotify album IDs
+
+# Example
+```julia-repl
+julia> Spotify.album_get_contains("382ObEPsp2rxGrnsizN5TX,1A2GTWGtFfWp7KSQTwWOyo")[1]
+[ Info: We try the request without checking if current grant includes scope user-library-read.
+2-element JSON3.Array{Bool, Base.CodeUnits{UInt8, String}, Vector{UInt64}}:
+ 0
+ 0
+```
+"""
+function album_get_contains(ids)
+    return spotify_request("me/albums/contains?ids=$ids"; scope = "user-library-read")
+end 

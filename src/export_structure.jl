@@ -22,7 +22,7 @@ end
 
 baremodule Albums
     import ..@_ie
-    @_ie album_get_single album_get_multiple album_get_tracks album_get_saved
+    @_ie album_get_single album_get_multiple album_get_tracks album_get_saved album_get_contains
 end
 baremodule Artists
     import ..@_ie
