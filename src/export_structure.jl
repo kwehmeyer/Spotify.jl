@@ -22,7 +22,7 @@ end
 
 baremodule Albums
     import ..@_ie
-    @_ie album_get album_get_tracks
+    @_ie album_get_single album_get_multiple album_get_tracks album_get_saved
 end
 baremodule Artists
     import ..@_ie
@@ -33,16 +33,6 @@ baremodule Browse
     @_ie category_get_single category_get_multiple  
     @_ie category_get_new_releases   
     @_ie recommendations_get  recommendations_dict_parser
-    # single parameter validation - integer or float
-    @_ie min_acousticness  min_danceability  min_duration_ms  min_energy  min_instrumentalness
-    @_ie min_key  min_liveness  min_loudness  min_mode  min_popularity  min_speechiness  
-    @_ie min_tempo  min_time_signature  min_valence  max_acousticness  max_danceability  
-    @_ie max_duration_ms  max_energy  max_instrumentalness  max_key  max_liveness 
-    @_ie max_loudness  max_mode  max_popularity  max_speechiness  max_tempo  
-    @_ie max_time_signature  max_valence  target_acousticness  target_danceability  
-    @_ie target_duration_ms  target_energy  target_instrumentalness  target_key  
-    @_ie target_liveness  target_loudness  target_mode  target_popularity  
-    @_ie target_speechiness  target_tempo  target_time_signature  target_valence  
 end
 baremodule Episodes
     import ..@_ie
@@ -54,8 +44,8 @@ baremodule Follow
 end
 baremodule Library
     import ..@_ie 
-    @_ie library_get_saved_tracks library_get_saved_shows library_get_saved_albums library_check_saved_tracks
-    @_ie library_check_saved_shows library_check_saved_albums library_remove_albums library_remove_shows
+    @_ie library_get_saved_albums library_check_saved_albums
+    @_ie library_remove_albums library_remove_shows
     @_ie library_remove_tracks library_save_album library_save_show library_save_track
 end
 baremodule Markets
