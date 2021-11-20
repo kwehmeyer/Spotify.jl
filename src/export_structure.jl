@@ -36,7 +36,7 @@ baremodule Browse
 end
 baremodule Episodes
     import ..@_ie
-    @_ie episodes_get 
+    @_ie episodes_get_single episodes_get_multiple episodes_get_saved episodes_get_contains
 end
 baremodule Follow
     import ..@_ie
