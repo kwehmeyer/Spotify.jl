@@ -44,7 +44,6 @@ baremodule Follow
 end
 baremodule Library
     import ..@_ie 
-    @_ie library_get_saved_albums library_check_saved_albums
     @_ie library_remove_albums library_remove_shows
     @_ie library_remove_tracks library_save_album library_save_show library_save_track
 end
