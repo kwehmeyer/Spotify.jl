@@ -56,12 +56,13 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 10 entries:
   :href          => "https://api.spotify.com/v1/artists/0YC192cP3KPCRWx8zr8MfZ"
 ```
 """
-function artist_get_albums(artist_id; include_groups="None", country="US", limit=20, offset=0)
-    if include_groups == "None"
-        return spotify_request("artists/$artist_id?include_groups=$include_groups&country=$country&limit=$limit&offset=$offset")
-    else 
-        return spotify_request("artists/$artist_id?country=$country&limit=$limit&offset=$offset")
-    end
+function artist_get_albums(artist_id; include_groups="album", country="US", limit=20, offset=0)
+
+    url1 = "artists/$artist_id?include_groups=$include_groups"
+    url2 = "&country=$country&limit=$limit&offset=$offset"  
+    
+    return spotify_request(url1 * url2)
+    
 end
 
 

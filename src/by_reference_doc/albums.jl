@@ -9,7 +9,7 @@
 - `album_id` : The Spotify ID for the album.
 
 # Optional keywords                         
-`market` : An ISO 3166-1 alpha-2 country code. Default is set to "US".
+- `market` : An ISO 3166-1 alpha-2 country code. Default is set to "US".
 
 # Example
 ```julia-repl
@@ -37,12 +37,12 @@ end
              can be used to limit the number of tracks returned.
              
 # Arguments
-`album_id` : The Spotify ID for the album
+- `album_id` : The Spotify ID for the album
 
 # Optional keywords
-`limit` : The maximum number of tracks to return. Default is set to 20.
-`offset` : The index of the first track to return. Default is 0.
-`market` : An ISO 3166-1 alpha-2 country code. Default is set to "US".
+- `limit` : The maximum number of tracks to return. Default is set to 20.
+- `offset` : The index of the first track to return. Default is 0.
+- `market` : An ISO 3166-1 alpha-2 country code. Default is set to "US".
 
 # Example
 ```julia-repl
@@ -67,10 +67,10 @@ end
 **Summary**: Get Spotify catalog information for multiple albums identified by their Spotify IDs.    
 
 # Arguments
-`album_ids` : A comma-separated list of the Spotify IDs for the albums. Maximum: 20 IDs.
+- `album_ids` : A comma-separated list of the Spotify IDs for the albums. Maximum: 20 IDs.
 
 # Optional keywords
-`market` : An ISO 3166-1 alpha-2 country code. Default is set to "US".
+- `market` : An ISO 3166-1 alpha-2 country code. Default is set to "US".
 
 # Example
 ```julia-repl
