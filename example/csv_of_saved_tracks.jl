@@ -31,8 +31,6 @@ define_df()
 for batch = 0:20:2000
     println("Getting batch: ", batch/20)
     temp = library_get_saved_tracks(20,(batch+1))[1]["items"]
-    #temp_df = DataFrame(;Dict(temp["track"])...)
-    #temp_df["added_at"] = temp["added_at"]
 
     for i in 1:20
         temp2 = DataFrame(;Dict(temp[i]["track"])...)
