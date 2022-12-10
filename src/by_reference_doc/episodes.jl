@@ -62,15 +62,15 @@ end
 
 # Optional keywords
 - `limit::Int64` : Maximum number of items to return, default is set to 20
-- `market::String` : An ISO 3166-1 alpha-2 country code. If a country code is specified, 
-                     only episodes that are available in that market will be returned. 
+- `market::String` : An ISO 3166-1 alpha-2 country code. If a country code is specified,
+                     only episodes that are available in that market will be returned.
                      Default is set to "US".
 - `offset::Int64` : Index of the first item to return, default is set to 0
 
 # Example
 ```julia-repl
 julia> Spotify.episodes_get_saved()[1]
-[ Info: We try the request without checking if current grant includes scope user-library-read.
+[ Info: We try requests without checking if current grant includes the necessary scope, which is: user-library-read.
 JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
   :href     => "https://api.spotify.com/v1/me/episodes?offset=0&limit=20&market=US"
   :items    => Union{}[]
@@ -78,7 +78,7 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
 """
 function episodes_get_saved(;limit::Int64=20, market::String="US", offset::Int64=0)
 
-    return spotify_request("me/episodes?limit=$limit&market=$market&offset=$offset"; 
+    return spotify_request("me/episodes?limit=$limit&market=$market&offset=$offset";
     scope = "user-library-read")
 
 end
@@ -98,7 +98,7 @@ end
 # Example
 ```julia-repl
 julia> Spotify.episodes_get_contains("77o6BIVlYM3msb4MMIL1jH,0Q86acNRm6V9GYx55SXKwf")[1]
-[ Info: We try the request without checking if current grant includes scope user-library-read.
+[ Info: We try requests without checking if current grant includes the necessary scope, which is: user-library-read.
 2-element JSON3.Array{Bool, Base.CodeUnits{UInt8, String}, Vector{UInt64}}:
  0
  0
@@ -106,4 +106,4 @@ julia> Spotify.episodes_get_contains("77o6BIVlYM3msb4MMIL1jH,0Q86acNRm6V9GYx55SX
 """
 function episodes_get_contains(ids)
     return spotify_request("me/episodes/contains?ids=$ids"; scope = "user-library-read")
-end 
+end

@@ -9,13 +9,13 @@
 **Summary**: Check to see if the current user is following one or more artists or other Spotify users.
 
 # Arguments
-- `item_type::String` _Required_: The ID type, either `artist` or `user`.\n 
-- `ids::String` _Required_: A comma separated list of the artist or user Spotify IDs to check. Maximum 50.\n 
+- `item_type::String` _Required_: The ID type, either `artist` or `user`.\n
+- `ids::String` _Required_: A comma separated list of the artist or user Spotify IDs to check. Maximum 50.\n
 
 # Example
 ```julia-repl
 julia> Spotify.follow_check("artist", "7fxBPUc2bTUgl7GLuqjajk")[1]
-[ Info: We try the request without checking if current grant includes scope user-follow-read.
+[ Info: We try requests without checking if current grant includes the necessary scope, which is: user-follow-read.
 1-element JSON3.Array{Bool, Base.CodeUnits{UInt8, String}, Vector{UInt64}}:
  1
 ```
@@ -30,11 +30,11 @@ end
 """
     follow_check_playlist(playlist_id::String, user_id::String)
 
-**Summary**: Check to see if one or more Spotify users are following a specified playlist_id.\n 
+**Summary**: Check to see if one or more Spotify users are following a specified playlist_id.\n
 
 # Arguments
-- `playlist_id::String` _Required_: The Spotify ID of the playlist.\n 
-- `user_id::String` _Required_: A comma separated list of the user Spotify IDS to check. Maximum 5.\n 
+- `playlist_id::String` _Required_: The Spotify ID of the playlist.\n
+- `user_id::String` _Required_: A comma separated list of the user Spotify IDS to check. Maximum 5.\n
 
 # Example
 ```julia-repl
@@ -53,7 +53,7 @@ end
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-followed
 """
     follow_artists(item_type::String="artist", limit::Int64=20)
- 
+
 **Summary**: Get the current user's followed artists.
 
 # Arguments
@@ -63,7 +63,7 @@ end
 # Example
 ```julia-repl
 julia> Spotify.follow_artists()[1]["artists"]
-[ Info: We try the request without checking if current grant includes scope user-follow-modify.
+[ Info: We try requests without checking if current grant includes the necessary scope, which is: user-follow-modify.
 JSON3.Object{Base.CodeUnits{UInt8, String}, SubArray{UInt64, 1, Vector{UInt64}, Tuple{UnitRange{Int64}}, true}} with 6 entries:
   :items   => JSON3.Object[{…
   :next    => nothing
@@ -84,10 +84,10 @@ end
 ## https://developer.spotify.com/documentation/web-api/reference/follow/follow-artists-users/
 @doc """
 # Follow Artists or Users
-**Summary**: Add the current user as a follower of one or more artists or other Spotify users.\n 
+**Summary**: Add the current user as a follower of one or more artists or other Spotify users.\n
 
-`type` _Required_: The ID type: either `artist` or `user`. \n 
-`ids` _Required_: A comma-separated list of the artists or users Spotify IDs. Maximum 50.\n 
+`type` _Required_: The ID type: either `artist` or `user`. \n
+`ids` _Required_: A comma-separated list of the artists or users Spotify IDs. Maximum 50.\n
 
 [Reference](https://developer.spotify.com/documentation/web-api/reference/follow/follow-artists-users/)
 """ ->
@@ -98,9 +98,9 @@ end
 ## https://developer.spotify.com/documentation/web-api/reference/follow/follow-playlist/
 @doc """
 # Follow a Playlist
-**Summary**: Add the currend user as a follower of a playlist. \n 
+**Summary**: Add the currend user as a follower of a playlist. \n
 
-`playlist_id` _Required_: The Spotify ID of the playlist. Any playlist can be followed regardless of it's private/public status, as long as the ID is known.\n 
+`playlist_id` _Required_: The Spotify ID of the playlist. Any playlist can be followed regardless of it's private/public status, as long as the ID is known.\n
 
 [Reference](https://developer.spotify.com/documentation/web-api/reference/follow/follow-playlist/)
 """ ->
@@ -112,11 +112,11 @@ end
 
 ## https://developer.spotify.com/documentation/web-api/reference/follow/unfollow-artists-users/
 @doc """
-# Unfollow Artists or Users 
-**Summary**: Remove the current user as a follower of one or more artists or other Spotify users.\n 
+# Unfollow Artists or Users
+**Summary**: Remove the current user as a follower of one or more artists or other Spotify users.\n
 
-`type` _Required_: The ID type: either `artist` or `user`. \n 
-`ids` _Required_: A comma-separated list of the artists or users Spotify IDs. Maximum 50.\n 
+`type` _Required_: The ID type: either `artist` or `user`. \n
+`ids` _Required_: A comma-separated list of the artists or users Spotify IDs. Maximum 50.\n
 
 [Reference](https://developer.spotify.com/documentation/web-api/reference/follow/unfollow-artists-users/)
 """ ->
@@ -127,9 +127,9 @@ end
 ## https://developer.spotify.com/documentation/web-api/reference/follow/unfollow-playlist/
 @doc """
 # Unfollow a Playlist
-**Summary**: Remove the current user as a follower of a playlist.\n 
+**Summary**: Remove the current user as a follower of a playlist.\n
 
-`playlist_id` _Required_: The Spotify ID of the playlist. Any playlist can be followed regardless of it's private/public status, as long as the ID is known.\n 
+`playlist_id` _Required_: The Spotify ID of the playlist. Any playlist can be followed regardless of it's private/public status, as long as the ID is known.\n
 
 [Reference](https://developer.spotify.com/documentation/web-api/reference/follow/unfollow-playlist/)
 """ ->

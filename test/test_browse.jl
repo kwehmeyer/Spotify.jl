@@ -2,11 +2,15 @@
 
 using Spotify.Browse
 
-@testset verbose = true "GET-request endpoints for browse categories" begin
 
+#category_get_multiple(;country::String="US", locale::String="en", limit::Int64=20, offset::Int64=0)
+
+
+
+
+@testset verbose = true "GET-request endpoints for browse categories" begin
     # Input arguments from composite types defined in src/types.jl
     category_id = SpCategoryId()
-
     # Cycle through different input keywords for testing
     countries = ["US", "NL", "DE"]
     offsets = [14, 42]

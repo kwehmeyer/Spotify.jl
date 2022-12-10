@@ -23,7 +23,7 @@
 
     @test shortp(spcategoryid)[1] == '\e'
     @test longp(spcategoryid)[1] == '\e'
-    @test shortp_bw(spcategoryid)[1] == 'p'
+    @test shortp_bw(spcategoryid)[1] == '0'
     @test longp_bw(spcategoryid)[1] == '"'
 
     @test shortp(spuserid)[1] == '\e'

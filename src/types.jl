@@ -46,7 +46,7 @@ SpId() = SpId("6rqhFgbbKwnb9MLmUQDhG6")
 mutable struct SpCategoryId
     s::String
 end
-SpCategoryId() = SpCategoryId("party")
+SpCategoryId() = SpCategoryId("0JQ5DAqbMKFAXlCG6QvYQ4")
 
 mutable struct SpUserId
     s::String

@@ -10,7 +10,7 @@
     user_id = SpUserId()
 
     # Get current user's profile 
-    @test ~isempty(Spotify.user_get_current_profile()[1])
+    @test ~isempty(Spotify.users_get_current_profile()[1])
     
     # Get user's top items
     # Currently shows 403 error, implemented in personalization.jl
@@ -20,7 +20,7 @@
     @test_broken ~isempty(Spotify.top_artists()[1])
 
     # Get user's profile
-    @test ~isempty(Spotify.user_get_profile(user_id)[1])
+    @test ~isempty(Spotify.users_get_profile(user_id)[1])
 
     # Get followed artists for current user
     @test ~isempty(Spotify.follow_artists()[1])

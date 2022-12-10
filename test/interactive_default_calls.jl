@@ -1,22 +1,40 @@
 using REPL.TerminalMenus
+using Spotify
 !endswith(pwd(), "test") && cd("test")
+
+# TODO: Make this dictionary automatically.
+const function_arguments_dic = include("interactive_default_calls.jl")
+
+"Return string description, sans line break"
+macro l(var)
+    if var isa Symbol
+        name = string(Symbol(var))
+        :($name * " : " * replace(string(@doc $var) , "\n" => ""))
+    else
+       :("Call @l with a single variable name: @l(x).")
+    end
+end
+
+
+
 include("generalize_calls.jl")
+is_loaded(s::Symbol) = isdefined(Main, s)
+function sub_modules_to_Spotify()
+    allsymbs = names(Spotify, all = false)
+    filter(allsymbs) do s
+        s !== :Spotify && Spotify.eval(s) isa Module
+    end
+end
+function function_symbols_in_submodule(s::Symbol)
+    m = Spotify.eval(s)
+    @assert m isa Module
+    filter(n-> n !== s,  names(m, all = false))
+end
 
-is_loaded(foo) = isdefined(Main, foo)
 
-# This menu needs to be updated quite manually, together with 
-# verb_vec.jl and 'export_structure.jl. It would
-# be nice if we could easily read which methods are loaded,
-# but that would require some elaborate Core.eval...
-# This 'problem' goes away when the list is complete!
 function pick_modules(;verb_vec = verb_vec)
-    !isdefined(Main, :Spotify) && return "-> using Spotify"
-    submods = [:Albums, :Artists, :Browse, :Episodes, 
-        :Follow, :Library, #:Markets,# 
-        :Personalization, #:Player, :Playlists, #:Search,
-        :Shows, :Tracks #, :UsersProfile, :Objects
-    ]
-
+    !is_loaded(:Spotify) && return "-> using Spotify"
+    submods = sub_modules_to_Spotify()
     foodi = Dict{Int, UnitRange}(
             1 => 1:2,
             2 => 3:6,

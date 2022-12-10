@@ -2,6 +2,12 @@ using Spotify
 using Spotify.JSON3
 using Dates: now
 !endswith(pwd(), "test") && cd("test")
+
+
+include("interactive_default_calls.jl")
+
+
+
 """
 - 1-2   Albums 
 - 3-6   Artists  

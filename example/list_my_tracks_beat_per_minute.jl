@@ -44,9 +44,4 @@ function listallmine()
     end
 end
 
-
-if !Spotify.has_ig_access_token()
-    Spotify.get_implicit_grant()
-    Spotify.wait_for_ig_access()
-end
 listallmine()

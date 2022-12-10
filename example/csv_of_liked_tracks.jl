@@ -17,7 +17,7 @@ using DataFrames
 ## Get tracks loop
 
 function define_df()
-    @info Defining the dataframe
+    @info "Defining the dataframe"
     temp = library_get_saved_tracks(1)[1]["items"][1]
     global tracks_df = DataFrame(;Dict(temp["track"])...)
     tracks_df["added_at"] = temp["added_at"]
@@ -27,19 +27,19 @@ end
 define_df()
 ##
 
-@warn "Attempting to retrieve the last 2,000 songs from Spotify \n This may take some time"
+@warn "Attempting to retrieve the last 2,000 liked songs from Spotify \n This may take some time"
 for batch = 0:20:2000
     println("Getting batch: ", batch/20)
     temp = library_get_saved_tracks(20,(batch+1))[1]["items"]
 
-    for i in 1:20
+    for i in 1:length(temp)
         temp2 = DataFrame(;Dict(temp[i]["track"])...)
         temp2["added_at"] = temp[i]["added_at"]
         println("Adding Track: ", temp[i]["track"]["name"])
         append!(tracks_df, temp2, cols=:union)
 
     end
-
+    length(temp) < 20 && break
     #sleep(rand(1:11))
 end
 
