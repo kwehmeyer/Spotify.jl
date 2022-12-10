@@ -22,8 +22,8 @@ We are excited to complete the project and see what people can create using `Spo
 Right now, 40 API functions have been written, roughly tested and organized by sub-modules as defined in Spotify's documentation:
 
 Albums, Artists, Browse, Episodes, Follow, Library
-Markets, Personalization, Player, Playlists, Search
-Shows, Tracks, UsersProfile, (Objects)
+Markets, Player, Playlists, Search, Shows, Tracks, Users
+
 Help wanted in adding the still-missing functions!
 
 Ouput from function calls is JSON3 objects, which can be readily manipulated in the REPL or in other packages.

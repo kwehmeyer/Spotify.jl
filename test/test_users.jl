@@ -1,34 +1,43 @@
 # Run tests on functions in:
 # src/by_reference_doc/users.jl
-# src/by_reference_doc/follow.jl
-# src/by_reference_doc/personalization.jl
-
+using Test, Spotify.Users
 @testset verbose = true "GET-request endpoints for users" begin
     
     # Input arguments from composite types defined in src/types.jl
     playlist_id = SpPlaylistId()
-    user_id = SpUserId()
+    user_id = get_user_name()
 
     # Get current user's profile 
-    @test ~isempty(Spotify.user_get_current_profile()[1])
+    @test ~isempty(users_get_current_profile()[1])
     
     # Get user's top items
-    # Currently shows 403 error, implemented in personalization.jl
-    # @test_broken - This will denote the test as Broken if the test continues to fail 
-    # and alerts the user via an Error if the test succeeds.
-    @test_broken ~isempty(Spotify.top_tracks()[1])
-    @test_broken ~isempty(Spotify.top_artists()[1])
+    @test ! isempty(users_get_current_user_top_items(type="artists")[1])
+    @test ! isempty(users_get_current_user_top_items(type="tracks")[1])
 
     # Get user's profile
-    @test ~isempty(Spotify.user_get_profile(user_id)[1])
+    @test ~isempty(users_get_profile(user_id)[1])
 
     # Get followed artists for current user
-    @test ~isempty(Spotify.follow_artists()[1])
+    @test ~isempty(users_get_follows()[1])
 
     # Check if current user follows a given artist
-    @test ~isempty(Spotify.follow_check("artist", "7fxBPUc2bTUgl7GLuqjajk")[1])
+    @test ~isempty(users_check_current_follows(["7fxBPUc2bTUgl7GLuqjajk"])[1])
 
+    # Check if current user follows a given user
+    @test ~isempty(users_check_current_follows("smedjan"; item_type = "user")[1])
+
+    @test ~isempty(users_check_current_follows("7fxBPUc2bTUgl7GLuqjajk")[1])
     # Check if given users follow a given playlist
-    @test ~isempty(Spotify.follow_check_playlist(playlist_id, user_id)[1])    
+    @test ~isempty(users_check_follows_playlist(playlist_id, user_id)[1])    
 
+end
+
+@testset verbose = true "PUT- and DELETE request endpoints for users" begin
+    playlist_id = SpPlaylistId("37i9dQZF1DX1rVvRgjX59F")
+    @test isempty(users_unfollow_playlist(playlist_id)[1])
+    @test isempty(users_follow_playlist(playlist_id)[1])
+
+    artist_ids = SpArtistId.(["2CIMQHirSU0MQqyYHq0eOx", "57dN52uHvrHOxijzpIgu3E", "1vCWHaC5f2uS3yhpwWbIA6"])
+    @test isempty(users_follow_artists_users(artist_ids)[1])
+    @test isempty(users_unfollow_artists_users(artist_ids)[1])
 end

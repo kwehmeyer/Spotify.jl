@@ -1,6 +1,6 @@
 # Run tests on functions in src/by_reference_doc/albums.jl
 
-using Spotify.Albums
+using Test, Spotify.Albums
 
 @testset verbose = true "GET-request endpoints for albums" begin
 
@@ -8,8 +8,8 @@ using Spotify.Albums
     album_id = SpAlbumId()
 
     # Cycle through different input keywords for testing
-    markets = ["US", "NL", "DE"]
-    offsets = [5, 18]
+    markets = ["US", "NL", "DE", ""]
+    offsets = [0, 5, 18]
 
     @testset "For market = $(market_id)" for market_id in markets
 
@@ -28,6 +28,6 @@ using Spotify.Albums
 
     end    
 
-    @test ~isempty(album_get_contains("$(album_id),5XgEM5g3xWEwL4Zr6UjoLo"))
+    @test ~isempty(album_get_contains(["$(album_id)","5XgEM5g3xWEwL4Zr6UjoLo"]))
 
 end

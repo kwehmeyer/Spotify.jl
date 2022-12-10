@@ -1,42 +1,48 @@
 """
     authorize()
+    -> Bool
 
 Get and store client credentials. Any other credentials will be dropped.
 """
 function authorize()
-    @info "Retrieving client credentials, which typically lasts 1 hour."
+    # This deletes .ig_access_token and ig_scopes.
+    # There may be a better way, so that we can keep the granted scopes.
+    @info "Negotiating client credentials, which typically last 1 hour." maxlog=1
     SPOTCRED[] = get_spotify_credentials()
     if string(SPOTCRED[]) != string(SpotifyCredentials())
-        @info "Expires at $(SPOTCRED[].expires_at). Access `spotcred()`, refresh with `refresh_spotify_credentials()`."
+        if credentials_still_valid()
+            msg = """Client credentials expire in $(expiring_in()).
+                           You can inspect with `Spotify.spotcred()`, `Spotify.expiring_in()`,
+                            or e.g. `Spotify.credentials_contain_scope("user-read-private")`
+                 """
+            @info msg
+            return true
+        else
+            @info "Client credentials are expired. When ready, `authorize()` again."
+            return false
+        end
     else
-        @info "When configured, `refresh_spotify_credentials()`."
-    end
-end
-function refresh_spotify_credentials()
-    SPOTCRED[] = get_spotify_credentials()
-    if string(SPOTCRED[]) != string(SpotifyCredentials())
-        @info "Expires at $(SPOTCRED[].expires_at)."
-    else
-        @info "When configured, `refresh_spotify_credentials()`."
+        @info "When configured, `authorize()` again."
+        return false
     end
 end
 
 function get_spotify_credentials()
     c = get_init_file_spotify_credentials()
     if string(c) == string(SpotifyCredentials())
+        # The ini file didn't contain what was needed.
         return c
     end
     j = get_authorization_token(c)
-    if isnothing(j)
-        return SpotifyCredentials()
+    if isempty(j)
+        # Warnings were issued, we assume here.
+        return c
     end
     c.access_token = j.access_token
     c.token_type = j.token_type
     c.expires_at = string(Dates.now() + Dates.Second(j.expires_in))
     c
 end
-
-
 
 function get_authorization_token(sc_tokenless::SpotifyCredentials)
     refreshtoken = sc_tokenless.encoded_credentials
@@ -48,10 +54,14 @@ function get_authorization_token(sc_tokenless::SpotifyCredentials)
     try
         resp = HTTP.post(AUTH_URL, headers, body)
     catch e
-        request = "HTTP.post call: AUTH_URL = $AUTH_URL\n  headers = $headers \n  body = $body"
-        @error request
-        @error e
-        return nothing
+        if e isa HTTP.Exceptions.ConnectError
+            @error "ConnectionError"
+        else
+            request = "HTTP.post call: AUTH_URL = $AUTH_URL\n  headers = $headers \n  body = $body"
+            @error request
+            @error e
+        end
+        return JSON3.Object()
     end
     response_body = resp.body |> String
     response_body |> JSON3.read
@@ -59,7 +69,7 @@ end
 
 function get_init_file_spotify_credentials()
     id, secret, redirect = get_id_secret_redirect()
-    if id == NOT_ACTUAL || secret == NOT_ACTUAL 
+    if id == NOT_ACTUAL || secret == NOT_ACTUAL
         @warn "User needs to configure $(_get_ini_fnam())"
         SpotifyCredentials()
     else
@@ -70,8 +80,6 @@ function get_init_file_spotify_credentials()
     end
 end
 
-
-
 "Get id and secret as 32-byte string, no encryption"
 function get_id_secret_redirect()
     container = read(Inifile(), _get_ini_fnam())
@@ -80,22 +88,15 @@ function get_id_secret_redirect()
     redirect = get(container, "Spotify developer's credentials", "REDIRECT_URI",  DEFAULT_REDIRECT_URI)
     id, secret, redirect
 end
-#=
-function get_working_browser_cmd()
-    container = read(Inifile(), _get_ini_fnam())
-    cmds = get(container, "Working browser command (auto filled in)", "CMD",  "")
-    @cmd cmds
-end
-=#
-#=
-function set_working_browser_cmd(cmd)
-    container = read(Inifile(), _get_ini_fnam())
-    set(container, "Working browser command (auto filled in)", "CMD",  string(cmd))
-end
-=#
+
 function get_user_name()
     container = read(Inifile(), _get_ini_fnam())
     get(container, "Spotify user id", "user_name",  "")
+end
+
+function get_user_country()
+    container = read(Inifile(), _get_ini_fnam())
+    get(container, "User's country code", "user_country",  "")
 end
 
 "Get an existing, readable ini file name, create it if necessary"
@@ -123,10 +124,7 @@ function _prepare_init_file_with_instructions(io)
     set(conta, "Spotify developer's credentials", "CLIENT_SECRET", NOT_ACTUAL)
     set(conta, "Spotify developer's credentials", "REDIRECT_URI", "http://127.0.0.1:8080")
     set(conta, "Spotify user id", "user_name", "Slartibartfast")
+    set(conta, "User's country code", "user_country", "US")
     write(io, conta)
 end
-
-
-client_credentials_still_valid() = now() < parse(DateTime, spotcred().expires_at)
-
 
