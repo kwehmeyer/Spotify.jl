@@ -2,7 +2,7 @@ export SpUri, SpId, SpCategoryId, SpUserId, SpUrl, SpPlaylistId, SpAlbumId,
        SpArtistId, SpShowId, SpEpisodeId
 """
 All web API arguments are strings, but types 
-`SpUri`, `SpId`, `CategoryId`, `SpUserId`, `SpUrl` 
+`SpUri`, `SpId`, `SpCategoryId`, `SpUserId`, `SpUrl` 
 aids in picking default values. [format](
 https://developer.spotify.com/documentation/web-api/#spotify-uris-and-ids)
 
@@ -33,7 +33,7 @@ SpUri, SpId, SpCategoryId, SpUserId, SpUrl, SpPlaylistId, SpAlbumId, SpArtistId,
 
 mutable struct SpUri
     s::String
-    SpUri(s) = isuri(s) ? new(s) : error("must be 'spotify:track:<base 62 string>")
+    SpUri(s) = isuri(s) ? new(s) : length(s) == 22 ? new("spotify:track:$s") : error("must be 'spotify:track:<base 62 string>")
 end
 SpUri() = SpUri("spotify:track:6rqhFgbbKwnb9MLmUQDhG6")
 

@@ -1,3 +1,4 @@
+# OBSOLETE, this is made automatically in src/utils/utilities.jl
 Dict{Symbol, Tuple}(
     :album_get =>                       (:album_id, :market),
     :album_get_tracks =>                (:album_id, :limit, :offset, :market) ,

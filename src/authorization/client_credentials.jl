@@ -51,9 +51,13 @@ function get_authorization_token(sc_tokenless::SpotifyCredentials)
     try
         resp = HTTP.post(AUTH_URL, headers, body)
     catch e
-        request = "HTTP.post call: AUTH_URL = $AUTH_URL\n  headers = $headers \n  body = $body"
-        @error request
-        @error e
+        if e isa HTTP.Exceptions.ConnectError
+            @error "ConnectionError"
+        else
+            request = "HTTP.post call: AUTH_URL = $AUTH_URL\n  headers = $headers \n  body = $body"
+            @error request
+            @error e
+        end
         return nothing
     end
     response_body = resp.body |> String

@@ -1,7 +1,7 @@
 # Use the access token to access the Spotify Web API
 # https://developer.spotify.com/documentation/general/guides/authorization-guide/#client-credentials-flow
 
-const RESP_DIC = include("lookup_containers/response_codes_dic.jl")
+const RESP_DIC = include("lookup/response_codes_dic.jl")
 """
     spotify_request(url_ext::String, method::String= "GET"; 
                     scope = "client-credentials", additional_scope = "")
@@ -14,9 +14,12 @@ Errors are written to 'stderr', expect for 'API rate limit exceeded', as
 the output would typically occur in the middle of recursive calls.
 """
 function spotify_request(url_ext::String, method::String= "GET"; 
-    scope = "client-credentials", additional_scope = "", body = "")
+    scope = "client-credentials", additional_scope = "", body = "",
+    hide_authorization_field = true)
     if method == "POST"
-        @assert body != ""  
+        @assert body != ""
+    elseif method == "PUT" || method == "DELETE"
+        # Some requests include a body, some don't (or we don't really know what's expected)
     else
         @assert body == "" "No need to define body for other than a 'POST' request!"
     end
@@ -28,16 +31,16 @@ function spotify_request(url_ext::String, method::String= "GET";
     try
         if method == "GET"
             resp = HTTP.request(method, url, [authorizationfield])
-        elseif method == "POST"
+        elseif method == "POST" || method == "PUT" || method == "DELETE"
+            @assert method !== "DELETE" "Delete requests are currently out of order"
             resp = HTTP.request(method, url, [authorizationfield], body)
         else
             throw("unexpected method")
         end
-        printstyled("     ", method, " ", url, "\n", color=:light_black) # This was OK, so cluttering up the console perhaps.
-        printstyled("               authorization field: ", authorizationfield, "\n", color=:light_black)
-        printstyled("     scopes in current credentials: ", spotcred().ig_scopes, "\n", color=:light_black)
+        # This request was OK, so this feedback is included for transparency and review.
+        request_to_stdout(method, url, body, authorizationfield, hide_authorization_field, true)
     catch e
-        printstyled("     ", method, " ", url, "\n", color=:red) 
+        request_to_stdout(method, url, body, authorizationfield, hide_authorization_field, false)
         if  e isa HTTP.ExceptionRequest.StatusError && e.status ∈ keys(RESP_DIC) #[400, 401, 403, 404, 429]
             response_body = e.response.body |> String
             code_meaning = get(RESP_DIC, Int(e.status), "")
@@ -46,34 +49,72 @@ function spotify_request(url_ext::String, method::String= "GET";
                 response_message = response_object.error.message
                 msg = "$(e.status) (code meaning): $code_meaning \n\t\t(response message): $response_message"
             else
-                response_message = ""
                 msg = "$(e.status): $code_meaning"
             end
-            @warn msg
+            @info msg
             if e.status == 400  # e.g. when a search query is empty
                 return JSON3.Object(), 0
             elseif e.status == 403
-                printstyled("  This code may be triggered by insufficient authorization scope(s).\n Consider: `Spotify.apply_and_wait_for_implicit_grant()`", color=:red)
+                printstyled("  This code may be triggered by insufficient authorization scope(s).\n Consider: `apply_and_wait_for_implicit_grant()`", color=:red)
                 printstyled("  scope(s) required for this API call: ", scope, " ", additional_scope, "\n", color=:red)
                 printstyled("     scopes in current credentials: ", spotcred().ig_scopes, "\n", color=:red)
-                printstyled("               authorization field: ", authorizationfield, "\n", color=:red)
+                !hide_authorization_field && printstyled("               authorization field: ", authorizationfield, "\n", color=:red)
                 return JSON3.Object(), 0
             elseif e.status == 404 # Not found, e.g. when a track/playlist/album ID is incorrect
+                return JSON3.Object(), 0
+            elseif e.status == 405 
                 return JSON3.Object(), 0
             elseif e.status == 429 # API rate limit temporarily exceeded.
                 retry_in_seconds =  HTTP.header(e.response, "retry-after") 
                 return JSON3.Object(), parse(Int, retry_in_seconds)
             else # 401 probably
-                @info "Error code $e.status_ You should try to re-authenticate the user: \n\tSpotify.refresh_spotify_credentials()\n\tor\n\tSpotify.apply_and_wait_for_implicit_grant()  (this should retain previously granted scopes)"
+                @warn "Error code $e.status_ You should try to re-authenticate the user: \n\trefresh_spotify_credentials()\n\tor\n\tapply_and_wait_for_implicit_grant()  (this should retain previously granted scopes)"
                 return JSON3.Object(), 0
             end
         else
-            @warn "HTTP.request call (unexpected error): method = $method\n header with authorization field = $authorizationfield \n $url_ext"
-            @error e
-            @error response_body
+            msg = "HTTP.request call (unexpected error): method = $method\n header with authorization field = $authorizationfield \n $url_ext"
+            @warn msg
+            response_body = e.response.body |> String
+            code_meaning = "?"
+            msg = "$(e.status): $code_meaning"
+            @error msg
+            @error string(e)
             return JSON3.Object(), 0
         end
     end
     response_body = resp.body |> String
-    response_body |> JSON3.read , 0
+    if method == "PUT"
+        code_meaning = get(RESP_DIC, Int(resp.status), "")
+        msg = "$(resp.status): $code_meaning"
+        @info msg
+        return JSON3.Object(), 0
+    else
+        if resp.status == 204
+            # This may occur if, for example, user is not associated with the requested country 
+            # code, or if the state of a player is requested while no player app is active.
+            code_meaning = get(RESP_DIC, Int(resp.status), "")
+            msg = "$(resp.status): $code_meaning"
+            @info msg
+            return JSON3.Object(), 0
+        else
+            return JSON3.read(response_body), 0
+        end
+    end
+end
+
+function request_to_stdout(method, url, body, authorizationfield, hide_authorization_field, no_mistake)
+    if no_mistake
+        color = :light_black
+    else
+        color = :red
+    end
+    if body == ""
+        printstyled("     ", method, " ", url, "\n"; color)
+    else
+        printstyled("     ", method, " ", url, "   \\", body, "\n"; color)
+    end
+    # We want to be able to reuse console output for examples, so hide confidential output
+    # by default.
+    !hide_authorization_field && printstyled("               authorization field: ", authorizationfield, "\n"; color)
+    printstyled("     scopes in current credentials: ", spotcred().ig_scopes, "\n"; color)
 end

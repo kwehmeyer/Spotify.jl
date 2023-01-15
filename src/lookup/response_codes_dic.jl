@@ -10,6 +10,7 @@ Dict{Int, String}(
     401	=> "Unauthorized - The request requires user authentication or, if the request included authorization credentials, authorization has been refused for those credentials.",
     403	=> "Forbidden - The server understood the request, but is refusing to fulfill it.",
     404	=> "Not Found - The requested resource could not be found. This error can be due to a temporary or permanent condition.",
+    405	=> "Method Not Allowed",
     429	=> "Too Many Requests - Rate limiting has been applied.",
     500	=> "Internal Server Error. You should never receive this error because our clever coders catch them all … but if you are unlucky enough to get one, please report it to us through a comment at the bottom of this page.",
     502	=> "Bad Gateway - The server was acting as a gateway or proxy and received an invalid response from the upstream server.",

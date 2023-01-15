@@ -1,4 +1,4 @@
-const ALLSCOPES = include("../lookup_containers/all_scopes_vector.jl")
+const ALLSCOPES = include("../lookup/all_scopes_vector.jl")
 function credentials_contain_scope(single_scope::String)
     @assert single_scope ∈ ALLSCOPES || single_scope == ""  "Not valid scope: $single_scope."
     single_scope ∈ spotcred().ig_scopes || single_scope == ""
@@ -13,9 +13,14 @@ If 'scope' is outside current grant, apply to user / Spotify for more.
 function get_authorization_field(;scope="client-credentials", additional_scope = "")
     if !credentials_still_valid()
         if spotcred().client_id ==""
-            @warn "Client credentials missing.\n Try Spotify.authorize()!"
-        else   
-            @warn "Credentials expired at $(spotcred().expires_at).\n Try Spotify.refresh_spotify_credentials()!"
+            @warn "Client credentials missing.\n Try `authorize()`!"
+        else
+            msg = "Credentials expired at $(spotcred().expires_at).\n
+                You should try to re-authenticate the user:
+                \trefresh_spotify_credentials()
+                \tor
+                \tapply_and_wait_for_implicit_grant()  (this should retain previously granted scopes)"
+            @warn msg
         end
     end
     if scope == "client-credentials"

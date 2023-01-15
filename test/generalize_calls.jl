@@ -26,7 +26,7 @@ include("interactive_default_calls.jl")
 """
 verb_vec = include("verb_vec.jl")
 tuples_vec = include("parameter_tuples_vec.jl")
-param_dic = include("parameter_default_dic.jl")
+param_dic = include("../src/lookup/paramname_default_dic.jl")
 get_defaults_tuple(tu) = map(x -> param_dic[x], tu)
 get_defaults_tuple(tu::Symbol) = (param_dic[tu],)
 

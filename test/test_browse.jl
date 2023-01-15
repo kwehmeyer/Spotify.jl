@@ -3,7 +3,7 @@
 using Spotify.Browse
 
 
-#category_get_multiple(;country::String="US", locale::String="en", limit::Int64=20, offset::Int64=0)
+#category_get_multiple(;country="", locale::String="en", limit=20, offset::Int64=0)
 
 
 

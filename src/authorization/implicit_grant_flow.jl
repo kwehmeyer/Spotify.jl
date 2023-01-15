@@ -96,7 +96,10 @@ function launch_async_single_grant_receiving_server()
     stored = spotcred().redirect   # "http://127.0.0.1:8080/api", String
     stripped = strip(stored, '/')  # "http://127.0.0.1:8080/api", SubString{String}
     u = parse(URI, stripped)       # URI("http://127.0.0.1:8080/api")
-    @assert length(stored) > 0 "Something went wrong, missing redirect URI in spotcred()."
+    if length(stored) == 0 
+        @error "Something went wrong, missing redirect URI in spotcred()."
+        return (@async(nothing), @async(nothing))
+    end
     host() = parse(IPAddr, u.host)
     port() = parse(Int, u.port)
     path() = u.path
@@ -135,7 +138,7 @@ function launch_a_browser_that_asks_for_implicit_grant(;scopes::Vector{String} =
             "&show_dialog=true" *
             "&response_type=token" *
             "&state=987"
-    println("\tLaunching a browser at: $uri\n")
+    println("\tLaunching a browser at: $(string(uri)[1:49])...\n")
 
     # Try opening a browser window based on OS type
     if Sys.isapple()
@@ -169,17 +172,19 @@ function apply_and_wait_for_implicit_grant(;scopes::Vector{String} = DEFAULT_IMP
     # These tasks are stored for potential inspection during debugging.
     listen_task, close_server_when_ready_task = launch_async_single_grant_receiving_server()
     yield() # Let those async tasks get going
-    launch_a_browser_that_asks_for_implicit_grant()
-    yield() # Let that external process get going
-    wait_for_ig_access()
-    if credentials_still_valid() && has_ig_access_token()
-        # 'receive_grant_as_request' did receive a coded token,
-        # but that function did not know what the grant was for,
-        # namely 'scopes'. But we know, and now store that info.
-        spotcred().ig_scopes = scopes
-        @info "Successfully retrieved grant of these scopes: $scopes"
-    else
-        @warn "We were not granted these scopes: $scopes"
+    if !istaskdone(listen_task) && !istaskdone(close_server_when_ready_task)
+        launch_a_browser_that_asks_for_implicit_grant()
+        yield() # Let that external process get going
+        wait_for_ig_access()
+        if credentials_still_valid() && has_ig_access_token()
+            # 'receive_grant_as_request' did receive a coded token,
+            # but that function did not know what the grant was for,
+            # namely 'scopes'. But we know, and now store that info.
+            spotcred().ig_scopes = scopes
+            @info "Successfully retrieved grant of these scopes: $scopes"
+        else
+            @warn "We were not granted these scopes: $scopes"
+        end
     end
     listen_task, close_server_when_ready_task
 end

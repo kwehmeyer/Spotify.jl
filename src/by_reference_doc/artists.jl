@@ -10,7 +10,7 @@
 
 # Example
 ```julia-repl
-julia> Spotify.artist_get("0YC192cP3KPCRWx8zr8MfZ")[1]
+julia> artist_get("0YC192cP3KPCRWx8zr8MfZ")[1]
 JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 10 entries:
   :external_urls => {…
   :followers     => {…
@@ -48,7 +48,7 @@ end
 
 # Example
 ```julia-repl
-julia> Spotify.artist_get_albums("0YC192cP3KPCRWx8zr8MfZ")[1]
+julia> artist_get_albums("0YC192cP3KPCRWx8zr8MfZ")[1]
 JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 10 entries:
   :external_urls => {…
   :followers     => {…
@@ -82,7 +82,7 @@ end
 
 # Example
 ```julia-repl
-julia> Spotify.artist_top_tracks("0YC192cP3KPCRWx8zr8MfZ")[1]
+julia> artist_top_tracks("0YC192cP3KPCRWx8zr8MfZ")[1]
 JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
   :tracks => JSON3.Object[{…
 ```
@@ -104,7 +104,7 @@ artist_get_related_artists(artist_id)
 
 # Example
 ```julia-repl
-julia> Spotify.artist_get_related_artists("0YC192cP3KPCRWx8zr8MfZ")[1]
+julia> artist_get_related_artists("0YC192cP3KPCRWx8zr8MfZ")[1]
 JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
 :artists => JSON3.Object[{…
 ```

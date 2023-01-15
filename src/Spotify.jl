@@ -18,8 +18,12 @@ import Dates
 import Base64
 using Base64: base64encode
 using Parameters: @with_kw
+using REPL.TerminalMenus
 import Base: show, show_vector, typeinfo_implicit
-export authorize, strip_embed_code
+export authorize, refresh_spotify_credentials, apply_and_wait_for_implicit_grant
+export select_calls, strip_embed_code
+export SpUri, SpId, SpCategoryId, SpUserId, SpUrl, SpPlaylistId, SpAlbumId
+export SpArtistId, SpShowId, SpEpisodeId
 "For the client credentials flow"
 const AUTH_URL = "https://accounts.spotify.com/api/token"
 "For the 'Implicit grant flow'"
@@ -75,6 +79,7 @@ include("authorization/access_local_credentials.jl")
 
 # Util
 include("util/utilities.jl")
+include("util/lenient_conversion_to_string.jl")
 
 #https://developer.spotify.com/documentation/web-api/reference/#/
 

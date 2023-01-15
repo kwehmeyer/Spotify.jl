@@ -1,3 +1,4 @@
+# OBSOLETE, these are keys in a dictionary, automatically made in src/utils/utilities.jl
 [
 (:album_id, :market)
 (:album_id, :limit, :offset, :market)

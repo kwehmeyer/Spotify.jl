@@ -1,3 +1,4 @@
+# OBSOLETE, these are keys in a dictionary, automatically made in src/utils/utilities.jl
 [
 #= 1-2 Albums 2 functions =#
 :album_get,  :album_get_tracks,

@@ -40,7 +40,8 @@ For repetitive debugging, the quickest syntax is (this function uses the low-lev
 For more detail on setting up your credentials and getting keys please checkout [this page in the documentation](https://kwehmeyer.github.io/Spotify.jl/dev/authentication.html#Obtaining-API-Keys).
 
 ```julia
-julia> Spotify.tracks_get_audio_features("5gZ5YB5SryZdM0GV7mXzDJ")
+julia> using Spotify, Spotify.Tracks
+julia> tracks_get_audio_features("5gZ5YB5SryZdM0GV7mXzDJ")
 ({
        "danceability": 0.636,
              "energy": 0.699,
