@@ -28,6 +28,11 @@ function urlstring(s)
     "$s"
 end
 
+"""
+    delimit(xs::Vararg{String,N} where N)
+
+Includes separators if needed, for urlstrings.
+"""
 function delimit(xs::Vararg{String,N} where N)
     sf = first(xs)
     if sf == ""

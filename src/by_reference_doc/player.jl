@@ -73,7 +73,7 @@ end
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-the-users-currently-playing-track
 
 """
-    player_get_current_track(;additional_types::String="track", market="")
+    player_get_current_track(;additional_types="track", market="")
 
 **Summary**: Get the object currently being played on the user's Spotify account.
 
@@ -96,12 +96,12 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
   :is_playing             => true
 ```
 """
-function player_get_current_track(;additional_types::String="track", market="")
+function player_get_current_track(;additional_types="track", market="")
 
-    url = "me/player/currently-playing?additional_types=$additional_types&market=$market"
-
+    u = "me/player/currently-playing"
+    a = urlstring(;additional_types, market)
+    url = delimit(u, a)
     spotify_request(url; scope = "user-read-playback-state")
-
 end
 
 
@@ -128,15 +128,13 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 5 entries:
 ```
 """
 function player_get_recent_tracks(;duration::Int64=1, limit=20)
-
+    u = "me/player/recently-played"
     # Subtract duration from current date and convert to Int64
     starting_date = Dates.datetime2unix(Dates.now() - Dates.Day(duration))
     after = round(Int64, starting_date)
-
-    url = "me/player/recently-played?after=$after&limit=$limit"
-
+    a = urlstring(;after, limit)
+    url = delimit(u, a)
     spotify_request(url; scope = "user-read-recently-played")
-
 end
 
 
@@ -150,8 +148,7 @@ end
 - `device_id`     The id of the device this command is targeting. If not supplied, the user's currently active device is the target. Example value:
 "0d1841b0976bae2a3a310dd74c0f3df354899bc8"
 - `context_uri`   Spotify URI of the context to play. Valid contexts are albums, artists & playlists. {context_uri:"spotify:album:1Je1IMUlBXcx1Fz0WE7oPT"}
-- `uris`          Array of strings. A JSON array of the Spotify track URIs to play. 
-                  For example: {"uris": ["spotify:track:4iV5W9uYEdYUVa79Axb7Rh", "spotify:track:1301WleyT98MSxVHPZCA6M"]}
+- `uris`          Array of strings. This is formed to JSON locally.
 - `offset`        Indicates from where in the context playback should start. Only available when context_uri corresponds to an album or playlist object 
     "position" is zero based and can’t be negative. Example: "offset": {"position": 5} "uri" is a string representing the uri of the item to start at. 
                   Example: "offset": {"uri": "spotify:track:1301WleyT98MSxVHPZCA6M"}
@@ -160,7 +157,7 @@ end
 # Examples
 
 ```julia-repl
-julia> player_resume_playback(uris= "[\"spotify:track:4iV5W9uYEdYUVa79Axb7Rh\", \"spotify:track:1301WleyT98MSxVHPZCA6M\"]")
+julia> player_resume_playback(uris= [\"spotify:track:4iV5W9uYEdYUVa79Axb7Rh\", \"spotify:track:1301WleyT98MSxVHPZCA6M\"])
 ```
 ... which is equivalent to this more formal input style:
 
@@ -169,7 +166,7 @@ julia> sids = ["4iV5W9uYEdYUVa79Axb7Rh", "1301WleyT98MSxVHPZCA6M"];
 
 julia> uris = SpUri.(sids);
 
-julia> player_resume_playback(; uris))
+julia> player_resume_playback(; uris)
     PUT https://api.spotify.com/v1/me/player/play/?   \\{"uris": ["spotify:track:4iV5W9uYEdYUVa79Axb7Rh", "spotify:track:1301WleyT98MSxVHPZCA6M"]}
     scopes in current credentials: ["user-read-private", "user-read-email", "user-follow-read", "user-library-read", "user-read-playback-state", "user-read-recently-played", "user-top-read", "user-modify-playback-state"]
 [ Info: 204: No Content - The request has succeeded but returns no message body.
@@ -183,8 +180,42 @@ player_resume_playback(; uris = [SpUri("2knANHszLdV409tIWivfVR")])
 ```
 """
 function player_resume_playback(;device_id="", context_uri="", uris="", offset=0, position_ms=0)
-    url = "me/player/play/"
-    url *= urlstring(;device_id)
+    u = "me/player/play"
+    a = urlstring(;device_id)
+    url = delimit(u, a)
     body = bodystring(;context_uri, uris, offset, position_ms)
     spotify_request(url, "PUT"; body, scope= "user-modify-playback-state")
+end
+
+#https://developer.spotify.com/documentation/web-api/reference/#/operations/skip-users-playback-to-next-track
+"""
+    player_skip_to_next(;device_id = "")
+
+**Summary**: Skips to next track in the user’s queue.
+
+- device_id    The id of the device this command is targeting. If not supplied, the user's currently active device is the target.
+"""
+function player_skip_to_next(;device_id = "")
+    u = "me/player/next"
+    a = urlstring(;device_id)
+    url = delimit(u, a)
+    body = bodystring(;)
+    spotify_request(url, "POST"; body, scope = "user-modify-playback-state")
+end
+
+
+# https://developer.spotify.com/documentation/web-api/reference/#/operations/skip-users-playback-to-previous-track
+"""
+    player_skip_to_previous(;device_id = "")
+
+**Summary**: Skips to previous track in the user’s queue.
+
+- device_id    The id of the device this command is targeting. If not supplied, the user's currently active device is the target.
+"""
+function player_skip_to_previous(;device_id = "")
+    u = "me/player/previous"
+    a = urlstring(;device_id)
+    url = delimit(u, a)
+    body = bodystring(;)
+    spotify_request(url, "POST"; body, scope = "user-modify-playback-state")
 end

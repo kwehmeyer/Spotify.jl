@@ -25,7 +25,7 @@ function receive_grant_as_request(req::HTTP.Request)
                 c.expires_at = string(Dates.now() + Dates.Second(expi_in))
                 SPOTCRED[] = c
                 # Console feedback also in 'wait_for_ig_access'
-                msg = """Token type 'bearer' received from browser through request uri and stored. This is an implicit grant!\n
+                msg = """Token type 'bearer' received from browser through request uri and stored. This is an implicit grant.\n
                        You can access the current credentials with `Spotify.spotcred()`, `Spotify.expiring_in()`,\n
                        or e.g. `Spotify.credentials_contain_scope("user-read-private")`
 
@@ -129,6 +129,7 @@ end
 Called by `apply_and_wait_for_implicit_grant`.
 
 Launch an available browser with an uri that contains the scope we are looking for. Exit at once.
+
 """
 function launch_a_browser_that_asks_for_implicit_grant(;scopes::Vector{String} = DEFAULT_IMPLICIT_GRANT)
     uri = OAUTH_AUTHORIZE_URL * "?" *
@@ -164,7 +165,7 @@ end
 """
     apply_and_wait_for_implicit_grant(;scopes::Vector{String} = DEFAULT_IMPLICIT_GRANT)
 
-1) Start the negotions for an extended scope!
+1) Start the negotiations for an extended scope!
 2) Wait for it!
 The result shows up in console, and in the stored credentials.
 """
@@ -173,17 +174,20 @@ function apply_and_wait_for_implicit_grant(;scopes::Vector{String} = DEFAULT_IMP
     listen_task, close_server_when_ready_task = launch_async_single_grant_receiving_server()
     yield() # Let those async tasks get going
     if !istaskdone(listen_task) && !istaskdone(close_server_when_ready_task)
-        launch_a_browser_that_asks_for_implicit_grant()
+        # We want to include any previously granted scopes.
+        existing =  spotcred().ig_scopes
+        scopelist = union(existing, scopes)
+        launch_a_browser_that_asks_for_implicit_grant(;scopes = scopelist)
         yield() # Let that external process get going
         wait_for_ig_access()
         if credentials_still_valid() && has_ig_access_token()
             # 'receive_grant_as_request' did receive a coded token,
             # but that function did not know what the grant was for,
             # namely 'scopes'. But we know, and now store that info.
-            spotcred().ig_scopes = scopes
-            @info "Successfully retrieved grant of these scopes: $scopes"
+            spotcred().ig_scopes = scopelist
+            @info "Successfully retrieved grant of these scopes: $scopelist"
         else
-            @warn "We were not granted these scopes: $scopes"
+            @warn "We were not granted these scopes: $scopelist"
         end
     end
     listen_task, close_server_when_ready_task

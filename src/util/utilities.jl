@@ -8,6 +8,12 @@ Spotify app -> Right click -> Share -> Copy embed code to clipboard
 """
 strip_embed_code(s) = SpId(match(r"\b[a-zA-Z0-9]{22}", s).match)
 
+
+
+
+# The below is about the select_calls()
+# functionality.
+
 "Sub-modules of Spotify, included ones that are not loaded"
 function module_symbols()
     allsymbs = names(Spotify, all = false)
@@ -27,6 +33,7 @@ function function_symbols_in_module(ms::Vector{Symbol})
     end
     fs
 end
+
 
 """
    is_function_loaded(foo::Symbol)
@@ -197,16 +204,27 @@ end
 
 function make_default_calls_and_print(fs::Vector{Symbol})
     names_by_func =  argumentnames_by_function_dic()
+    result = (JSON3.Object(), 0)
     for f in fs
         argnames = get(names_by_func, f, ())
         argvals = default_values(argnames)
         fexpr = Expr(:call, f, argvals...)
         printstyled(stdout, "```julia-repl\n", color=:blue)
         print_as_console_input(stdout, fexpr)
-        resu = Main.eval(fexpr)[1]
-        display(resu)
+        result = Main.eval(fexpr)
+        display(result[1])
+        if result[2] > 0
+            println("Retry in $(result[2])")
+        end
         printstyled("```\n", color=:blue)
         println("---------------------")
+    end
+    if length(fs) == 1
+        println("Just one call was made; returning result.")
+        return result[1]
+    else
+        println("Several calls made. The text syntax and result from each call was printed for copy / paste.")
+        return nothing
     end
 end
 
@@ -217,7 +235,7 @@ Open an interactive menu in the console. User picks modules, then functions
 in those. Calls are made with default arguments, defined in 
 `src/lookup/paramname_default_dic`.
 
-Console output is formatted for pasting  -into inline documentation.
+Console output is formatted for pasting  into inline documentation.
 """
 function select_calls()
     fs = select_functions()

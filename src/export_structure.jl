@@ -49,6 +49,8 @@
     @_ie player_get_recent_tracks
     @_ie player_get_state
     @_ie player_resume_playback
+    @_ie player_skip_to_next
+    @_ie player_skip_to_previous
     @_ie playlist_add_tracks_to_playlist
     @_ie playlist_create_playlist
     @_ie playlist_get
@@ -204,6 +206,8 @@ baremodule Player
     @_ie player_get_recent_tracks
     @_ie player_get_state
     @_ie player_resume_playback
+    @_ie player_skip_to_next
+    @_ie player_skip_to_previous
 end
 export Player
 

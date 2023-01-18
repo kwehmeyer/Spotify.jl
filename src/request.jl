@@ -15,11 +15,10 @@ the output would typically occur in the middle of recursive calls.
 """
 function spotify_request(url_ext::String, method::String= "GET"; 
     scope = "client-credentials", additional_scope = "", body = "",
-    hide_authorization_field = true)
-    if method == "POST"
-        @assert body != ""
-    elseif method == "PUT" || method == "DELETE"
-        # Some requests include a body, some don't (or we don't really know what's expected)
+    log_authorization_field = LOG_authorization_field[],
+    log_request_string = LOG_request_string[])
+    if method == "PUT" || method == "DELETE" || method == "POST"
+        # Some requests include a body, some don't!
     else
         @assert body == "" "No need to define body for other than a 'POST' request!"
     end
@@ -38,9 +37,9 @@ function spotify_request(url_ext::String, method::String= "GET";
             throw("unexpected method")
         end
         # This request was OK, so this feedback is included for transparency and review.
-        request_to_stdout(method, url, body, authorizationfield, hide_authorization_field, true)
+        request_to_stdout(method, url, body, authorizationfield, log_request_string, log_authorization_field, true)
     catch e
-        request_to_stdout(method, url, body, authorizationfield, hide_authorization_field, false)
+        request_to_stdout(method, url, body, authorizationfield, log_request_string, log_authorization_field, false)
         if  e isa HTTP.ExceptionRequest.StatusError && e.status ∈ keys(RESP_DIC) #[400, 401, 403, 404, 429]
             response_body = e.response.body |> String
             code_meaning = get(RESP_DIC, Int(e.status), "")
@@ -58,7 +57,7 @@ function spotify_request(url_ext::String, method::String= "GET";
                 printstyled("  This code may be triggered by insufficient authorization scope(s).\n Consider: `apply_and_wait_for_implicit_grant()`", color=:red)
                 printstyled("  scope(s) required for this API call: ", scope, " ", additional_scope, "\n", color=:red)
                 printstyled("     scopes in current credentials: ", spotcred().ig_scopes, "\n", color=:red)
-                !hide_authorization_field && printstyled("               authorization field: ", authorizationfield, "\n", color=:red)
+                log_authorization_field && printstyled("               authorization field: ", authorizationfield, "\n", color=:red)
                 return JSON3.Object(), 0
             elseif e.status == 404 # Not found, e.g. when a track/playlist/album ID is incorrect
                 return JSON3.Object(), 0
@@ -102,19 +101,20 @@ function spotify_request(url_ext::String, method::String= "GET";
     end
 end
 
-function request_to_stdout(method, url, body, authorizationfield, hide_authorization_field, no_mistake)
+function request_to_stdout(method, url, body, authorizationfield, log_request_string, log_authorization_field, no_mistake)
     if no_mistake
         color = :light_black
     else
         color = :red
     end
-    if body == ""
-        printstyled("     ", method, " ", url, "\n"; color)
-    else
-        printstyled("     ", method, " ", url, "   \\", body, "\n"; color)
+    if log_request_string
+        if body == ""
+            printstyled("     ", method, " ", url, "\n"; color)
+        else
+            printstyled("     ", method, " ", url, "   \\", body, "\n"; color)
+        end
     end
-    # We want to be able to reuse console output for examples, so hide confidential output
-    # by default.
-    !hide_authorization_field && printstyled("               authorization field: ", authorizationfield, "\n"; color)
-    printstyled("     scopes in current credentials: ", spotcred().ig_scopes, "\n"; color)
+    # We want to be able to reuse console output for examples, so hiding confidential output is a choice:
+    log_authorization_field && printstyled("               authorization field: ", authorizationfield, "\n"; color)
+    log_authorization_field && printstyled("     scopes in current credentials: ", spotcred().ig_scopes, "\n"; color)
 end

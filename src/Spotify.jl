@@ -12,7 +12,12 @@ and the overlapping [console structure](https://developer.spotify.com/console/).
 
 """
 module Spotify
-
+# TODO:
+# 1. Change LOG flags to use the mutable structure. Add more fields.
+# 2. Replace code with interpolation methods in utils. Done in Player.
+# 3. Change function arguments to optional. Especially country codes. See Player.
+# 4. Refine DEFAULT_IMPLICIT_GRANT, check from fresh shart using select_calls()
+# 5. Possibly delete help text, refer to Spotify instead? OR update properly.
 using HTTP, Parameters, Dates, IniFile, HTTP, JSON3, URIs, Sockets
 import Dates
 import Base64
@@ -21,7 +26,7 @@ using Parameters: @with_kw
 using REPL.TerminalMenus
 import Base: show, show_vector, typeinfo_implicit
 export authorize, refresh_spotify_credentials, apply_and_wait_for_implicit_grant
-export select_calls, strip_embed_code
+export select_calls, strip_embed_code, LOG_authorization_field, LOG_request_string
 export SpUri, SpId, SpCategoryId, SpUserId, SpUrl, SpPlaylistId, SpAlbumId
 export SpArtistId, SpShowId, SpEpisodeId
 "For the client credentials flow"
@@ -32,6 +37,34 @@ const DEFAULT_REDIRECT_URI = "http://127.0.0.1:8080/api"
 const NOT_ACTUAL = "Paste_32_bytes_in_inifile"
 "A list of potentially available browsers, to be tried in succession if present"
 const BROWSERS = ["chrome", "firefox", "edge", "safari", "phantomjs"]
+
+# Mutable flags for logging TODO 
+mutable struct Logstate
+    autorization_field::Bool
+    request_string::Bool
+    empty_response::Bool
+end
+
+"""
+Global mutable flag for logging to REPL. Nice when 
+making inline docs. The global can be overruled with
+keyword arguments to `spotify_request`.
+
+To turn off this part of logging:
+    Spotify.LOG_authorization_field[] = false
+"""
+const LOG_authorization_field::Ref{Bool} = true
+
+"""
+Global mutable flag for logging to REPL. Nice when 
+debugging. The global can be overruled with
+keyword arguments to `spotify_request`.
+
+To turn on this part of logging:
+    Spotify.LOG_request_string[] = false
+"""
+const LOG_request_string::Ref{Bool} = false
+
 
 "Stored credentials"
 @with_kw mutable struct SpotifyCredentials
@@ -53,18 +86,20 @@ const SPOTCRED  = Ref{SpotifyCredentials}(SpotifyCredentials())
 spotcred() = SPOTCRED[]
 
 """
-These permissions are not requested until the current scope is
-insufficient, or the user calls 'apply_and_wait_for_implicit_grant()'
-
 Default requested permissions are 'client-credentials'.
+
+These permissions are not requested until the current scope is
+insufficient, or the user calls 'apply_and_wait_for_implicit_grant(;scopes)'
 """
 const DEFAULT_IMPLICIT_GRANT = ["user-read-private",
-                                "user-read-email",
-                                "user-follow-read",
-                                "user-library-read",
-                                "user-read-playback-state",
-                                "user-read-recently-played",
-                                "user-top-read"]
+                               "user-modify-playback-state",
+                               "user-read-playback-state"]#,
+                               # "user-read-email",
+                               # "user-follow-read",
+                               # "user-library-read",
+                               # "user-read-recently-played",
+                               # "user-top-read"]#,
+#                                ]
 
 # Every API call is made through this
 include("request.jl")
@@ -81,6 +116,7 @@ include("authorization/access_local_credentials.jl")
 include("util/utilities.jl")
 include("util/lenient_conversion_to_string.jl")
 
+# The below are structured by 'Docs' / 'Web api':
 #https://developer.spotify.com/documentation/web-api/reference/#/
 
 # Albums 
@@ -120,8 +156,8 @@ include("by_reference_doc/player.jl")
 include("by_reference_doc/markets.jl")
 
 
-# The below are not structured by reference
-
+# The below are structured by the 'Console' tab (beside 'Docs')
+# https://developer.spotify.com/console/
 # Browse
 include("by_console_doc/browse.jl")
 
