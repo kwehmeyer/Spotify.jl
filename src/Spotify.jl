@@ -13,11 +13,12 @@ and the overlapping [console structure](https://developer.spotify.com/console/).
 """
 module Spotify
 # TODO:
-# 1. Change LOG flags to use the mutable structure. Add more fields.
-# 2. Replace code with interpolation methods in utils. Done in Player.
+# 1. Add more fields to Logstate
+# 2. Replace code with 'urlstring', 'bodystring'. Done in Player.
 # 3. Change function arguments to optional. Especially country codes. See Player.
-# 4. Refine DEFAULT_IMPLICIT_GRANT, check from fresh shart using select_calls()
+# 4. Refine DEFAULT_IMPLICIT_GRANT, check from fresh start using select_calls()
 # 5. Possibly delete help text, refer to Spotify instead? OR update properly.
+# 6. Revisit the type system. Delete it, or decide on if it needs to contain prefixes.
 using HTTP, Parameters, Dates, IniFile, HTTP, JSON3, URIs, Sockets
 import Dates
 import Base64
@@ -26,7 +27,7 @@ using Parameters: @with_kw
 using REPL.TerminalMenus
 import Base: show, show_vector, typeinfo_implicit
 export authorize, refresh_spotify_credentials, apply_and_wait_for_implicit_grant
-export select_calls, strip_embed_code, LOG_authorization_field, LOG_request_string
+export select_calls, strip_embed_code, LOGSTATE
 export SpUri, SpId, SpCategoryId, SpUserId, SpUrl, SpPlaylistId, SpAlbumId
 export SpArtistId, SpShowId, SpEpisodeId
 "For the client credentials flow"
@@ -38,33 +39,19 @@ const NOT_ACTUAL = "Paste_32_bytes_in_inifile"
 "A list of potentially available browsers, to be tried in succession if present"
 const BROWSERS = ["chrome", "firefox", "edge", "safari", "phantomjs"]
 
-# Mutable flags for logging TODO 
 mutable struct Logstate
-    autorization_field::Bool
+    authorization::Bool
     request_string::Bool
     empty_response::Bool
 end
 
 """
-Global mutable flag for logging to REPL. Nice when 
-making inline docs. The global can be overruled with
-keyword arguments to `spotify_request`.
-
-To turn off this part of logging:
-    Spotify.LOG_authorization_field[] = false
+Mutable flags for logging to REPL. Nice when 
+making inline docs or new interfaces. 
+The global can be locally overruled with
+keyword argument to `spotify_request`.
 """
-const LOG_authorization_field::Ref{Bool} = true
-
-"""
-Global mutable flag for logging to REPL. Nice when 
-debugging. The global can be overruled with
-keyword arguments to `spotify_request`.
-
-To turn on this part of logging:
-    Spotify.LOG_request_string[] = false
-"""
-const LOG_request_string::Ref{Bool} = false
-
+const LOGSTATE = Logstate(true, true, false)
 
 "Stored credentials"
 @with_kw mutable struct SpotifyCredentials

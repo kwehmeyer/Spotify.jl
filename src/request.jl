@@ -15,8 +15,7 @@ the output would typically occur in the middle of recursive calls.
 """
 function spotify_request(url_ext::String, method::String= "GET"; 
     scope = "client-credentials", additional_scope = "", body = "",
-    log_authorization_field = LOG_authorization_field[],
-    log_request_string = LOG_request_string[])
+    logstate = LOGSTATE)
     if method == "PUT" || method == "DELETE" || method == "POST"
         # Some requests include a body, some don't!
     else
@@ -37,9 +36,9 @@ function spotify_request(url_ext::String, method::String= "GET";
             throw("unexpected method")
         end
         # This request was OK, so this feedback is included for transparency and review.
-        request_to_stdout(method, url, body, authorizationfield, log_request_string, log_authorization_field, true)
+        request_to_stdout(method, url, body, authorizationfield, logstate, true)
     catch e
-        request_to_stdout(method, url, body, authorizationfield, log_request_string, log_authorization_field, false)
+        request_to_stdout(method, url, body, authorizationfield, logstate, false)
         if  e isa HTTP.ExceptionRequest.StatusError && e.status ∈ keys(RESP_DIC) #[400, 401, 403, 404, 429]
             response_body = e.response.body |> String
             code_meaning = get(RESP_DIC, Int(e.status), "")
@@ -57,7 +56,7 @@ function spotify_request(url_ext::String, method::String= "GET";
                 printstyled("  This code may be triggered by insufficient authorization scope(s).\n Consider: `apply_and_wait_for_implicit_grant()`", color=:red)
                 printstyled("  scope(s) required for this API call: ", scope, " ", additional_scope, "\n", color=:red)
                 printstyled("     scopes in current credentials: ", spotcred().ig_scopes, "\n", color=:red)
-                log_authorization_field && printstyled("               authorization field: ", authorizationfield, "\n", color=:red)
+                logstate.authorization && printstyled("               authorization field: ", authorizationfield, "\n", color=:red)
                 return JSON3.Object(), 0
             elseif e.status == 404 # Not found, e.g. when a track/playlist/album ID is incorrect
                 return JSON3.Object(), 0
@@ -91,9 +90,11 @@ function spotify_request(url_ext::String, method::String= "GET";
         if resp.status == 204
             # This may occur if, for example, user is not associated with the requested country 
             # code, or if the state of a player is requested while no player app is active.
-            code_meaning = get(RESP_DIC, Int(resp.status), "")
-            msg = "$(resp.status): $code_meaning"
-            @info msg
+            if logstate.empty_response
+                code_meaning = get(RESP_DIC, Int(resp.status), "")
+                msg = "$(resp.status): $code_meaning"
+                @info msg
+            end
             return JSON3.Object(), 0
         else
             return JSON3.read(response_body), 0
@@ -101,13 +102,13 @@ function spotify_request(url_ext::String, method::String= "GET";
     end
 end
 
-function request_to_stdout(method, url, body, authorizationfield, log_request_string, log_authorization_field, no_mistake)
+function request_to_stdout(method, url, body, authorizationfield, logstate, no_mistake)
     if no_mistake
         color = :light_black
     else
         color = :red
     end
-    if log_request_string
+    if logstate.request_string
         if body == ""
             printstyled("     ", method, " ", url, "\n"; color)
         else
@@ -115,6 +116,8 @@ function request_to_stdout(method, url, body, authorizationfield, log_request_st
         end
     end
     # We want to be able to reuse console output for examples, so hiding confidential output is a choice:
-    log_authorization_field && printstyled("               authorization field: ", authorizationfield, "\n"; color)
-    log_authorization_field && printstyled("     scopes in current credentials: ", spotcred().ig_scopes, "\n"; color)
+    if logstate.authorization
+        printstyled("               authorization field: ", authorizationfield, "\n"; color)
+        printstyled("     scopes in current credentials: ", spotcred().ig_scopes, "\n"; color)
+    end
 end

@@ -9,53 +9,57 @@
 
 # We can't read single keystrokes without adding dependencies
 # so we'll just have to use 'Enter'.
-using Spotify, Spotify.Player
+using Spotify, Spotify.Player, Spotify.Playlists
 using Base: text_colors
 using REPL
 using REPL.LineEdit
 import JSON3
 @info "Turning off detailed REPL logging"
-LOG_request_string[] = false
-LOG_authorization_field[] = false
+LOGSTATE.authorization = false
+LOGSTATE.request_string = false
+LOGSTATE.empty_response = false
 
-
-
-function playffffffffnext()
-    p = player_get_devices()[1].devices[1]
-end
 function string_current_playing()
-    t = player_get_current_track()[1]
-    if t != JSON3.Object()
-        a = t.item.album.name
-        ars = t.item.artists
-        vs = [ar.name for ar in ars]
-        t.item.name * " \\ " * a * " \\ " * join(vs, " & ")
+    # If we call player_get_current_track() right
+    # after changing tracks, we might get the
+    # previous state.
+    # This otherwise useless call seems to
+    # make Spotify return the currently playing song.
+    st = player_get_state()[1]
+    if st != JSON3.Object()
+        t = player_get_current_track()[1]
+        if t != JSON3.Object()
+            a = t.item.album.name
+            ars = t.item.artists
+            vs = [ar.name for ar in ars]
+            t.item.name * " \\ " * a * " \\ " * join(vs, " & ")
+        else
+            "Not known"
+        end
     else
-        "Not known"
+        "Can't get state"
     end
 end
-#=
 
-@info strmenu
-while true
-    println(string_current_playing())
-    #c = String(readline(stdin))
-    c = read(stdin, Char)
-    throwaway = readavailable(stdin)
-    print(stdout, Base.text_colors[:magenta])
-    show(stdout, MIME("text/plain"), c)
-    print(stdout, Base.text_colors[:normal])
-    printstyled("->  ", color=:green)
-    if c == 'q'
-        println("HA")
-    end
-    c == 'q' && break
-    c == '\r' && break
-    c == '\f' && player_skip_to_next()
-    c == '\b' && player_skip_to_previous()
-
+function delete_current_from_own_playlist()
+        # If we call player_get_current_track() right
+    # after changing tracks, we might get the
+    # previous state.
+    # This otherwise useless call seems to
+    # make Spotify return the currently playing song.
+    st = player_get_state()[1]
+    t = player_get_current_track()[1]
+    t == JSON3.Object() && return false 
+    cont = t.context
+    cont.type !== "playlist" && return false
+    playlist_id = cont.uri[end - 21:end]
+    playlist_details = playlist_get(playlist_id)[1]
+    id = playlist_details.owner.id
+    id !== get_user_name() && return false
+    tracksinlist =  playlist_get_tracks(playlist_id)[1]
+    println(stdout, "TODO finish this")
+    nothing
 end
-=#
 
 # We'll make a new REPL interface mode for this,
 # based off the shell promt (shell mode would
@@ -102,47 +106,48 @@ miniprompt.prompt_prefix = text_colors[:green]
 
 # Respond to pressing enter after typing:
 function on_non_empty_enter(s)
-    println(stdout, "$s ignored. Backspace exits. Otherwise, use arrow keys for playing!")
+    #println(stdout, "  $s ignored.")
+    println(stdout, "  Backspace : exit "  )
+    println(stdout, "  'f' or '→' : skip forward")
+    println(stdout, "  'b' or '←' : skip back")
+    println(stdout, "  'delete' or 'fn+delete' on mac: delete from playlist (if currently playing from user")
     print(stdout, text_colors[:green])
     println(stdout, "  " * string_current_playing())
     print(stdout, text_colors[:normal])
     nothing
 end
-miniprompt.on_done = REPL.respond(on_non_empty_enter, repl, miniprompt)
+miniprompt.on_done = REPL.respond(on_non_empty_enter, repl, miniprompt; pass_empty = true)
 
-# We're going to wrap commands in this:
-
+# We're going to wrap commands in this.
 function wrap_command(state::REPL.LineEdit.MIState, repl::LineEditREPL, char::AbstractString)
-    # write character typed into line buffer
+    # This buffer contain other characters typed so far.
     iobuffer = LineEdit.buffer(state)
+    # write character typed into line buffer
     LineEdit.edit_insert(iobuffer, char)
-    c = char[1]
     # change color of recognized character.
-    if ! iscntrl(c)
-       printstyled(c, color=:green)
-    else
-        show(stdout, MIME("text/plain"), c)
-    end
-    if c == 'b'
+    c = char[1]
+    printstyled(stdout, char, color=:green)
+    #println(stdout)
+    if c == 'b' || char == "\e[D"
         player_skip_to_previous()
-    elseif c == 'f'
+    elseif c == 'f' || char == "\e[C"
         player_skip_to_next()
+    elseif char == "\e[3~"  || char == "\e\b"
+        delete_current_from_own_playlist()
     end
+    println(stdout, text_colors[:green])
+    println(stdout, "  " * string_current_playing())
+    println(stdout, text_colors[:normal])
 end
 
 
 # Single keystroke commands
 
-#miniprompt.keymap_dict['f'] = (args...) -> begin;print(stdout, 'f');player_skip_to_next();end
 miniprompt.keymap_dict['b'] = wrap_command
 miniprompt.keymap_dict['f'] = wrap_command
-
-#=
-using REPL.TerminalMenus
-mutable struct NoEnterMenu <: AbstractMenu
-    pagesize::Int
-    pageoffset::Int
-end
-
-REPL.TerminalMenus.keypress
-=#
+controlkeydict = miniprompt.keymap_dict['\e']
+arrowdict = controlkeydict['[']
+arrowdict['C'] = wrap_command
+arrowdict['D'] = wrap_command
+deletedict = arrowdict['3']
+deletedict['~'] =  wrap_command

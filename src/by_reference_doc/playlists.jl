@@ -42,8 +42,9 @@
 """
 function playlist_get(playlist_id; additional_types="track", fields="",
                       market="")
-    url = "playlists/$(playlist_id)"
-    url *= urlstring(;additional_types, fields, market)
+    u = "playlists/$(playlist_id)"
+    a  = urlstring(;additional_types, fields, market)
+    url = delimit(u, a)
     spotify_request(url)
 end
 
@@ -88,11 +89,10 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
 """
 function playlist_get_tracks(playlist_id; additional_types="track", fields="",
                              limit=20, offset=0, market="")
-    url = "playlists/$(playlist_id)/tracks"
-    url *= urlstring(;additional_types, fields, limit, offset)
-#    url1 = "playlists/$(playlist_id)/tracks?additional_types=$additional_types"
-#    url2 = "&fields=$fields&limit=$limit&offset=$offset&market=$market"
-    spotify_request(url)
+    u = "playlists/$(playlist_id)/tracks"
+    a = urlstring(;additional_types, fields, limit, offset, market)
+    url = delimit(u, a)
+    spotify_request(url; scope = "playlist-read-private")
 end
 
 
