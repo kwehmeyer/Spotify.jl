@@ -153,8 +153,25 @@ end
 # TODO playlist_reorder_or_replace_tracks()
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/reorder-or-replace-playlists-tracks
 
-# TODO playlist_remove_tracks()
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/remove-tracks-playlist
+
+"""
+    playlist_remove_playlist_item(playlist_id; track_uris)
+
+**Summary**: Remove one or more items from a user's playlist.
+
+# Arguments
+- `playlist_id` The Spotify ID of the playlist.
+- `track_uris`   A maximum of 100 items can be removed in one request.
+
+"""
+function playlist_remove_playlist_item(playlist_id; track_uris)
+    url = "playlists/$playlist_id/tracks"
+    body = bodystring(;uris = track_uris)
+    spotify_request(url, "DELETE"; body, scope= "playlist-modify-private")
+end
+
+
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-list-of-current-users-playlists
 """

@@ -30,7 +30,7 @@ function spotify_request(url_ext::String, method::String= "GET";
         if method == "GET"
             resp = HTTP.request(method, url, [authorizationfield])
         elseif method == "POST" || method == "PUT" || method == "DELETE"
-            @assert method !== "DELETE" "Delete requests are currently out of order"
+            #@assert method !== "DELETE" "Delete requests are currently out of order"
             resp = HTTP.request(method, url, [authorizationfield], body)
         else
             throw("unexpected method")

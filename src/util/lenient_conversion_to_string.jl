@@ -99,3 +99,7 @@ function bodystring(s::Bool)
     #println("9----------")
     "$s"
 end
+function bodystring(s::T) where T<:Number
+    #println("10----------")
+    "$s"
+end

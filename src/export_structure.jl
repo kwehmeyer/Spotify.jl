@@ -52,6 +52,7 @@
     @_ie player_skip_to_next
     @_ie player_skip_to_previous
     @_ie playlist_add_tracks_to_playlist
+    @_ie  playlist_remove_playlist_item
     @_ie playlist_create_playlist
     @_ie playlist_get
     @_ie playlist_get_category
@@ -214,6 +215,7 @@ export Player
 baremodule Playlists
     import ..@_ie
     @_ie playlist_add_tracks_to_playlist
+    @_ie  playlist_remove_playlist_item
     @_ie playlist_create_playlist
     @_ie playlist_get
     @_ie playlist_get_category

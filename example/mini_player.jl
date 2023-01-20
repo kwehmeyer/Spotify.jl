@@ -49,16 +49,54 @@ function delete_current_from_own_playlist()
     # make Spotify return the currently playing song.
     st = player_get_state()[1]
     t = player_get_current_track()[1]
-    t == JSON3.Object() && return false 
+    if t == JSON3.Object()
+        printstyled(stdout, "\n  Delete: Can't get currently playing track.\n", color=:red)
+        return false
+    end
+    scur = string_current_playing()
+    current_playing_id = t.item.id
+    current_playing_uri = t.item.uri
     cont = t.context
-    cont.type !== "playlist" && return false
+    if cont.type !== "playlist" 
+        printstyled(stdout, "\n  Can't delete " * scur * "\n  - Not currently playing from a playlist.\n", color=:red)
+        return false
+    end
     playlist_id = cont.uri[end - 21:end]
     playlist_details = playlist_get(playlist_id)[1]
-    id = playlist_details.owner.id
-    id !== get_user_name() && return false
+    if playlist_details == JSON3.Object()
+        printstyled(stdout, "\n  Delete: Can't get playlist details.\n", color=:red)
+        return false
+    end
+    plo_id = playlist_details.owner.id
+    user_id = Spotify.get_user_name()
+    pll_name = playlist_details.name
+    if plo_id !== String(user_id)
+        printstyled(stdout, "\n  Can't delete " * scur * "\n  - The playlist $pll_name is owned by $plo_id, not $user_id.\n", color=:red)
+        return false
+    end
     tracksinlist =  playlist_get_tracks(playlist_id)[1]
-    println(stdout, "TODO finish this")
-    nothing
+    current_is_in_playlist = false
+    i = 0
+    for (i, pll_item) in enumerate(tracksinlist.items)
+        if pll_item.track.id == current_playing_id
+            current_is_in_playlist = true
+            break
+        end
+    end
+    if current_is_in_playlist
+        printstyled(stdout, "Going to delete ... $current_playing_uri from $playlist_id \n", color = :yellow)
+        res = playlist_remove_playlist_item(playlist_id; track_uris = [current_playing_uri])[1]
+        if res == JSON3.Object()
+            printstyled(stdout, "\n  Could not delete " * scur * "\n  from $pll_name. \n  This is due to technical reasons.\n", color=:red)
+            return false
+        else
+            printstyled("The playlist's snapshot ID against which you deleted the track:\n  $(res.snapshot_id)", color = :green)
+            return true
+        end
+    else
+        printstyled(stdout, "\n  Can't delete " * scur * "\n  - Not part of current playlist $pll_name. Played too far?\n", color=:red)
+        return false
+    end
 end
 
 # We'll make a new REPL interface mode for this,
@@ -151,3 +189,4 @@ arrowdict['C'] = wrap_command
 arrowdict['D'] = wrap_command
 deletedict = arrowdict['3']
 deletedict['~'] =  wrap_command
+@info "Press ':' on an empty 'julia> ' promt to enter mini player"
