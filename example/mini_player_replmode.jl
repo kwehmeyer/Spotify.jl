@@ -7,16 +7,18 @@
 # https://erik-engheim.medium.com/exploring-julia-repl-internals-6b19667a7a62
 
 function print_menu()
-    printstyled(stdout, "↑ or (↵ + ⌫) ", color= :bold)
-    printstyled(stdout, ": Exit mode.", color = :light_black)
+    printstyled(stdout, "       ↑ or (↵ + ⌫)", color= :bold)
+    printstyled(stdout, ": exit mode.", color = :light_black)
     printstyled(stdout, "  f or → ", color= :bold)
     printstyled(stdout, ": forward.", color = :light_black)
     printstyled(stdout, "  b or ← ", color= :bold)
     printstyled(stdout, ": back.\n", color= :light_black)
-    printstyled(stdout, "       del or Fn + ⌫  ", color= :bold)
+    printstyled(stdout, "       del or Fn + ⌫ ", color= :bold)
     printstyled(stdout, ": delete from own playlist.", color = :light_black)
-    printstyled(stdout, " p  ", color= :bold)
-    printstyled(stdout, ": pause / unpause\n", color = :light_black)
+    printstyled(stdout, " p", color= :bold)
+    printstyled(stdout, ": pause / unpause.", color = :light_black)
+    printstyled(stdout, " l", color= :bold)
+    printstyled(stdout, ": playlist.\n", color = :light_black)
 end
 repl = Base.active_repl;
 shellprompt = repl.interface.modes[2]
@@ -39,7 +41,7 @@ function triggermini(state::LineEdit.MIState, repl::LineEditREPL, char::Abstract
                 prompt_state = LineEdit.state(state, miniprompt)
                 prompt_state.input_buffer = copy(iobuffer)
                 print_menu()
-                s = string_current_playing()
+                s = current_playing()
                 printstyled(stdout, "\n  " * s * '\n', color=:green)
             end
         end
@@ -62,7 +64,7 @@ miniprompt.prompt_prefix = text_colors[:green]
 function on_non_empty_enter(s)
     print_menu()
     print(stdout, text_colors[:green])
-    println(stdout, "  " * string_current_playing())
+    println(stdout, "  " * current_playing())
     print(stdout, text_colors[:normal])
     nothing
 end
@@ -77,18 +79,28 @@ function wrap_command(state::REPL.LineEdit.MIState, repl::LineEditREPL, char::Ab
     # change color of recognized character.
     c = char[1]
     printstyled(stdout, char, color=:green)
-    #println(stdout)
     if c == 'b' || char == "\e[D"
         player_skip_to_previous()
+            # If we call player_get_current_track() right
+            # after changing tracks, we might get the
+            # previous state.
+            # Ref. https://github.com/spotify/web-api/issues/821#issuecomment-381423071
+            sleep(1)
     elseif c == 'f' || char == "\e[C"
         player_skip_to_next()
+        # Ref. https://github.com/spotify/web-api/issues/821#issuecomment-381423071
+        sleep(1)
     elseif c == 'p'
         pause_unpause()
+    elseif c == 'l'
+        println(stdout, text_colors[:light_blue])
+        print(stdout, "  " * current_playlist())
+        println(stdout, text_colors[:normal])
     elseif char == "\e[3~"  || char == "\e\b"
         delete_current_from_own_playlist()
     end
     println(stdout, text_colors[:green])
-    println(stdout, "  " * string_current_playing())
+    print(stdout, "  " * current_playing())
     println(stdout, text_colors[:normal])
 end
 
@@ -98,6 +110,7 @@ let
     miniprompt.keymap_dict['b'] = wrap_command
     miniprompt.keymap_dict['f'] = wrap_command
     miniprompt.keymap_dict['p'] = wrap_command
+    miniprompt.keymap_dict['l'] = wrap_command
     # The structure is nested for special keystrokes.
     special_dict = miniprompt.keymap_dict['\e']
     very_special_dict = special_dict['[']

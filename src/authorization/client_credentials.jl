@@ -1,25 +1,29 @@
 """
     authorize()
+    -> Bool
 
 Get and store client credentials. Any other credentials will be dropped.
 """
 function authorize()
+        # This deletes .ig_access_token and ig_scopes.
+    # There may be a better way, so that we can keep the granted scopes.
     @info "Retrieving client credentials, which typically last 1 hour."
     SPOTCRED[] = get_spotify_credentials()
     if string(SPOTCRED[]) != string(SpotifyCredentials())
-        @info "Client credentials expire in $(expiring_in()). You can access it with `spotcred()`. When necessary, `refresh_spotify_credentials()`."
+        if credentials_still_valid()
+            msg = """Client credentials expire in $(expiring_in()).
+                           You can inspect with `Spotify.spotcred()`, `Spotify.expiring_in()`,
+                            or e.g. `Spotify.credentials_contain_scope("user-read-private")`
+                 """
+            @info msg
+            return true
+        else
+            @info "Client credentials are expired. When ready, `authorize()` again."
+            return false
+        end
     else
-        @info "When configured, `refresh_spotify_credentials()`."
-    end
-end
-function refresh_spotify_credentials()
-    # TODO this now deletes .ig_access_token and ig_scopes.
-    # Find out if we actually loose that access next time a grant expires.
-    SPOTCRED[] = get_spotify_credentials()
-    if string(SPOTCRED[]) != string(SpotifyCredentials())
-        @info "Expires in $(expiring_in())."
-    else
-        @info "When configured, `refresh_spotify_credentials()`."
+        @info "When configured, `authorize()` again."
+        return false
     end
 end
 
@@ -30,8 +34,9 @@ function get_spotify_credentials()
         return c
     end
     j = get_authorization_token(c)
-    if isnothing(j)
-        return SpotifyCredentials()
+    if j == JSON3.Object()
+        # Warnings were issued, we assume here.
+        return c
     end
     c.access_token = j.access_token
     c.token_type = j.token_type
@@ -58,7 +63,7 @@ function get_authorization_token(sc_tokenless::SpotifyCredentials)
             @error request
             @error e
         end
-        return nothing
+        return JSON3.Object()
     end
     response_body = resp.body |> String
     response_body |> JSON3.read

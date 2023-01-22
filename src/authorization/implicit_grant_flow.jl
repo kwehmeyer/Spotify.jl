@@ -73,7 +73,7 @@ function wait_for_ig_access(; stopwait::DateTime = now() + Dates.Second(20))
     if now() >= stopwait
         @info "Timeout access_grant_server, received grant too late."
     else
-        @info "Received implicit grant token expires in $(expiring_in())"
+        @info "Received implicit grant token expires in $(expiring_in())" maxlog=1
     end
 end
 
@@ -109,7 +109,7 @@ function launch_async_single_grant_receiving_server()
     spotcred().ig_access_token = ""
     close_server_when_ready_task = @async begin
         wait_for_ig_access()
-        @info "Closing server"
+        # @info "Closing server" # Redundant, said elsewhere.
         close(server[])
         "Server is closed, and this string can be inspected in this task's result field."
     end

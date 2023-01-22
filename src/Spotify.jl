@@ -26,7 +26,7 @@ using Base64: base64encode
 using Parameters: @with_kw
 using REPL.TerminalMenus
 import Base: show, show_vector, typeinfo_implicit
-export authorize, refresh_spotify_credentials, apply_and_wait_for_implicit_grant
+export authorize, apply_and_wait_for_implicit_grant
 export select_calls, strip_embed_code, LOGSTATE
 export SpUri, SpId, SpCategoryId, SpUserId, SpUrl, SpPlaylistId, SpAlbumId
 export SpArtistId, SpShowId, SpEpisodeId
@@ -80,13 +80,9 @@ insufficient, or the user calls 'apply_and_wait_for_implicit_grant(;scopes)'
 """
 const DEFAULT_IMPLICIT_GRANT = ["user-read-private",
                                "user-modify-playback-state",
-                               "user-read-playback-state"]#,
-                               # "user-read-email",
-                               # "user-follow-read",
-                               # "user-library-read",
-                               # "user-read-recently-played",
-                               # "user-top-read"]#,
-#                                ]
+                               "user-read-playback-state",
+                               "playlist-modify-private",
+                               "playlist-read-private"]
 
 # Every API call is made through this
 include("request.jl")
@@ -162,8 +158,8 @@ include("by_console_doc/follow.jl")
 include("export_structure.jl")
 
 function __init__()
-    authorize()
-    apply_and_wait_for_implicit_grant()
+    success = authorize()
+    success && apply_and_wait_for_implicit_grant()
 end
 
 end # module

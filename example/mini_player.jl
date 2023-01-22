@@ -19,68 +19,69 @@ LOGSTATE.authorization = false
 LOGSTATE.request_string = false
 LOGSTATE.empty_response = false
 
-function string_current_playing()
-    # If we call player_get_current_track() right
-    # after changing tracks, we might get the
-    # previous state.
-    # This otherwise useless call seems to
-    # make Spotify return the currently playing song.
+"""
+    get_state_print_feedback
+    --> state object
+Note: state contains the current track,
+but it seems slow to update after changes.
+"""
+function get_state_print_feedback()
     st = player_get_state()[1]
-    if st != JSON3.Object()
-        t = player_get_current_track()[1]
-        if t != JSON3.Object()
-            a = t.item.album.name
-            ars = t.item.artists
-            vs = [ar.name for ar in ars]
-            t.item.name * " \\ " * a * " \\ " * join(vs, " & ")
-        else
-            "Can't get current track"
-        end
-    else
-        """Can't get Spotify state.  
-           - Is $(Spotify.get_user_name()) running Spotify on any device? 
-           - Has $(Spotify.get_user_name()) started playing any track?
-        """
+    if st == JSON3.Object()
+        print(stdout, """Can't get Spotify state.  
+        - Is $(Spotify.get_user_name()) running Spotify on any device? 
+        - Has $(Spotify.get_user_name()) started playing any track?
+        """)
     end
+    st
 end
 
+"""
+    current_playing()
+    -> String
+
+Please wait 1 second after changes for correct info.
+"""
+function current_playing()
+    st = get_state_print_feedback()
+    st == JSON3.Object() && return ""
+    current_playing(st.item)
+end
+function current_playing(item)
+    # Ref. delay https://github.com/spotify/web-api/issues/821#issuecomment-381423071
+    a = item.album.name
+    ars = item.artists
+    vs = [ar.name for ar in ars]
+    item.name * " \\ " * a * " \\ " * join(vs, " & ")
+end
 function delete_current_from_own_playlist()
-    # If we call player_get_current_track() right
-    # after changing tracks, we might get the
-    # previous state.
-    # This otherwise useless call seems to
-    # make Spotify return the currently playing song.
-    st = player_get_state()[1]
-    t = player_get_current_track()[1]
-    if t == JSON3.Object()
-        printstyled(stdout, "\n  Delete: Can't get currently playing track.\n", color=:red)
-        return false
-    end
-    scur = string_current_playing()
-    current_playing_id = t.item.id
-    current_playing_uri = t.item.uri
-    cont = t.context
+    st = get_state_print_feedback()
+    st == JSON3.Object() && return false
+    curitem = st.item
+    scur = current_playing(curitem)
+    current_playing_id = curitem.id
+    current_playing_uri = curitem.uri
+    cont = st.context
     if isnothing(cont)
         printstyled(stdout, "\n  Can't delete " * scur * "\n  - Not currently playing from a known playlist.\n", color=:red)
-        return false
+        return ""
     end
-    
     if cont.type !== "playlist"
         printstyled(stdout, "\n  Can't delete " * scur * "\n  - Not currently playing from a playlist.\n", color=:red)
-        return false
+        return ""
     end
     playlist_id = cont.uri[end - 21:end]
     playlist_details = playlist_get(playlist_id)[1]
     if playlist_details == JSON3.Object()
         printstyled(stdout, "\n  Delete: Can't get playlist details.\n", color=:red)
-        return false
+        return ""
     end
     plo_id = playlist_details.owner.id
     user_id = Spotify.get_user_name()
     pll_name = playlist_details.name
     if plo_id !== String(user_id)
         printstyled(stdout, "\n  Can't delete " * scur * "\n  - The playlist $pll_name is owned by $plo_id, not $user_id.\n", color=:red)
-        return false
+        return ""
     end
     tracksinlist =  playlist_get_tracks(playlist_id)[1]
     current_is_in_playlist = false
@@ -96,51 +97,68 @@ function delete_current_from_own_playlist()
         res = playlist_remove_playlist_item(playlist_id; track_uris = [current_playing_uri])[1]
         if res == JSON3.Object()
             printstyled(stdout, "\n  Could not delete " * scur * "\n  from $pll_name. \n  This is due to technical reasons.\n", color=:red)
-            return false
+            return "✓"  
         else
             printstyled("The playlist's snapshot ID against which you deleted the track:\n  $(res.snapshot_id)", color = :green)
-            return true
+            return ""
         end
     else
         printstyled(stdout, "\n  Can't delete " * scur * "\n  - Not part of current playlist $pll_name. Played too far?\n", color=:red)
-        return false
+        return ""
     end
 end
 
 function pause_unpause()
-    st = player_get_state()[1]
-    if st != JSON3.Object()
-        t = player_get_current_track()[1]
-        if t != JSON3.Object()
-            if t.is_playing
-                player_pause()
-                ""
-            else
-                player_resume_playback()
-                ""
-            end
-        else
-            "Can't get current track"
-        end
+    st = get_state_print_feedback()
+    st == JSON3.Object() && return ""
+    if st.is_playing
+        player_pause()
+        ""
     else
-        """Can't get Spotify state.  
-           - Is $(Spotify.get_user_name()) running Spotify on any device? 
-           - Has $(Spotify.get_user_name()) started playing any track?
-        """
+        player_resume_playback()
+        ""
     end
 end
 
-# TODO use this, generalize, drop fetching track since it's in st.item!
-function get_state_print_feedback()
-    st = player_get_state()[1]
-    if st == JSON3.Object()
-        print(stdout, """Can't get Spotify state.  
-        - Is $(Spotify.get_user_name()) running Spotify on any device? 
-        - Has $(Spotify.get_user_name()) started playing any track?
-        """)
-        return st, JSON3.Object()
-    end
+"""
+    current_playlist()
+    -> String
+
+Please wait 1 second after changes for correct info.
+"""
+function current_playlist()
+    st = get_state_print_feedback()
+    st == JSON3.Object() && return ""
+    current_playlist(st.context)
 end
+function current_playlist(cont)
+    if isnothing(cont)
+        return("Not currently playing from a known playlist.")
+    end
+    if cont.type !== "playlist"
+        return("Not currently playing from a playlist.")
+    end
+    playlist_id = cont.uri[end - 21:end]
+    pld = playlist_get(playlist_id)[1]
+    if pld == JSON3.Object()
+        return "Can't get playlist details."
+    end
+    s  = String(pld.name)
+    plo_id = pld.owner.id
+    user_id = Spotify.get_user_name()
+    if plo_id !== String(user_id)
+        s *= " (owned by $(plo_id))"
+    end
+    if pld.description != ""
+        s *= "  ($(pld.description))"
+    end
+    if pld.public && plo_id == String(user_id)
+        s *= " (public, $(pld.total) followers)"
+    end
+    s
+end
+
+
 include("mini_player_replmode.jl")
 
 
