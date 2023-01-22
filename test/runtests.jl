@@ -26,7 +26,7 @@ all_tests = ["test_int_format_strings.jl",
              "test_browse.jl",
              "test_episodes.jl"]
 
-Spotify.refresh_spotify_credentials()             
+Spotify.authorize()             
 
 println("Running full test suite:")
 

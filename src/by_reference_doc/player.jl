@@ -138,6 +138,30 @@ function player_get_recent_tracks(;duration::Int64=1, limit=20)
 end
 
 
+#https://developer.spotify.com/documentation/web-api/reference/#/operations/pause-a-users-playback
+"""
+    player_pause(;device_id="")
+
+**Summary**: Pause playback on the user's account.
+
+# Optional keywords
+
+- `device_id`   The id of the device this command is targeting. If not supplied, the user's currently active device is the target.
+    Example value:
+    "0d1841b0976bae2a3a310dd74c0f3df354899bc8"
+"""
+function player_pause(;device_id="")
+    u = "me/player/pause"
+    a = urlstring(;device_id)
+    url = delimit(u, a)
+    spotify_request(url, "PUT"; scope= "user-modify-playback-state")
+end
+
+
+
+
+
+
 #https://developer.spotify.com/documentation/web-api/reference/#/operations/start-a-users-playback
 """
     player_resume_playback(;device_id="", context_uri="", uris="", offset=0, position_ms=0)
@@ -219,3 +243,4 @@ function player_skip_to_previous(;device_id = "")
     body = bodystring(;)
     spotify_request(url, "POST"; body, scope = "user-modify-playback-state")
 end
+

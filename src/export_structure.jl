@@ -48,6 +48,7 @@
     @_ie player_get_devices
     @_ie player_get_recent_tracks
     @_ie player_get_state
+    @_ie player_pause 
     @_ie player_resume_playback
     @_ie player_skip_to_next
     @_ie player_skip_to_previous
@@ -82,9 +83,6 @@
     @_ie users_get_current_user_top_items
     @_ie users_get_profile
 =#
-msg = "Exported submodules, which exports all functions. 
-      Explore with `select_calls()` or `varinfo(Spotify.Library)`!"
-@info msg
 # Export: See below each submodule
 
 "import export shorthand"
@@ -124,7 +122,7 @@ export Artists
 
 baremodule Browse # From 'console'
     import ..@_ie
-    @_ie category_get_single 
+    @_ie category_get_single
     @_ie category_get_multiple
     @_ie category_get_new_releases
     @_ie category_get_playlist
@@ -206,6 +204,7 @@ baremodule Player
     @_ie player_get_devices
     @_ie player_get_recent_tracks
     @_ie player_get_state
+    @_ie player_pause   
     @_ie player_resume_playback
     @_ie player_skip_to_next
     @_ie player_skip_to_previous
@@ -263,4 +262,9 @@ baremodule Users
 end
 export Users
 
-
+let 
+    msg = "Exported submodules:\n"
+    msg *= join(module_symbols(), ", ")
+    msg *= "\n Explore with `select_calls()`!"
+    @info msg
+end

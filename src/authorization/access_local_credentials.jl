@@ -14,13 +14,12 @@ function get_authorization_field(;scope="client-credentials", additional_scope =
     if !credentials_still_valid()
         if spotcred().client_id ==""
             @warn "Client credentials missing.\n Try `authorize()`!"
+            return "" => ""
         else
             msg = "Credentials expired at $(spotcred().expires_at).\n
-                You should try to re-authenticate the user:
-                \trefresh_spotify_credentials()
-                \tor
-                \tapply_and_wait_for_implicit_grant()  (this should retain previously granted scopes)"
+                You should probably try `authorize()`"
             @warn msg
+            return "" => ""
         end
     end
     if scope == "client-credentials"

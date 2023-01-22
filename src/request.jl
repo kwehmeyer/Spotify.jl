@@ -25,6 +25,10 @@ function spotify_request(url_ext::String, method::String= "GET";
     url_ext = replace(url_ext, ' ' => "")
     url = "https://api.spotify.com/v1/$url_ext"
     authorizationfield = get_authorization_field(;scope, additional_scope)
+    if authorizationfield == ("" => "")
+        # Warnings enough were issued already.
+        return JSON3.Object(), 0
+    end
     resp = HTTP.Messages.Response()
     try
         if method == "GET"
@@ -66,25 +70,33 @@ function spotify_request(url_ext::String, method::String= "GET";
                 retry_in_seconds =  HTTP.header(e.response, "retry-after") 
                 return JSON3.Object(), parse(Int, retry_in_seconds)
             else # 401 probably
-                @warn "Error code $e.status_ You should try to re-authenticate the user: \n\trefresh_spotify_credentials()\n\tor\n\tapply_and_wait_for_implicit_grant()  (this should retain previously granted scopes)"
+                @warn "Error code $(e.status). You should probably try `authorize()` or \n\tor `apply_and_wait_for_implicit_grant()`"
                 return JSON3.Object(), 0
             end
         else
             msg = "HTTP.request call (unexpected error): method = $method\n header with authorization field = $authorizationfield \n $url_ext"
             @warn msg
-            response_body = e.response.body |> String
-            code_meaning = "?"
-            msg = "$(e.status): $code_meaning"
-            @error msg
-            @error string(e)
-            return JSON3.Object(), 0
+            if e isa HTTP.Exceptions.ConnectError
+                @error string(e.url)
+                @error string(e.error)
+                return JSON3.Object(), 0
+            else
+                response_body = e.response.body |> String
+                code_meaning = "?"
+                msg = "$(e.status): $code_meaning"
+                @error msg
+                @error string(e)
+                return JSON3.Object(), 0
+            end
         end
     end
     response_body = resp.body |> String
     if method == "PUT"
-        code_meaning = get(RESP_DIC, Int(resp.status), "")
-        msg = "$(resp.status): $code_meaning"
-        @info msg
+        if ! (resp.status == 204 && ! logstate.empty_response)
+            code_meaning = get(RESP_DIC, Int(resp.status), "")
+            msg = "$(resp.status): $code_meaning"
+            @info msg
+        end
         return JSON3.Object(), 0
     else
         if resp.status == 204

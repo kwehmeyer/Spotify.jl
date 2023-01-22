@@ -25,11 +25,10 @@ function receive_grant_as_request(req::HTTP.Request)
                 c.expires_at = string(Dates.now() + Dates.Second(expi_in))
                 SPOTCRED[] = c
                 # Console feedback also in 'wait_for_ig_access'
-                msg = """Token type 'bearer' received from browser through request uri and stored. This is an implicit grant.\n
-                       You can access the current credentials with `Spotify.spotcred()`, `Spotify.expiring_in()`,\n
-                       or e.g. `Spotify.credentials_contain_scope("user-read-private")`
-
-                       This message is sent back to the browser, which you can close."""
+                msg = """Token type 'bearer' received from browser through request uri and stored. This is an implicit grant.
+                             You can inspect with `Spotify.spotcred()`, `Spotify.expiring_in()`,
+                             or e.g. `Spotify.credentials_contain_scope("user-read-private")`
+                             This message is sent back to the browser, which you can close."""
                 @info msg
                 # This response is sent to our local browser, not to Spotify!
                 return HTTP.Response(202, msg)
@@ -170,6 +169,12 @@ end
 The result shows up in console, and in the stored credentials.
 """
 function apply_and_wait_for_implicit_grant(;scopes::Vector{String} = DEFAULT_IMPLICIT_GRANT)
+    if ! authorize()
+        @info "Can't apply for implicit grant - `authorize()` client credentials!"
+        t1 = Base.schedule(Base.Task((()->nothing)))
+        t2 = Base.schedule(Base.Task((()->nothing)))
+        return t1, t2
+    end
     # These tasks are stored for potential inspection during debugging.
     listen_task, close_server_when_ready_task = launch_async_single_grant_receiving_server()
     yield() # Let those async tasks get going

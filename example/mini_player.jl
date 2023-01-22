@@ -13,7 +13,7 @@ using Spotify, Spotify.Player, Spotify.Playlists
 using Base: text_colors
 using REPL
 using REPL.LineEdit
-import JSON3
+import Spotify.JSON3
 @info "Turning off detailed REPL logging"
 LOGSTATE.authorization = false
 LOGSTATE.request_string = false
@@ -34,15 +34,18 @@ function string_current_playing()
             vs = [ar.name for ar in ars]
             t.item.name * " \\ " * a * " \\ " * join(vs, " & ")
         else
-            "Not known"
+            "Can't get current track"
         end
     else
-        "Can't get state"
+        """Can't get Spotify state.  
+           - Is $(Spotify.get_user_name()) running Spotify on any device? 
+           - Has $(Spotify.get_user_name()) started playing any track?
+        """
     end
 end
 
 function delete_current_from_own_playlist()
-        # If we call player_get_current_track() right
+    # If we call player_get_current_track() right
     # after changing tracks, we might get the
     # previous state.
     # This otherwise useless call seems to
@@ -57,7 +60,12 @@ function delete_current_from_own_playlist()
     current_playing_id = t.item.id
     current_playing_uri = t.item.uri
     cont = t.context
-    if cont.type !== "playlist" 
+    if isnothing(cont)
+        printstyled(stdout, "\n  Can't delete " * scur * "\n  - Not currently playing from a known playlist.\n", color=:red)
+        return false
+    end
+    
+    if cont.type !== "playlist"
         printstyled(stdout, "\n  Can't delete " * scur * "\n  - Not currently playing from a playlist.\n", color=:red)
         return false
     end
@@ -99,94 +107,41 @@ function delete_current_from_own_playlist()
     end
 end
 
-# We'll make a new REPL interface mode for this,
-# based off the shell promt (shell mode would
-# be entered by pressing ; at the julia> prompt).
-# Method based on 
-# https://erik-engheim.medium.com/exploring-julia-repl-internals-6b19667a7a62
-
-repl = Base.active_repl;
-shellprompt = repl.interface.modes[2]
-miniprompt = REPL.Prompt("◍>")
-for name in fieldnames(REPL.Prompt)
-    if name != :prompt
-        setfield!(miniprompt, name, getfield(shellprompt, name))
-    end
-end
-push!(repl.interface.modes, miniprompt);
-
-# To enter this mode, user must be at start of line, just as with the other
-# interface modes.
-function triggermini(state::LineEdit.MIState, repl::LineEditREPL, char::AbstractString)
-    iobuffer = LineEdit.buffer(state)
-    if position(iobuffer) == 0
-        LineEdit.transition(state, miniprompt) do
-            # Type of LineEdit.PromptState
-            prompt_state = LineEdit.state(state, miniprompt)
-            prompt_state.input_buffer = copy(iobuffer)
-            s = string_current_playing()
-            printstyled(stdout, "\n  " * s * '\n', color=:green)
+function pause_unpause()
+    st = player_get_state()[1]
+    if st != JSON3.Object()
+        t = player_get_current_track()[1]
+        if t != JSON3.Object()
+            if t.is_playing
+                player_pause()
+                ""
+            else
+                player_resume_playback()
+                ""
+            end
+        else
+            "Can't get current track"
         end
     else
-        LineEdit.edit_insert(state, char)
+        """Can't get Spotify state.  
+           - Is $(Spotify.get_user_name()) running Spotify on any device? 
+           - Has $(Spotify.get_user_name()) started playing any track?
+        """
     end
 end
 
-# Trigger mode transition to shell when a ':' is written
-# at the beginning of a line
-juliamode = repl.interface.modes[1]
-juliamode.keymap_dict[':'] = triggermini
-
-# So far the '◍>' mode is identical to 'shell>' mode.
-#
-# Be green, like Spotify:
-miniprompt.prompt_prefix = text_colors[:green]
-
-# Respond to pressing enter after typing:
-function on_non_empty_enter(s)
-    #println(stdout, "  $s ignored.")
-    println(stdout, "  Backspace : exit "  )
-    println(stdout, "  'f' or '→' : skip forward")
-    println(stdout, "  'b' or '←' : skip back")
-    println(stdout, "  'delete' or 'fn+delete' on mac: delete from playlist (if currently playing from user")
-    print(stdout, text_colors[:green])
-    println(stdout, "  " * string_current_playing())
-    print(stdout, text_colors[:normal])
-    nothing
-end
-miniprompt.on_done = REPL.respond(on_non_empty_enter, repl, miniprompt; pass_empty = true)
-
-# We're going to wrap commands in this.
-function wrap_command(state::REPL.LineEdit.MIState, repl::LineEditREPL, char::AbstractString)
-    # This buffer contain other characters typed so far.
-    iobuffer = LineEdit.buffer(state)
-    # write character typed into line buffer
-    LineEdit.edit_insert(iobuffer, char)
-    # change color of recognized character.
-    c = char[1]
-    printstyled(stdout, char, color=:green)
-    #println(stdout)
-    if c == 'b' || char == "\e[D"
-        player_skip_to_previous()
-    elseif c == 'f' || char == "\e[C"
-        player_skip_to_next()
-    elseif char == "\e[3~"  || char == "\e\b"
-        delete_current_from_own_playlist()
+# TODO use this, generalize, drop fetching track since it's in st.item!
+function get_state_print_feedback()
+    st = player_get_state()[1]
+    if st == JSON3.Object()
+        print(stdout, """Can't get Spotify state.  
+        - Is $(Spotify.get_user_name()) running Spotify on any device? 
+        - Has $(Spotify.get_user_name()) started playing any track?
+        """)
+        return st, JSON3.Object()
     end
-    println(stdout, text_colors[:green])
-    println(stdout, "  " * string_current_playing())
-    println(stdout, text_colors[:normal])
 end
+include("mini_player_replmode.jl")
 
 
-# Single keystroke commands
-
-miniprompt.keymap_dict['b'] = wrap_command
-miniprompt.keymap_dict['f'] = wrap_command
-controlkeydict = miniprompt.keymap_dict['\e']
-arrowdict = controlkeydict['[']
-arrowdict['C'] = wrap_command
-arrowdict['D'] = wrap_command
-deletedict = arrowdict['3']
-deletedict['~'] =  wrap_command
-@info "Press ':' on an empty 'julia> ' promt to enter mini player"
+@info "Press ':' on an empty 'julia> ' prompt to enter mini player"
