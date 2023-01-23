@@ -9,7 +9,7 @@
 
 # We can't read single keystrokes without adding dependencies
 # so we'll just have to use 'Enter'.
-using Spotify, Spotify.Player, Spotify.Playlists
+using Spotify, Spotify.Player, Spotify.Playlists, Spotify.Tracks
 using Base: text_colors
 using REPL
 using REPL.LineEdit
@@ -58,8 +58,7 @@ function delete_current_from_own_playlist()
     st = get_state_print_feedback()
     st == JSON3.Object() && return false
     curitem = st.item
-    scur = current_playing(curitem)
-    current_playing_id = curitem.id
+    scur = current_playing(curitem) # String for feedback
     current_playing_uri = curitem.uri
     cont = st.context
     if isnothing(cont)
@@ -158,8 +157,25 @@ function current_playlist(cont)
     s
 end
 
-
+function current_audio_features()
+    st = get_state_print_feedback()
+    st == JSON3.Object() && return ""
+    curitem = st.item
+    scur = current_playing(curitem) # String for feedback
+    current_playing_id = curitem.id
+    af = tracks_get_audio_features( current_playing_id)[1]
+    af == JSON3.Object() && return ""
+    s = ""
+  s *= rpad("acousticness     $(af.acousticness)", 25)     * rpad("key               $(af.key)", 25) * "\n"
+  s *= rpad("speechiness      $(af.speechiness)", 25)      * rpad("mode              $(af.mode)", 25) * "\n"
+  s *= rpad("instrumentalness $(af.instrumentalness)", 25) * rpad("time_signature    $(af.time_signature)", 25) * "\n"
+  s *= rpad("liveness         $(af.liveness)", 25)         * rpad("tempo             $(af.tempo)", 25)  * "\n"
+  s *= rpad("loudness         $(af.loudness)", 25)         * rpad("duration_ms       $(af.duration_ms)", 25)   * "\n"     
+  s *= "energy           $( af.energy)\n"
+  s *= "danceability     $( af.danceability)\n"
+  s *= "valence          $( af.valence)"
+  s
+end
 include("mini_player_replmode.jl")
 
-
-@info "Press ':' on an empty 'julia> ' prompt to enter mini player"
+@info "Type : to enter mini player mode."

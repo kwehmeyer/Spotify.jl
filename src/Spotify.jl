@@ -158,8 +158,9 @@ include("by_console_doc/follow.jl")
 include("export_structure.jl")
 
 function __init__()
-    success = authorize()
-    success && apply_and_wait_for_implicit_grant()
+    #success = authorize()
+    #success && 
+    apply_and_wait_for_implicit_grant()
 end
 
 end # module

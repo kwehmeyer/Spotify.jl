@@ -222,10 +222,10 @@ function make_default_calls_and_print(fs::Vector{Symbol})
     if length(fs) == 1
         println("Just one call was made; returning result.")
         return result[1]
-    else
+    elseif length(fs) > 1
         println("Several calls made. The text syntax and result from each call was printed for copy / paste.")
-        return nothing
     end
+    return nothing
 end
 
 """
