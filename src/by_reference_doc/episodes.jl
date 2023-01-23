@@ -1,7 +1,7 @@
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-episode
 
 """
-    episodes_get_single(episode_id; market="US")
+    episodes_get_single(episode_id; market="")
 
 **Summary**: Get Spotify catalog information for a single episode identified by its unique Spotify ID.
 
@@ -22,7 +22,7 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 19 entries:
   :external_urls        => {…
 ```
 """
-function episodes_get_single(episode_id; market="US")
+function episodes_get_single(episode_id; market="")
     return spotify_request("episodes/$episode_id?market=$market")
 end
 
@@ -30,7 +30,7 @@ end
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-multiple-episodes
 
 """
-    episodes_get_multiple(episode_ids; market="US")
+    episodes_get_multiple(episode_ids; market="")
 
 **Summary**: Get Spotify catalog information for several episodes based on their Spotify IDs.
 
@@ -47,7 +47,7 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
   :episodes => JSON3.Object[{…
 ```
 """
-function episodes_get_multiple(episode_ids; market="US")
+function episodes_get_multiple(episode_ids; market="")
     return spotify_request("episodes?ids=$episode_ids&market=$market")
 end
 

@@ -9,8 +9,8 @@ using Markets, Personalization, Player, Playlists, Search
 using  Shows, Tracks, UsersProfile, Objects
 
 #= Albums =#
-album_get(album_id, market="US")
-album_get_tracks(album_id, limit=20, offset=0, market="US")
+album_get(album_id, market="")
+album_get_tracks(album_id, limit=20, offset=0, market="")
 
 #= Artists =#
 artist_get(artist_id)
@@ -33,7 +33,7 @@ recommendations_get(
 recommendations_dict_parser(track_attributes::Dict)
 
 #= Episodes =#
-episodes_get(episode_id, market="US")
+episodes_get(episode_id, market="")
 
 #= Follow =#
 follow_check(type, ids)
@@ -45,9 +45,9 @@ unfollow_artists_users(type, ids)
 unfollow_playlist(playlist_id)
 
 #= Library =#
-library_get_saved_tracks(limit=20, offset=0, market="US")
+library_get_saved_tracks(limit=20, offset=0, market="")
 library_get_saved_shows(limit=20, offset=0)
-library_get_saved_albums(limit=20, offset=0, market="US")
+library_get_saved_albums(limit=20, offset=0, market="")
 library_check_saved_tracks(track_ids)
 library_check_saved_shows(show_ids)
 library_check_saved_albums(album_ids)
@@ -63,13 +63,13 @@ top_tracks(offset=0, limit=20, time_range="medium")
 top_artists(offset=0, limit=20, time_range="medium")
 
 #= Player =#
-show_get(show_id, market="US")
-show_get_episodes(show_id, market="US", limit=20, offset=0)
+show_get(show_id, market="")
+show_get_episodes(show_id, market="", limit=20, offset=0)
 
 #= Playlists =#
 tracks_get_audio_analysis(track_id)
 tracks_get_audio_features(track_id)
-tracks_get(track_id, market="US")
+tracks_get(track_id, market="")
 
 #= Search =#
 #= Shows =#

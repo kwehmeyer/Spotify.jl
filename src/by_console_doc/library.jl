@@ -1,5 +1,5 @@
 "Alias for tracks_get_saved in tracks.jl"
-library_get_saved_tracks(;limit=20, offset=0, market="US") = tracks_get_saved(;limit, market, offset)
+library_get_saved_tracks(;limit=20, offset=0, market="") = tracks_get_saved(;limit, market, offset)
 
 
 "Alias for show_get_saved in shows.jl"
@@ -7,7 +7,7 @@ library_get_saved_shows(;limit=20, offset=0) = show_get_saved(;limit, offset)
 
 
 "Alias for album_get_saved in albums.jl"
-library_get_saved_albums(;limit=20, offset=0, market="US") = album_get_saved(;limit, offset, market)
+library_get_saved_albums(;limit=20, offset=0, market="") = album_get_saved(;limit, offset, market)
 
 
 "Alias for tracks_get_contains in tracks.jl"

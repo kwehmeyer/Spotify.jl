@@ -55,7 +55,7 @@ end
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-playlists-tracks
 """
     playlist_get_tracks(playlist_id::String; additional_types="track", limit=50,
-    offset=0, market="US")
+    offset=0, market="")
 
 **Summary**: Get details about the items of a playlist.
 

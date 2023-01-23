@@ -48,7 +48,7 @@ end
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-albums-tracks
 
 """
-    album_get_tracks(album_id; limit=20, offset=0, market="US")
+    album_get_tracks(album_id; limit=20, offset=0, market="")
 
 **Summary**: Get Spotify catalog information about an album's tracks. Optional parameters
             can be used to limit the number of tracks returned.

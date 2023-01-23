@@ -113,7 +113,7 @@ end
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-track
 
 """
-    tracks_get(track_id; market="US")
+    tracks_get(track_id; market="")
 
 **Summary**: Get a spotify catalog information for a single track identified by it's unique Spotify ID.
 
@@ -139,7 +139,10 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 18 entries:
 ```
 """
 function tracks_get_single(track_id; market="")
-    return spotify_request("tracks/$track_id?market=$market")
+    u = "tracks/$track_id"
+    a = urlstring(; market)
+    url = delimit(u, a)
+    return spotify_request(url)
 end
 
 
@@ -166,14 +169,17 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
 ```
 """
 function tracks_get_multiple(ids; market="")
-    return spotify_request("tracks?ids=$ids&market=$market")
+    u = "tracks/$tracks"
+    a = urlstring(; market)
+    url = delimit(u, a)
+    return spotify_request(url)
 end
 
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-saved-tracks
 
 """
-    tracks_get_saved(;limit=20, market="", offset::Int64=0)
+    tracks_get_saved(;limit=20, market="", offset=0)
 
 **Summary**: Get a list of the songs saved in the current Spotify user's 'Your Music' library.
 
@@ -182,7 +188,7 @@ end
 - `market::String` : An ISO 3166-1 alpha-2 country code. If a country code is specified,
                      only episodes that are available in that market will be returned.
                      Default is set to "US".
-- `offset::Int64` : Index of the first item to return, default is set to 0
+- `offset` : Index of the first item to return, default is set to 0
 
 # Example
 ```julia-repl
@@ -194,9 +200,11 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
   :next     => "https://api.spotify.com/v1/me/tracks?offset=20&limit=20&market=US"
 ```
 """
-function tracks_get_saved(;limit=20, market="", offset::Int64=0)
-    return spotify_request("me/tracks?limit=$limit&market=$market&offset=$offset";
-                           scope = "user-library-read")
+function tracks_get_saved(;limit=20, market="", offset=0)
+    u = "me/tracks"
+    a = urlstring(; market, offset)
+    url = delimit(u, a)
+    return spotify_request(url, scope = "user-library-read")
 end
 
 
@@ -260,10 +268,10 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 2 entries:
 """
 function tracks_get_recommendations(seeds_dict::Dict; 
                               track_attributes_dict = Dict{String, String}(), limit=50, market="")
-    url = "recommendations?" 
-    url1 = urlstring(seeds_dict)
-    url2 = urlstring(track_attributes_dict)
-    url3 = urlstring(; limit, market)
-    url *= join([url1, url2, url3], "&")
+    u = "recommendations" 
+    a1 = urlstring(seeds_dict)
+    a2 = urlstring(track_attributes_dict)
+    a3 = urlstring(;limit, market)
+    url = delimit(u, a1, a2, a3)
     return spotify_request(url)
 end

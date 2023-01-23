@@ -30,6 +30,7 @@ export authorize, apply_and_wait_for_implicit_grant
 export select_calls, strip_embed_code, LOGSTATE
 export SpUri, SpId, SpCategoryId, SpUserId, SpUrl, SpPlaylistId, SpAlbumId
 export SpArtistId, SpShowId, SpEpisodeId
+export JSON3
 "For the client credentials flow"
 const AUTH_URL = "https://accounts.spotify.com/api/token"
 "For the 'Implicit grant flow'"
@@ -48,7 +49,7 @@ end
 """
 Mutable flags for logging to REPL. Nice when 
 making inline docs or new interfaces. 
-The global can be locally overruled with
+This global can also be locally overruled with
 keyword argument to `spotify_request`.
 """
 const LOGSTATE = Logstate(true, true, false)

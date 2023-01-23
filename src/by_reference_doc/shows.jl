@@ -3,7 +3,7 @@
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-show
 
 """
-    show_get(show_id; market="US")
+    show_get(show_id; market="")
 
 **Summary**: Get a Spotify catalog information for a single show identified by it's unique Spotify ID.
 
@@ -57,7 +57,7 @@ end
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-shows-episodes
 """
-    show_get_episodes(show_id; market="US", limit=20, offset=0)
+    show_get_episodes(show_id; market="", limit=20, offset=0)
 
 **Summary**: Get Spotify catalog information about a show’s episodes. Optional parameters
              can be used to limit the number of episodes returned.

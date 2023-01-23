@@ -14,11 +14,11 @@ strip_embed_code(s) = SpId(match(r"\b[a-zA-Z0-9]{22}", s).match)
 # The below is about the select_calls()
 # functionality.
 
-"Sub-modules of Spotify, included ones that are not loaded"
+"Sub-modules of Spotify, included ones that are not loaded. Exclude JSON3."
 function module_symbols()
     allsymbs = names(Spotify, all = false)
     filter(allsymbs) do s
-        s !== :Spotify && Spotify.eval(s) isa Module
+        s !== :Spotify && s !== :JSON3 && Spotify.eval(s) isa Module
     end
 end
 function function_symbols_in_module(s::Symbol)
@@ -62,7 +62,9 @@ false
 ```
 """
 function is_module_loaded(m::Symbol)
-    f = first(function_symbols_in_module(m))
+    foos = function_symbols_in_module(m)
+    length(foos) == 0 && return false
+    f = first(foos)
     is_function_loaded(f)
 end
 
