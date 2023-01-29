@@ -1,6 +1,6 @@
 # Run tests on functions in src/by_reference_doc/shows.jl
 
-using Spotify.Shows
+using Test, Spotify, Spotify.Shows
 
 @testset verbose = true "GET-request endpoints for shows" begin
 
@@ -24,6 +24,6 @@ using Spotify.Shows
     @test ~isempty(show_get_saved()[1])
 
     # Currently shows 403 error, implemented in shows.jl
-    @test_broken ~isempty(show_get_contains("2MAi0BvDc6GTFvKFPXnkCL")[1])
+    @test ! isempty(show_get_contains("2MAi0BvDc6GTFvKFPXnkCL")[1])
 
 end

@@ -25,7 +25,10 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 18 entries:
 ```
 """
 function show_get_single(show_id; market = "")
-    return spotify_request("shows/$show_id?market=$market")
+    u = "shows/$show_id"
+    a = urlstring(;market)
+    url = build_query_string(u, a)
+    spotify_request(url)
 end
 
 
@@ -51,7 +54,10 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
 ```
 """
 function show_get_multiple(ids; market = "")
-    return spotify_request("shows/?ids=$ids&market=$market")
+    u = "shows"
+    a = urlstring(; ids = ids, market)
+    url = build_query_string(u, a)
+    spotify_request(url)
 end
 
 
@@ -82,7 +88,10 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
 ```
 """
 function show_get_episodes(show_id; market = "", limit = 20, offset = 0)
-    return spotify_request("shows/$show_id/episodes?market=$market&limit=$limit&offset=$offset")
+    u = "shows/$show_id"
+    a = urlstring(;market, limit, offset)
+    url = build_query_string(u, a)
+    spotify_request(url)
 end
 
 
@@ -108,7 +117,10 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
 ```
 """
 function show_get_saved(;limit = 20, offset = 0)
-    return spotify_request("me/shows?limit=$limit&offset=$offset"; scope = "user-library-read")
+    u = "me/shows"
+    a = urlstring(; limit, offset)
+    url = build_query_string(u, a)
+    spotify_request(url; scope = "user-library-read")
 end
 
 
@@ -127,10 +139,8 @@ end
 └               (response message): Insufficient client scope
 """
 function show_get_contains(show_ids)
-    return spotify_request("me/shows/contains?ids=$show_ids"; scope = "user-library-read")
+    return spotify_request("me/shows/contains?ids=$show_ids"; scope = "user-library-read", additional_scope="user-library-modify")
 end
-
-
 
 ## https://developer.spotify.com/documentation/web-api/reference/library/remove-shows-user/
 """
@@ -142,7 +152,7 @@ end
 [Reference](https://developer.spotify.com/documentation/web-api/reference/library/remove-shows-user/)
 """
 function show_remove_from_library(show_ids)
-    return spotify_request("me/shows?ids=$show_ids", method = "DELETE")
+    return spotify_request("me/shows?ids=$show_ids", method = "DELETE", scope="user-library-modify")
 end
 
 
@@ -156,5 +166,5 @@ end
 [Reference](https://developer.spotify.com/documentation/web-api/reference/library/save-shows-user/)
 """ 
 function show_save_library(show_ids)
-    return spotify_request("me/shows?ids=$show_ids", method = "PUT")
+    return spotify_request("me/shows?ids=$show_ids", method = "PUT", scope="user-library-modify")
 end

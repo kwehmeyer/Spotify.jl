@@ -66,12 +66,14 @@ function has_ig_access_token()
     t != ""
 end
 
-function wait_for_ig_access(; stopwait::DateTime = now() + Dates.Second(20))
+"wait_for_ig_access(; timeout_in_seconds = 30)"
+function wait_for_ig_access(; timeout_in_seconds = 30)
+    stopwait = now() + Dates.Second(timeout_in_seconds)
     while !has_ig_access_token() && now() < stopwait
         sleep(0.1)
     end
     if now() >= stopwait
-        @info "Timeout access_grant_server, received grant too late."
+        @info "Timeout access_grant_server, did not receive grant in $timeout_in_seconds seconds." maxlog = 1
     else
         @info "Received implicit grant token expires in $(expiring_in())" maxlog = 1
     end
@@ -102,6 +104,7 @@ function launch_async_single_grant_receiving_server()
     host() = parse(HTTP.IPAddr, u.host)
     port() = parse(Int, u.port)
     path() = u.path
+    println("\tListening for user authorization through browser on $(host()):$(port()) and path $(path())")
     server = Ref(Sockets.listen(host(), port()))
     # Invalidate the current credentials storage,
     # in case we are waiting for an extension of scope or a refresh.
@@ -113,11 +116,17 @@ function launch_async_single_grant_receiving_server()
         close(server[])
         "Server is closed, and this string can be inspected in this task's result field."
     end
-    println("\tListening for user authorization through browser on $(host()):$(port()) and path $(path())")
-    listen_task = @async HTTP.serve(receive_grant_as_request,
+    #listen_task = @async HTTP.serve(receive_grant_as_request,
+    #                              host(), port();
+    #                              server = server[],
+    #                              stream =false)
+    listen_task = with_logger(NullLogger()) do # We're not interested in HTTPs conversation with REPL.
+        @async HTTP.serve(receive_grant_as_request,
                                   host(), port();
                                   server = server[],
                                   stream =false)
+    end
+
     listen_task, close_server_when_ready_task
 end
 
@@ -140,7 +149,7 @@ function launch_a_browser_that_asks_for_implicit_grant(;scopes::Vector{String} =
             "&state=987"
     println("\tLaunching a browser at: $(string(uri)[1:49])...\n")
 
-    # Try opening a browser window based on OS type
+    # Try opening a browser based on OS type
     if Sys.isapple()
         run(`open $uri`)
     end
@@ -149,7 +158,6 @@ function launch_a_browser_that_asks_for_implicit_grant(;scopes::Vector{String} =
         for shortbrowsername in BROWSERS
             comm = launch_command_windows(shortbrowsername; url = uri)
             if comm != ``
-                @info "Found $shortbrowsername"
                 break
             end
         end

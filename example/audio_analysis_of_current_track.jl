@@ -1,7 +1,7 @@
 using Spotify, Spotify.Player, Spotify.Tracks
 # Note, we don't change LOGSTATE and so get lots of output.
 json = player_get_state()[1]
-@assert json != JSON3.Object() "None playing (on any device)"
+@assert ! isempty(json) "None playing (on any device)"
 it = json.item
 trackid = SpId(it.id)
 af = tracks_get_audio_features(trackid)[1]

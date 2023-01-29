@@ -1,6 +1,6 @@
 # Run tests on functions in src/by_reference_doc/tracks.jl
 
-using Spotify.Tracks
+using Test, Spotify, Spotify.Tracks
 
 @testset verbose = true "GET-request endpoints for tracks" begin
 

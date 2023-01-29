@@ -1,5 +1,5 @@
 # Run tests on functions in src/by_reference_doc/player.jl
-
+using Test, Spotify, Spotify.Player
 @testset verbose = true "GET-request endpoints for player" begin
 
     #------- Following 3 tests will work only when the Spotify player is active -------#

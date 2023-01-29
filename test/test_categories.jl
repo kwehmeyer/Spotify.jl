@@ -1,12 +1,6 @@
 # Run tests on functions in src/by_reference_doc/categories.jl
  
-using Spotify.Categories
-
-
-#category_get_multiple(;country = "", locale = "", limit = 20, offset = 0)
-
-
-
+using Test, Spotify, Spotify.Categories
 
 @testset verbose = true "GET-request endpoints for browse categories" begin
     # Input arguments from composite types defined in src/types.jl

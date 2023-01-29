@@ -20,7 +20,7 @@ playlistnames = Vector{String}()
 for batchno = 0:200
     offset = batchno * batchsize
     json, waitsec = playlist_get_current_user(limit = batchsize, offset = batchno * batchsize)
-    json == JSON3.Object() && break
+    isempty(json) && break
     waitsec > 0 && throw("Too fast, whoa!")
     l = length(json.items)
     l == 0 && break

@@ -29,9 +29,11 @@ module Spotify
 12. In inline docs, use a short form of JSON display that doesn't include request strings.
     This makes source code hard to search in. 
 13. Drop 'return' in in all request wrapping functions.
-14. Drop unnecessary dependencies URIs and Parameters
+✓.  Drop unnecessary dependencies URIs and Parameters
+15. Use the name-based parameter defaults in tests. See paramname_default_dic.jl
 =#
 using HTTP, Dates, IniFile, HTTP, JSON3, Sockets
+using Logging: with_logger, NullLogger
 import Dates
 import Base64
 using Base64: base64encode

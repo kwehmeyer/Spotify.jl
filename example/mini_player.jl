@@ -27,7 +27,7 @@ but it seems slow to update after changes.
 """
 function get_state_print_feedback()
     st = player_get_state()[1]
-    if st == JSON3.Object()
+    if isempty(st)
         print(stdout, """Can't get Spotify state.  
         - Is $(Spotify.get_user_name()) running Spotify on any device? 
         - Has $(Spotify.get_user_name()) started playing any track?
@@ -44,7 +44,7 @@ Please wait 1 second after changes for correct info.
 """
 function current_playing()
     st = get_state_print_feedback()
-    st == JSON3.Object() && return ""
+    isempty(st) && return ""
     current_playing(st.item)
 end
 function current_playing(item)
@@ -56,7 +56,7 @@ function current_playing(item)
 end
 function delete_current_from_own_playlist()
     st = get_state_print_feedback()
-    st == JSON3.Object() && return false
+    isempty(st) && return false
     curitem = st.item
     scur = current_playing(curitem) # String for feedback
     current_playing_uri = curitem.uri
@@ -71,7 +71,7 @@ function delete_current_from_own_playlist()
     end
     playlist_id = cont.uri[end - 21:end]
     playlist_details = playlist_get(playlist_id)[1]
-    if playlist_details == JSON3.Object()
+    if isempty(playlist_details)
         printstyled(stdout, "\n  Delete: Can't get playlist details.\n", color = :red)
         return ""
     end
@@ -94,7 +94,7 @@ function delete_current_from_own_playlist()
     if current_is_in_playlist
         printstyled(stdout, "Going to delete ... $current_playing_uri from $playlist_id \n", color = :yellow)
         res = playlist_remove_playlist_item(playlist_id; track_uris = [current_playing_uri])[1]
-        if res == JSON3.Object()
+        if isempty(res)
             printstyled(stdout, "\n  Could not delete " * scur * "\n  from $pll_name. \n  This is due to technical reasons.\n", color = :red)
             return "✓"  
         else
@@ -109,7 +109,7 @@ end
 
 function pause_unpause()
     st = get_state_print_feedback()
-    st == JSON3.Object() && return ""
+    isempty(st) && return ""
     if st.is_playing
         player_pause()
         ""
@@ -127,7 +127,7 @@ Please wait 1 second after changes for correct info.
 """
 function current_playlist()
     st = get_state_print_feedback()
-    st == JSON3.Object() && return ""
+    isempty(st) && return ""
     current_playlist(st.context)
 end
 function current_playlist(cont)
@@ -139,7 +139,7 @@ function current_playlist(cont)
     end
     playlist_id = cont.uri[end - 21:end]
     pld = playlist_get(playlist_id)[1]
-    if pld == JSON3.Object()
+    if isempty(pld)
         return "Can't get playlist details."
     end
     s  = String(pld.name)
@@ -159,12 +159,12 @@ end
 
 function current_audio_features()
     st = get_state_print_feedback()
-    st == JSON3.Object() && return ""
+    isempty(st) && return ""
     curitem = st.item
     scur = current_playing(curitem) # String for feedback
     current_playing_id = curitem.id
     af = tracks_get_audio_features( current_playing_id)[1]
-    af == JSON3.Object() && return ""
+    isempty(af) && return ""
     s = ""
   s *= rpad("acousticness     $(af.acousticness)", 25)     * rpad("key               $(af.key)", 25) * "\n"
   s *= rpad("speechiness      $(af.speechiness)", 25)      * rpad("mode              $(af.mode)", 25) * "\n"

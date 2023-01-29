@@ -12,7 +12,6 @@ quiet = length(ARGS) > 0 && ARGS[1] == "q"
 errors = false
 
 all_tests = ["test_int_format_strings.jl", 
-             "generalize_calls.jl",
              "test_playlists.jl",
              "test_users.jl",
              "test_search.jl",
@@ -23,10 +22,8 @@ all_tests = ["test_int_format_strings.jl",
              "test_artist.jl",
              "test_tracks.jl",
              "test_shows.jl",
-             "test_browse.jl",
              "test_episodes.jl"]
-
-Spotify.authorize()             
+   
 
 println("Running full test suite:")
 

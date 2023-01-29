@@ -1,3 +1,4 @@
+# OBSOLETE?
 #= 
 Test every function once in sequence.
 Sequence could matter ?
@@ -38,7 +39,7 @@ episodes_get(episode_id, market = "")
 #= Follow =#
 users_check_current_follows(type, ids)
 users_check_follows_playlist(playlist_id, ids)
-follow_artists(type = "artist", limit = 20)
+users_get_follows(type = "artist", limit = 20)
 follow_artists_users(type, ids)
 users_follow_playlist(playlist_id)
 users_unfollow_artists_users(type, ids)

@@ -214,7 +214,7 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, SubArray{UInt64, 1, Vector{UInt64}, 
 ```
 """
 function users_get_follows(;item_type = "artist", limit = 20)
-    return spotify_request("me/following?type=$item_type&limit=$limit"; scope = "user-follow-modify")
+    return spotify_request("me/following?type=$item_type&limit=$limit"; scope = "user-follow-read")
 end
 
 

@@ -1,6 +1,6 @@
 # Run tests on functions in src/by_reference_doc/episodes.jl
 
-using Spotify.Episodes
+using Test, Spotify, Spotify.Episodes
 
 @testset verbose = true "GET-request endpoints for episodes" begin
 

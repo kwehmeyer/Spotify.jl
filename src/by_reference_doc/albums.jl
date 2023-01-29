@@ -37,10 +37,9 @@
 ```
 """
 function album_get_single(album_id; market = "")
-    u1 = "albums/"
-    u2 = urlstring(album_id)
-    u3 = urlstring(;market)
-    url = build_query_string(u1, u2, u3)
+    u = "albums/$album_id"
+    a = urlstring(; market)
+    url = build_query_string(u, a)
     spotify_request(url)
 end
 
@@ -72,7 +71,6 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
 ```
 """
 function album_get_tracks(album_id; limit = 20, offset = 0, market = "")
-    #return spotify_request("albums/$album_id/tracks?limit=$limit&offset=$offset&market=$market")
     u1 = "albums/$album_id/tracks"
     u2 = urlstring(; limit, offset, market)
     url = build_query_string(u1, u2)
