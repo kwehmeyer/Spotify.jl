@@ -5,12 +5,12 @@ function credentials_contain_scope(single_scope::String)
 end
 
 """
-    get_authorization_field(;scope="client-credentials", additional_scope = "")
+    get_authorization_field(;scope = "client-credentials", additional_scope = "")
 
 For Spotify requests, provide authorization field.
 If 'scope' is outside current grant, apply to user / Spotify for more.
 """
-function get_authorization_field(;scope="client-credentials", additional_scope = "")
+function get_authorization_field(;scope = "client-credentials", additional_scope = "")
     if !credentials_still_valid()
         if spotcred().client_id ==""
             @warn "Client credentials missing.\n Try `authorize()`!"

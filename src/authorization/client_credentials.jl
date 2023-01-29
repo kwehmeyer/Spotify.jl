@@ -7,7 +7,7 @@ Get and store client credentials. Any other credentials will be dropped.
 function authorize()
     # This deletes .ig_access_token and ig_scopes.
     # There may be a better way, so that we can keep the granted scopes.
-    @info "Retrieving client credentials, which typically last 1 hour."
+    @info "Negotiating client credentials, which typically last 1 hour."
     SPOTCRED[] = get_spotify_credentials()
     if string(SPOTCRED[]) != string(SpotifyCredentials())
         if credentials_still_valid()

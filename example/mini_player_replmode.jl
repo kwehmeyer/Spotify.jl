@@ -43,7 +43,7 @@ function triggermini(state::LineEdit.MIState, repl::LineEditREPL, char::Abstract
                 println(stdout)
                 print_menu()
                 s = current_playing()
-                printstyled(stdout, "\n  " * s * '\n', color=:green)
+                printstyled(stdout, "\n  " * s * '\n', color = :green)
             end
         end
     else
@@ -114,7 +114,7 @@ function wrap_command(state::REPL.LineEdit.MIState, repl::LineEditREPL, char::Ab
     # write character typed into line buffer
     LineEdit.edit_insert(iobuffer, char)
     # change color of recognized character.
-    printstyled(stdout, char, color=:green)
+    printstyled(stdout, char, color = :green)
     c = char[1]
     if c == 'b' || char == "\e[D"
         player_skip_to_previous()

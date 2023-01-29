@@ -10,7 +10,7 @@ function receive_grant_as_request(req::HTTP.Request)
     target = String(HTTP.Messages.getfield(req, :target))
     uri = HTTP.URI(target)
     query = uri.query
-    urisstring = unescapeuri(query)
+    urisstring = HTTP.unescapeuri(query)
     params = HTTP.queryparams(urisstring) # create URI out of target String
     wewant = ["access_token", "token_type", "state", "expires_in"]
     ipa = filter(pa-> in(pa[1], wewant), params)
@@ -73,7 +73,7 @@ function wait_for_ig_access(; stopwait::DateTime = now() + Dates.Second(20))
     if now() >= stopwait
         @info "Timeout access_grant_server, received grant too late."
     else
-        @info "Received implicit grant token expires in $(expiring_in())" maxlog=1
+        @info "Received implicit grant token expires in $(expiring_in())" maxlog = 1
     end
 end
 
@@ -94,12 +94,12 @@ Server closes after some time, or when the grant has been received and stored.
 function launch_async_single_grant_receiving_server()
     stored = spotcred().redirect   # "http://127.0.0.1:8080/api", String
     stripped = strip(stored, '/')  # "http://127.0.0.1:8080/api", SubString{String}
-    u = parse(URI, stripped)       # URI("http://127.0.0.1:8080/api")
+    u = parse(HTTP.URI, stripped)       # URI("http://127.0.0.1:8080/api")
     if length(stored) == 0 
         @error "Something went wrong, missing redirect URI in spotcred()."
         return (@async(nothing), @async(nothing))
     end
-    host() = parse(IPAddr, u.host)
+    host() = parse(HTTP.IPAddr, u.host)
     port() = parse(Int, u.port)
     path() = u.path
     server = Ref(Sockets.listen(host(), port()))
@@ -113,7 +113,7 @@ function launch_async_single_grant_receiving_server()
         close(server[])
         "Server is closed, and this string can be inspected in this task's result field."
     end
-    println("\tListening for implicit grant on $(host()):$(port()) and path $(path())")
+    println("\tListening for user authorization through browser on $(host()):$(port()) and path $(path())")
     listen_task = @async HTTP.serve(receive_grant_as_request,
                                   host(), port();
                                   server = server[],

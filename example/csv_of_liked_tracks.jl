@@ -33,7 +33,7 @@ for batch = 0:20:2000
         temp2 = DataFrame(temp1)
         temp2[!, :added_at] .= temp[i]["added_at"]
         println("Adding Track: ", temp[i]["track"]["name"])
-        append!(tracks_df, temp2, cols=:union)
+        append!(tracks_df, temp2, cols = :union)
     end
     length(temp) < 20 && break
     sleep(nextwait)

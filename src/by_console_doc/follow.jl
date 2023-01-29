@@ -27,13 +27,13 @@ end
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/check-if-user-follows-playlist
 """
-    follow_check_playlist(playlist_id::String, user_id::String)
+    follow_check_playlist(playlist_id, user_id)
 
 **Summary**: Check to see if one or more Spotify users are following a specified playlist_id.\n
 
 # Arguments
-- `playlist_id::String` _Required_: The Spotify ID of the playlist.\n
-- `user_id::String` _Required_: A comma separated list of the user Spotify IDS to check. Maximum 5.\n
+- `playlist_id` _Required_: The Spotify ID of the playlist.\n
+- `user_id` _Required_: A comma separated list of the user Spotify IDS to check. Maximum 5.\n
 
 # Example
 ```julia-repl
@@ -56,7 +56,7 @@ end
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-followed
 """
-    follow_get(;item_type="artist", limit=20)
+    follow_get(;item_type = "artist", limit = 20)
 
 **Summary**: Get the current user's followed artists.
 
@@ -78,7 +78,7 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, SubArray{UInt64, 1, Vector{UInt64}, 
   :href    => "https://api.spotify.com/v1/me/following?type=artist&limit=20"
 ```
 """
-function follow_get(;item_type="artist", limit=20)
+function follow_get(;item_type = "artist", limit = 20)
 
     return spotify_request("me/following?type=$item_type&limit=$limit"; scope = "user-follow-modify")
 
@@ -169,5 +169,5 @@ function unfollow_playlist(playlist_id)
     scope  = "playlist-modify-private"
     additional_scope = "playlist-modify-public"
     throw("Not yet implemented and kind of dangerous. Fix the body and the url!")
-    return spotify_request("playlists/$playlist_id/followers", method="DELETE"; scope = "playlist-modify-private")
+    return spotify_request("playlists/$playlist_id/followers", method = "DELETE"; scope = "playlist-modify-private")
 end

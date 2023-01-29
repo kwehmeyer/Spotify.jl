@@ -3,7 +3,7 @@
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-show
 
 """
-    show_get(show_id; market="")
+    show_get(show_id; market = "")
 
 **Summary**: Get a Spotify catalog information for a single show identified by it's unique Spotify ID.
 
@@ -24,7 +24,7 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 18 entries:
   :episodes             => {…
 ```
 """
-function show_get_single(show_id; market="")
+function show_get_single(show_id; market = "")
     return spotify_request("shows/$show_id?market=$market")
 end
 
@@ -32,7 +32,7 @@ end
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-multiple-shows
 
 """
-    show_get_multiple(ids; market="")
+    show_get_multiple(ids; market = "")
 
 **Summary**: Get Spotify catalog information for several shows based on their Spotify IDs.
 
@@ -50,14 +50,14 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
   :shows => JSON3.Object[{…
 ```
 """
-function show_get_multiple(ids; market="")
+function show_get_multiple(ids; market = "")
     return spotify_request("shows/?ids=$ids&market=$market")
 end
 
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-shows-episodes
 """
-    show_get_episodes(show_id; market="", limit=20, offset=0)
+    show_get_episodes(show_id; market = "", limit = 20, offset = 0)
 
 **Summary**: Get Spotify catalog information about a show’s episodes. Optional parameters
              can be used to limit the number of episodes returned.
@@ -66,11 +66,11 @@ end
 - `show_id` : The Spotify ID for the show
 
 # Optional keywords
-- `market::String` : An ISO 3166-1 alpha-2 country code. If a country code is specified,
+- `market`         : An ISO 3166-1 alpha-2 country code. If a country code is specified,
                      only episodes that are available in that market will be returned.
                      Default is set to "US".
 - `limit`          : Maximum number of items to return, default is set to 20. (0 < limit <= 50)
-- `offset::Int64` : Index of the first item to return, default is set to 0
+- `offset`         : Index of the first item to return, default is set to 0
 
 # Example
 ```julia-repl
@@ -81,7 +81,7 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
   :limit    => 20
 ```
 """
-function show_get_episodes(show_id; market="", limit=20, offset::Int64=0)
+function show_get_episodes(show_id; market = "", limit = 20, offset = 0)
     return spotify_request("shows/$show_id/episodes?market=$market&limit=$limit&offset=$offset")
 end
 
@@ -89,14 +89,14 @@ end
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-saved-shows
 
 """
-    show_get_saved(;limit=20, offset::Int64=0)
+    show_get_saved(;limit = 20, offset = 0)
 
 **Summary**: Get a list of shows saved in the current Spotify user's library. Optional parameters can
              be used to limit the number of shows returned.
 
 # Optional keywords
 - `limit`          : Maximum number of items to return, default is set to 20. (0 < limit <= 50)
-- `offset::Int64` : Index of the first item to return, default is set to 0
+- `offset`         : Index of the first item to return, default is set to 0
 
 # Example
 ```julia-repl
@@ -107,7 +107,7 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
   :limit    => 20
 ```
 """
-function show_get_saved(;limit=20, offset::Int64=0)
+function show_get_saved(;limit = 20, offset = 0)
     return spotify_request("me/shows?limit=$limit&offset=$offset"; scope = "user-library-read")
 end
 

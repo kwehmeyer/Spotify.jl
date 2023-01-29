@@ -62,24 +62,24 @@ function delete_current_from_own_playlist()
     current_playing_uri = curitem.uri
     cont = st.context
     if isnothing(cont)
-        printstyled(stdout, "\n  Can't delete " * scur * "\n  - Not currently playing from a known playlist.\n", color=:red)
+        printstyled(stdout, "\n  Can't delete " * scur * "\n  - Not currently playing from a known playlist.\n", color = :red)
         return ""
     end
     if cont.type !== "playlist"
-        printstyled(stdout, "\n  Can't delete " * scur * "\n  - Not currently playing from a playlist.\n", color=:red)
+        printstyled(stdout, "\n  Can't delete " * scur * "\n  - Not currently playing from a playlist.\n", color = :red)
         return ""
     end
     playlist_id = cont.uri[end - 21:end]
     playlist_details = playlist_get(playlist_id)[1]
     if playlist_details == JSON3.Object()
-        printstyled(stdout, "\n  Delete: Can't get playlist details.\n", color=:red)
+        printstyled(stdout, "\n  Delete: Can't get playlist details.\n", color = :red)
         return ""
     end
     plo_id = playlist_details.owner.id
     user_id = Spotify.get_user_name()
     pll_name = playlist_details.name
     if plo_id !== String(user_id)
-        printstyled(stdout, "\n  Can't delete " * scur * "\n  - The playlist $pll_name is owned by $plo_id, not $user_id.\n", color=:red)
+        printstyled(stdout, "\n  Can't delete " * scur * "\n  - The playlist $pll_name is owned by $plo_id, not $user_id.\n", color = :red)
         return ""
     end
     tracksinlist =  playlist_get_tracks(playlist_id)[1]
@@ -95,14 +95,14 @@ function delete_current_from_own_playlist()
         printstyled(stdout, "Going to delete ... $current_playing_uri from $playlist_id \n", color = :yellow)
         res = playlist_remove_playlist_item(playlist_id; track_uris = [current_playing_uri])[1]
         if res == JSON3.Object()
-            printstyled(stdout, "\n  Could not delete " * scur * "\n  from $pll_name. \n  This is due to technical reasons.\n", color=:red)
+            printstyled(stdout, "\n  Could not delete " * scur * "\n  from $pll_name. \n  This is due to technical reasons.\n", color = :red)
             return "✓"  
         else
             printstyled("The playlist's snapshot ID against which you deleted the track:\n  $(res.snapshot_id)", color = :green)
             return ""
         end
     else
-        printstyled(stdout, "\n  Can't delete " * scur * "\n  - Not part of current playlist $pll_name. Played too far?\n", color=:red)
+        printstyled(stdout, "\n  Can't delete " * scur * "\n  - Not part of current playlist $pll_name. Played too far?\n", color = :red)
         return ""
     end
 end

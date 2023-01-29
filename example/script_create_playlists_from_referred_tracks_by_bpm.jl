@@ -1,12 +1,15 @@
 using Spotify
 using Spotify.Playlists
 using Spotify.Tracks
+LOGSTATE.request_string = false
+LOGSTATE.authorization = false
 const batchsize = 50 # max
 # My very slowest jogging pace
 const minBPM = 63 
 # More than double the beat is meaningless. 
 const maxBPM = minBPM * 2 - 1
-# From experience, felt pace for a good playlist
+# From experience, pace deviation 
+# which feels identical.
 const deltaBPM = 2
 
 ########################################
@@ -17,6 +20,7 @@ playlistnames = Vector{String}()
 for batchno = 0:200
     offset = batchno * batchsize
     json, waitsec = playlist_get_current_user(limit = batchsize, offset = batchno * batchsize)
+    json == JSON3.Object() && break
     waitsec > 0 && throw("Too fast, whoa!")
     l = length(json.items)
     l == 0 && break
@@ -26,7 +30,7 @@ for batchno = 0:200
             push!(playlists, SpPlaylistId(item.id))
             push!(playlistnames, item.name)
         else
-            @show item.owner
+            printstyled("We're not including $(item.name), which is owned by $(item.owner.id)\n", color= :176)
         end
     end
 end
@@ -52,27 +56,33 @@ for (playlistid, playlistname) in zip(playlists, playlistnames)
 end
 track_collection = collect(track_set)
 n = length(track_collection)
+printstyled("$n unique tracks identified from 'playlistnames'\n", color= :176)
 
-####################################################################################
-# Order the tracks by categories or buckets. Each bucket will become a new playlist.
-####################################################################################
+
+######################################################################################
+# Order the tracks by categories or buckets. Each bucket is intended for new playlist.
+######################################################################################
 
 bucketmin = [i for i in minBPM:deltaBPM:maxBPM]
 bucketmax = [i+deltaBPM - 1 for i in minBPM:deltaBPM:maxBPM]
 # There are so many public playlist with 'bpm' in the name, we go for 'spm' instead,
 # meaning 'strokes per minute'.
 bucketnames = ["$mi-$(ma)spm" for (mi, ma) in zip(bucketmin, bucketmax)]
+
+# Prepare some containers we'll need
 Idbucket = Vector{SpId}
 Namebucket = Vector{String}
 tracknamebuckets = Vector{Namebucket}()
 idbuckets = Vector{Idbucket}()
 for i = 1:length(bucketnames)
-    # Oh so inelegant, but fill would make every element refer to the same object
+    # Oh so inelegant, but `fill`` would make every element refer to the same object
     push!(tracknamebuckets, Namebucket())
     push!(idbuckets, Idbucket())
 end
-i = 0
 
+# Now loop through track_collection, ask Spotify for the tempo, and drop in the right container.
+# Expect some temporary holdups since we're making a potentially large number of requests.
+i = 0
 for (trackid, trackname) in track_collection
     af, waitsec =  tracks_get_audio_features(trackid)
     waitsec > 0 && throw("Too fast, whoa!")
@@ -88,7 +98,9 @@ for (trackid, trackname) in track_collection
     tempo = min(tempo, maxBPM)
     bucketno = findfirst(x-> x >= tempo, bucketmin)
     i += 1
-    printstyled(round(i / n, digits = 3), " Tempo: $(round(tempo, digits=0)),  Bucket no.: $bucketno   $trackname \n", color=:176)
+    printstyled(rpad(round(i / n, digits = 3), 10), 
+        rpad(" Tempo: $(round(tempo, digits = 0))  Bucket no.: $bucketno ", 35), 
+        "$trackname \n", color = :176)
     push!(tracknamebuckets[bucketno], trackname)
     push!(idbuckets[bucketno], trackid)
 end
@@ -96,14 +108,14 @@ end
 for bucketno in 1:length(bucketnames)
     println(rpad(bucketnames[bucketno], 25), "No. of tracks: ", length(idbuckets[bucketno]))
 end
-# That was fine, but we risk that some buckets are empty.
+
 #####################################################
 # Create additional playlists (for non-empty buckets)
 #####################################################
 for (bucket_list_name, tracknamebucket, trackidbucket) in zip(bucketnames, tracknamebuckets, idbuckets)
-    if length(tracknamebucket) > 1
+    if length(tracknamebucket) > 1 # Only create non-empty playlists
         @show bucket_list_name
-        # Use existing playlistname if it exists
+        # Use existing playlistname if possible
         existingno = findfirst(x -> x == bucket_list_name, playlistnames)
         if existingno !== nothing
             playlistid = playlists[existingno]

@@ -1,20 +1,20 @@
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-playlist
 """
-    playlist_get(playlist_id::String; additional_types::String="track", fields::String="",
-    market="")
+    playlist_get(playlist_id; additional_types = "track", fields = "",
+    market = "")
 
   **Summary**: Get details about a playlist owned by a Spotify user.
 
   # Arguments
-  - `playlist_id::String` : Alphanumeric ID of the playlist
+  - `playlist_id` : Alphanumeric ID of the playlist
 
   # Optional keywords
-  - `additional_types::String` : "track" (default) or "episode"
-  - `fields::String` : Filters for the query, a comma-separated list of the fields to return.
+  - `additional_types`: "track" (default) or "episode"
+  - `fields`         : Filters for the query, a comma-separated list of the fields to return.
                       For example, to get just the added date and user ID of the adder,
                       fields = "items(added_at,added_by.id)". Default is set to "", which means
                       all fields are returned.
-  - `market::String` : An ISO 3166-1 alpha-2 country code. If a country code is specified,
+  - `market`         : An ISO 3166-1 alpha-2 country code. If a country code is specified,
                       only episodes that are available in that market will be returned.
                       Default is set to "US".
 
@@ -40,11 +40,11 @@
     :uri           => "spotify:playlist:37i9dQZF1E4vUblDJbCkV3"
   ```
 """
-function playlist_get(playlist_id; additional_types="track", fields="",
-                      market="")
+function playlist_get(playlist_id; additional_types = "track", fields = "",
+                      market = "")
     u = "playlists/$(playlist_id)"
     a  = urlstring(;additional_types, fields, market)
-    url = delimit(u, a)
+    url = build_query_string(u, a)
     spotify_request(url)
 end
 
@@ -54,23 +54,23 @@ end
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-playlists-tracks
 """
-    playlist_get_tracks(playlist_id::String; additional_types="track", limit=50,
-    offset=0, market="")
+    playlist_get_tracks(playlist_id; additional_types = "track", limit = 50,
+    offset = 0, market = "")
 
 **Summary**: Get details about the items of a playlist.
 
 # Arguments
-- `playlist_id::String` : Alphanumeric ID of the playlist
+- `playlist_id`   : Alphanumeric ID of the playlist
 
 # Optional keywords
-- `additional_types::String` : "track" (default) or "episode"
-- `fields::String` : Filters for the query, a comma-separated list of the fields to return.
+- `additional_types` : "track" (default) or "episode"
+- `fields` : Filters for the query, a comma-separated list of the fields to return.
                     For example, to get just the added date and user ID of the adder,
                     fields = "items(added_at,added_by.id)". Default is set to "", which means
                     all fields are returned.
 - `limit`          : Maximum number of items to return, default is set to 20. Minimum: 1. Maximum: 50.
-- `offset::Int64` : Index of the first item to return, default is set to 0
-- `market::String` : An ISO 3166-1 alpha-2 country code. If a country code is specified,
+- `offset`         : Index of the first item to return, default is set to 0
+- `market`         : An ISO 3166-1 alpha-2 country code. If a country code is specified,
                     only episodes that are available in that market will be returned.
                     Default is set to "US".
 
@@ -87,11 +87,11 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
 :total    => 50
 ```
 """
-function playlist_get_tracks(playlist_id; additional_types="track", fields="",
-                             limit=20, offset=0, market="")
+function playlist_get_tracks(playlist_id; additional_types = "track", fields = "",
+                             limit = 20, offset = 0, market = "")
     u = "playlists/$(playlist_id)/tracks"
     a = urlstring(;additional_types, fields, limit, offset, market)
-    url = delimit(u, a)
+    url = build_query_string(u, a)
     spotify_request(url; scope = "playlist-read-private")
 end
 
@@ -107,8 +107,8 @@ end
 - `track_uris`   A maximum of 100 items can be added in one request.
 # Optional keywords
 - `position`::Int     The position to insert the items, a zero-based index.
-    For example, to insert the items in the first position: position=0;
-    to insert the items in the third position: position=2.
+    For example, to insert the items in the first position: position = 0;
+    to insert the items in the third position: position = 2.
     The default value is -1, meaning we omit the argument in the API call.
     When omitted, the items will be appended to the playlist. Items are added in the order they
     are listed in the query string or request body.
@@ -142,8 +142,9 @@ julia> playlist_add_tracks_to_playlist(myownplaylist, track_uris)
 """
 function playlist_add_tracks_to_playlist(playlist_id, track_uris; position = -1)
     method = "POST"
-    url = "playlists/$playlist_id/tracks"
-    url *= urlstring(;position)
+    u = "playlists/$playlist_id/tracks"
+    a = urlstring(;position)
+    url = build_query_string(u, a)
     body = bodystring(;uris = track_uris)
     spotify_request(url, method; body,
         scope = "playlist-modify-public",
@@ -158,12 +159,31 @@ end
 """
     playlist_remove_playlist_item(playlist_id; track_uris)
 
-**Summary**: Remove one or more items from a user's playlist.
+**Summary**: Remove one or more items from a user's playlist. For 'deleting playlists', see 'unfollow_artists_users'.
 
 # Arguments
 - `playlist_id` The Spotify ID of the playlist.
 - `track_uris`   A maximum of 100 items can be removed in one request.
 
+# Example (to be run after `playlist_create_playlist`)
+```julia-repl
+julia> playlist = ans
+JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 15 entries:
+  :collaborative => false
+  :description   => ""
+  :external_urls => {…
+  :followers     => {…
+  ⋮              => ⋮
+
+julia> track_uris = json.tracks.items .|> t -> t.track.uri
+2-element Vector{String}:
+ "spotify:track:1vMMlstAC32gQJSY20rKTI"
+ "spotify:track:3bFoGv8y90y4fnaVwI3vSe"
+
+julia> playlist_remove_playlist_item(playlist_id; track_uris)[1]
+JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
+  :snapshot_id => "NCxhMmY2NzJhZWJiMTc4NjczNDUyY2E2ZjIyMTRjZTlmZjRlMTY2Nzll"
+```
 """
 function playlist_remove_playlist_item(playlist_id; track_uris)
     url = "playlists/$playlist_id/tracks"
@@ -175,13 +195,13 @@ end
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-list-of-current-users-playlists
 """
-    playlist_get_current_user(limit=20, offset::Int64=0)
+    playlist_get_current_user(limit = 20, offset = 0)
 
 **Summary**: Get a list of the playlists owned or followed by the current Spotify user.
 
 # Optional keywords
 - `limit`          : Maximum number of items to return, default is set to 20. Minimum: 1. Maximum: 50.
-- `offset::Int64` : Index of the first item to return, default is set to 0
+- `offset`         : Index of the first item to return, default is set to 0
 
 # Example
 ```julia-repl
@@ -196,24 +216,25 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
 :total    => 2
 ```
 """
-function playlist_get_current_user(;limit=20, offset=0)
-    url = "me/playlists"
-    url *= urlstring(; limit, offset)
-    spotify_request(url; scope = "playlist-read-private")
+function playlist_get_current_user(;limit = 20, offset = 0)
+    u = "me/playlists"
+    a = urlstring(;limit, offset)
+    url = build_query_string(u, a)
+    spotify_request(url;  scope = "playlist-read-private", additional_scope = "playlist-read-collaborative")
 end
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-list-users-playlists
 """
-playlist_get_user(user_id::String; limit=20, offset::Int64=0)
+playlist_get_user(user_id; limit = 20, offset = 0)
 
 **Summary**: Get a list of the playlists owned or followed by a Spotify user.
 
 # Arguments
-- `user_id::String` : Alphanumeric ID of the user or name (e.g. "smedjan")
+- `user_id` : Alphanumeric ID of the user or name (e.g. "smedjan")
 
 # Optional keywords
 - `limit`          : Maximum number of items to return, default is set to 20
-- `offset::Int64` : Index of the first item to return, default is set to 0
+- `offset`         : Index of the first item to return, default is set to 0
 
 # Example
 ```julia-repl
@@ -228,33 +249,49 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
 :total    => 98
 ```
 """
-function playlist_get_user(user_id; limit=20, offset::Int64=0)
-    spotify_request("users/$user_id/playlists?limit=$limit&offset=$offset")
+function playlist_get_user(user_id; limit = 20, offset = 0)
+    u = "users/$user_id/playlists"
+    a = urlstring(;limit, offset)
+    url = build_query_string(u, a)
+    spotify_request(url;  scope = "playlist-read-private", additional_scope = "playlist-read-collaborative")
 end
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/create-playlist
 """
-    playlist_create_playlist(name::String; user_id:: ,,,public::Bool = true, collaborative::Bool = false, description::String = "")
+    playlist_create_playlist(name; user_id = SpUserId(), public = true, collaborative = false, description = "")
 
 **Summary**: Create a playlist for a Spotify user. (The playlist will be empty until you add tracks.)
 
 # Arguments
-- `name::String` :   The name for the new playlist, for example "Your Coolest Playlist". This name does not need to be unique; a user may have several playlists with the same name.
+- `name` :   The name for the new playlist, for example "Your Coolest Playlist". This name does not need to be unique; a user may have several playlists with the same name.
 
 # Optional keywords
 - `user_id`                 Defaults to SpUserId(), from the .ini file
 - `public`::Boolean         Defaults to true. If true the playlist will be public, if false it will be private. To be able to create private playlists, the user must have granted the playlist-modify-private scope
 - `collaborative`::Boolean  Defaults to false. If true the playlist will be collaborative. Note: to create a collaborative playlist you must also set public to false. To create collaborative playlists you must have granted playlist-modify-private and playlist-modify-public scopes.
-- `description`::String     Value for playlist description as displayed in Spotify Clients and in the Web API.
+- `description`     Value for playlist description as displayed in Spotify Clients and in the Web API.
 
 # Example
 ```
+julia> user_id = get_user_name();
+
+julia> description = "Songs about orcs learning to code after being laid off from the mines of Mordor";
+
+julia> playlist_create_playlist("Temporary private playlist")[1]
+JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 15 entries:
+  :collaborative => false
+  :description   => nothing
+  :external_urls => {…
+  :followers     => {…
+  :href          => "https://api.spotify.com/v1/playlists/6VX6WsbD9CpEGMAxuQEbm3"
+  ⋮              => ⋮
 ```
 """
-function playlist_create_playlist(name::String; user_id = SpUserId(), public::Bool = true, collaborative::Bool = false, description::String = "")
+function playlist_create_playlist(name; user_id = SpUserId(), public = true, collaborative = false, description = "")
     method = "POST"
     url = "users/$user_id/playlists"
-    body = """{"name": "$name", "description": "$description",  "public": $public, "collaborative": $collaborative}"""
+    body = bodystring(;name, description, public, collaborative)
+   # body = """{"name": "$name", "description": "$description",  "public": $public, "collaborative": $collaborative}"""
     spotify_request(url, method; body,
         scope = "playlist-modify-public",
         additional_scope = "playlist-modify-private")
@@ -264,44 +301,46 @@ end
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-featured-playlists
 """
-    playlist_get_featured(;country="", limit=20, locale::String="en_US",
-                               offset::Int64=0, timestamp::String="$(Dates.now())")
+    playlist_get_featured(;country = "", limit = 20, locale = "",
+                               offset = 0, timestamp = "$(Dates.now())")
 
 **Summary**: Get a list of Spotify featured playlists (shown, for example, on a Spotify player's 'Browse' tab).
 
 # Optional keywords
-- `country::String` : An ISO 3166-1 alpha-2 country code. Provide this parameter if you want
+- `country`       : An ISO 3166-1 alpha-2 country code. Provide this parameter if you want
                     the list of returned items to be relevant to a particular country.
-                    Default is set to "US".
+                    If omitted, the returned items will be relevant to all countries.
 - `limit`          : Maximum number of items to return, default is set to 20
-- `locale::String` : The desired language, consisting of a lowercase ISO 639-1 language code and an uppercase
+- `locale`         : The desired language, consisting of a lowercase ISO 639-1 language code and an uppercase
                     ISO 3166-1 alpha-2 country code, joined by an underscore. For example: es_MX, meaning "Spanish (Mexico)".
                     Provide this parameter if you want the results returned in a particular language (where available).
                     Default is set to "en_US".
-- `offset::Int64` : Index of the first item to return, default is set to 0
-- `timestamp::String` : A timestamp in ISO 8601 format: yyyy-MM-ddTHH:mm:ss. Use this parameter to specify the user's local time
+- `offset`         : Index of the first item to return, default is set to 0
+- `timestamp` : A timestamp in ISO 8601 format: yyyy-MM-ddTHH:mm:ss. Use this parameter to specify the user's local time
                         to get results tailored for that specific date and time in the day.
                         Default is set to user's current time.
 
 # Example
 ```julia-repl
-julia> playlist_get_featured(locale="en_UK")[1]
+julia> playlist_get_featured(locale = "en_UK")[1]
 JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 2 entries:
 :message   => "Tuesday jams"
 :playlists => {…
 ```
 """
-function playlist_get_featured(;country="US", limit=20, locale="en_US",
-                               offset=0, timestamp="")
-    url = "browse/featured-playlists"
-    url *= urlstring(;country, limit, locale, offset, timestamp)
+function playlist_get_featured(;country = "", limit = 20, locale = "",
+                               offset = 0, timestamp = "")
+    assert_locale(locale)
+    u = "browse/featured-playlists"
+    a = urlstring(;country, limit, locale, offset, timestamp)
+    url = build_query_string(u, a)                             
     spotify_request(url)
 end
 
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-categories-playlists
 """
-    playlist_get_category(category_id; country="", limit=20, offset=0)
+    playlist_get_category(category_id; country = "", limit = 20, offset = 0)
 
 **Summary**: Get a list of Spotify playlists tagged with a particular category.
 
@@ -311,8 +350,9 @@ end
 # Optional keywords
 - `country`       : An ISO 3166-1 alpha-2 country code. Provide this parameter if you want
                     the list of returned items to be relevant to a particular country.
+                    If omitted, the returned items will be relevant to all countries.
 - `limit`         : Maximum number of items to return, default is set to 20
-- `offset::Int64` : Index of the first item to return, default is set to 0
+- `offset`        : Index of the first item to return, default is set to 0
 
 # Example
 ```julia-repl
@@ -321,21 +361,22 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
 :playlists => {…
 ```
 """
-function playlist_get_category(category_id; country="", limit=20, offset=0)
-    url = "browse/categories/$category_id/playlists"
-    url *= urlstring(;country, limit, offset)
+function playlist_get_category(category_id; country = "", limit = 20, offset = 0)
+    u = "browse/categories/$category_id/playlists"
+    a = urlstring(;country, limit, offset)
+    url = build_query_string(u, a)
     spotify_request(url)
 end
 
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-playlist-cover
 """
-    playlist_get_cover_image(playlist_id::String)
+    playlist_get_cover_image(playlist_id)
 
 **Summary**: Get the current image associated with a specific playlist.
 
 # Arguments
-- `playlist_id::String` : Alphanumeric ID of the playlist
+- `playlist_id` : Alphanumeric ID of the playlist
 
 # Example
 ```julia-repl

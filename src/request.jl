@@ -57,10 +57,10 @@ function spotify_request(url_ext::String, method::String= "GET";
             if e.status == 400  # e.g. when a search query is empty
                 return JSON3.Object(), 0
             elseif e.status == 403
-                printstyled("  This code may be triggered by insufficient authorization scope(s).\n Consider: `apply_and_wait_for_implicit_grant()`", color=:red)
-                printstyled("  scope(s) required for this API call: ", scope, " ", additional_scope, "\n", color=:red)
-                printstyled("     scopes in current credentials: ", spotcred().ig_scopes, "\n", color=:red)
-                logstate.authorization && printstyled("               authorization field: ", authorizationfield, "\n", color=:red)
+                printstyled("  This code may be triggered by insufficient authorization scope(s).\n Consider: `apply_and_wait_for_implicit_grant()`", color = :red)
+                printstyled("  scope(s) required for this API call: ", scope, " ", additional_scope, "\n", color = :red)
+                printstyled("     scopes in current credentials: ", spotcred().ig_scopes, "\n", color = :red)
+                logstate.authorization && printstyled("               authorization field: ", authorizationfield, "\n", color = :red)
                 return JSON3.Object(), 0
             elseif e.status == 404 # Not found, e.g. when a track/playlist/album ID is incorrect
                 return JSON3.Object(), 0
@@ -114,6 +114,11 @@ function spotify_request(url_ext::String, method::String= "GET";
     end
 end
 
+"""
+    request_to_stdout(method, url, body, authorizationfield, logstate, no_mistake)
+
+Print a request after it is made.
+"""
 function request_to_stdout(method, url, body, authorizationfield, logstate, no_mistake)
     if no_mistake
         color = :light_black

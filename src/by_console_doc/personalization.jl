@@ -1,7 +1,7 @@
 # Also see related functions in users.jl and follow.jl
 
 """
-    top_tracks(;offset=0, limit=20, time_range="medium_term")
+    top_tracks(;offset = 0, limit = 20, time_range = "medium_term")
 
 **Summary**: Get the current user's top tracks based on calculated affinity.
 
@@ -14,7 +14,7 @@
                             * `medium_term` : Approx. last 6 months
                             * `short_term` : Approx. last 4 weeks
 """
-function top_tracks(;offset=0, limit=20, time_range="medium_term")
+function top_tracks(;offset = 0, limit = 20, time_range = "medium_term")
 
     #url1 = "me/top/tracks?offset=$offset&limit=$limit"
     url1 = "me/top/tracks?offset=$offset&limit=$limit"
@@ -26,7 +26,7 @@ end
 
 
 """
-    top_artists(;offset=0, limit=20, time_range="medium_term")
+    top_artists(;offset = 0, limit = 20, time_range = "medium_term")
 
 **Summary**: Get the current user's top artists based on calculated affinity.
 
@@ -39,7 +39,7 @@ end
                             * `medium_term` : Approx. last 6 months
                             * `short_term` : Approx. last 4 weeks
 """
-function top_artists(;offset=0, limit=20, time_range="medium_term")
+function top_artists(;offset = 0, limit = 20, time_range = "medium_term")
 
     url1 = "me/top/artists?offset=$offset&limit=$limit"
     url2 = "&time_range=$time_range"

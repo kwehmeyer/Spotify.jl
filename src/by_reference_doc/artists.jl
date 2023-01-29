@@ -26,7 +26,7 @@ end
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-artists-albums
 
 """
-    artist_get_albums(artist_id; include_groups="None", country="US", limit=20, offset=0)
+    artist_get_albums(artist_id; include_groups = "album", country = "", limit = 20, offset = 0)
 
 **Summary**: Get Spotify catalog information about an artist's albums.
 
@@ -41,8 +41,9 @@ end
                      * `single`
                      * `compilation`
                      * `appears_on`
-- `country` : An ISO 3166-1 alpha-2 country code string. Use this to limit the response to one particular
-              geographical market. Default is set to "US".
+- `country`        : An ISO 3166-1 alpha-2 country code. Provide this parameter if you want
+                     the list of returned items to be relevant to a particular country.
+                     If omitted, the returned items will be relevant to all countries.
 - `limit` : The maximum number of tracks to return. Default is set to 20.
 - `offset` : The index of the first track to return. Default is 0.
 
@@ -56,20 +57,18 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 10 entries:
   :href          => "https://api.spotify.com/v1/artists/0YC192cP3KPCRWx8zr8MfZ"
 ```
 """
-function artist_get_albums(artist_id; include_groups="album", country="US", limit=20, offset=0)
-
-    url1 = "artists/$artist_id?include_groups=$include_groups"
-    url2 = "&country=$country&limit=$limit&offset=$offset"
-
-    return spotify_request(url1 * url2)
-
+function artist_get_albums(artist_id; include_groups = "album", country = "", limit = 20, offset = 0)
+    u = "artists/$artist_id"
+    a = urlstring(; include_groups, country, limit, offset)
+    url = build_query_string(u, a)
+    spotify_request(url)
 end
 
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-artists-top-tracks
 
 """
-    artist_top_tracks(artist_id; country="US")
+    artist_top_tracks(artist_id; market = "")
 
 **Summary**: Get Spotify catalog information about an artist's top tracks by country.
 
@@ -77,8 +76,14 @@ end
 - `artist_id` : The Spotify ID of the artist
 
 # Optional keywords
-- `country` : An ISO 3166-1 alpha-2 country code string. Use this to limit the response to one particular
-              geographical market. Default is set to "US".
+- `market`       : An ISO 3166-1 alpha-2 country code. If a country code is specified, only content that is 
+                   available in that market will be returned. If a valid user access token is specified in 
+                   the request header, the country associated with the user account will take priority over 
+                   this parameter.
+
+                   Note: If neither market or user country are provided, the content is considered unavailable 
+                   for the client. Users can view the country that is associated with their account in the 
+                   account settings.
 
 # Example
 ```julia-repl
@@ -87,8 +92,12 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
   :tracks => JSON3.Object[{…
 ```
 """
-function artist_top_tracks(artist_id; country="US")
-    return spotify_request("artists/$artist_id/top-tracks?country=$country")
+function artist_top_tracks(artist_id; market = "US")
+    #return spotify_request("artists/$artist_id/top-tracks?country=$country")
+    u = "artists/$artist_id/top-tracks"
+    a = urlstring(;market)
+    url = build_query_string(u, a)
+    spotify_request(url)
 end
 
 

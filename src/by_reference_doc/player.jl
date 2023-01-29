@@ -1,7 +1,7 @@
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-information-about-the-users-current-playback
 
 """
-    player_get_state(;additional_types::String="track", market="")
+    player_get_state(;additional_types = "track", market = "")
 
 **Summary**: Get information about the user’s current playback state, including track or episode,
              progress, and active device.
@@ -32,11 +32,10 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 10 entries:
   :is_playing             => true
 ```
 """
-function player_get_state(;additional_types="track", market="")
-    url = "me/player?additional_types=$additional_types"
-    if market !== ""
-        url *= "&market=$market"
-    end
+function player_get_state(;additional_types = "track", market = "")
+    u = "me/player"
+    a = urlstring(;additional_types, market)
+    url = build_query_string(u, a)
     spotify_request(url; scope = "user-read-playback-state")
 end
 
@@ -73,13 +72,13 @@ end
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-the-users-currently-playing-track
 
 """
-    player_get_current_track(;additional_types="track", market="")
+    player_get_current_track(;additional_types = "track", market = "")
 
 **Summary**: Get the object currently being played on the user's Spotify account.
 
 # Optional keywords
-- `additional_types::String` : "track" (default) or "episode"
-- `market::String` : An ISO 3166-1 alpha-2 country code. If a country code is specified,
+- `additional_types` : "track" (default) or "episode"
+- `market`         : An ISO 3166-1 alpha-2 country code. If a country code is specified,
                      only episodes that are available in that market will be returned.
                      Default is set to "US".
 
@@ -96,11 +95,11 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
   :is_playing             => true
 ```
 """
-function player_get_current_track(;additional_types="track", market="")
+function player_get_current_track(;additional_types = "track", market = "")
 
     u = "me/player/currently-playing"
     a = urlstring(;additional_types, market)
-    url = delimit(u, a)
+    url = build_query_string(u, a)
     spotify_request(url; scope = "user-read-playback-state")
 end
 
@@ -108,12 +107,12 @@ end
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-recently-played
 
 """
-    player_get_recent_tracks(;duration::Int64=1, limit=20)
+    player_get_recent_tracks(;duration = 1, limit = 20)
 
 **Summary**: Get current user's recently played tracks.
 
 # Optional keywords
-- `duration::Int64` : Number of days to look in the past, default is set to 1
+- `duration` : Number of days to look in the past, default is set to 1
 - `limit` : Maximum number of items to return, default is set to 20
 
 # Example
@@ -127,20 +126,20 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 5 entries:
   :href    => "https://api.spotify.com/v1/me/player/recently-played?after=1636410050&limit=20"
 ```
 """
-function player_get_recent_tracks(;duration::Int64=1, limit=20)
+function player_get_recent_tracks(;duration = 1, limit = 20)
     u = "me/player/recently-played"
     # Subtract duration from current date and convert to Int64
     starting_date = Dates.datetime2unix(Dates.now() - Dates.Day(duration))
     after = round(Int64, starting_date)
     a = urlstring(;after, limit)
-    url = delimit(u, a)
+    url = build_query_string(u, a)
     spotify_request(url; scope = "user-read-recently-played")
 end
 
 
 #https://developer.spotify.com/documentation/web-api/reference/#/operations/pause-a-users-playback
 """
-    player_pause(;device_id="")
+    player_pause(;device_id = "")
 
 **Summary**: Pause playback on the user's account.
 
@@ -150,10 +149,10 @@ end
     Example value:
     "0d1841b0976bae2a3a310dd74c0f3df354899bc8"
 """
-function player_pause(;device_id="")
+function player_pause(;device_id = "")
     u = "me/player/pause"
     a = urlstring(;device_id)
-    url = delimit(u, a)
+    url = build_query_string(u, a)
     spotify_request(url, "PUT"; scope= "user-modify-playback-state")
 end
 
@@ -164,7 +163,7 @@ end
 
 #https://developer.spotify.com/documentation/web-api/reference/#/operations/start-a-users-playback
 """
-    player_resume_playback(;device_id="", context_uri="", uris="", offset=0, position_ms=0)
+    player_resume_playback(;device_id = "", context_uri = "", uris = "", offset = 0, position_ms = 0)
 
 **Summary**: Start a new context or resume current playback on the user's active device.
 
@@ -203,10 +202,10 @@ Single tracks must also be enclosed in vector brackets:
 player_resume_playback(; uris = [SpUri("2knANHszLdV409tIWivfVR")])
 ```
 """
-function player_resume_playback(;device_id="", context_uri="", uris="", offset=0, position_ms=0)
+function player_resume_playback(;device_id = "", context_uri = "", uris = "", offset = 0, position_ms = 0)
     u = "me/player/play"
     a = urlstring(;device_id)
-    url = delimit(u, a)
+    url = build_query_string(u, a)
     body = bodystring(;context_uri, uris, offset, position_ms)
     spotify_request(url, "PUT"; body, scope= "user-modify-playback-state")
 end
@@ -222,7 +221,7 @@ end
 function player_skip_to_next(;device_id = "")
     u = "me/player/next"
     a = urlstring(;device_id)
-    url = delimit(u, a)
+    url = build_query_string(u, a)
     body = bodystring(;)
     spotify_request(url, "POST"; body, scope = "user-modify-playback-state")
 end
@@ -239,7 +238,7 @@ end
 function player_skip_to_previous(;device_id = "")
     u = "me/player/previous"
     a = urlstring(;device_id)
-    url = delimit(u, a)
+    url = build_query_string(u, a)
     body = bodystring(;)
     spotify_request(url, "POST"; body, scope = "user-modify-playback-state")
 end

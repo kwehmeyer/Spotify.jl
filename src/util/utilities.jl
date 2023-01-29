@@ -9,7 +9,17 @@ Spotify app -> Right click -> Share -> Copy embed code to clipboard
 strip_embed_code(s) = SpId(match(r"\b[a-zA-Z0-9]{22}", s).match)
 
 
-
+function assert_locale(locale)
+    # Spotify ignores this incorrect value.
+    locale == "en" && return nothing
+    if locale != ""
+        @assert occursin("_", locale)
+        lang, langcountry = split(locale, '_')
+        @assert lang == lowercase(lang)
+        @assert langcountry == uppercase(langcountry)
+    end
+    nothing
+end
 
 # The below is about the select_calls()
 # functionality.
@@ -179,7 +189,7 @@ function print_as_console_input(io::IO, v::Vector)
     print(stdout, "\"")
 end
 function print_as_console_input(io::IO, fexpr::Expr)
-    printstyled(io, "julia> ", color=:blue)
+    printstyled(io, "julia> ", color = :blue)
     f = fexpr.args[1]
     print(io, "$f(")
     if length(fexpr.args) == 1
@@ -211,14 +221,14 @@ function make_default_calls_and_print(fs::Vector{Symbol})
         argnames = get(names_by_func, f, ())
         argvals = default_values(argnames)
         fexpr = Expr(:call, f, argvals...)
-        printstyled(stdout, "```julia-repl\n", color=:blue)
+        printstyled(stdout, "```julia-repl\n", color = :blue)
         print_as_console_input(stdout, fexpr)
         result = Main.eval(fexpr)
         display(result[1])
         if result[2] > 0
             println("Retry in $(result[2])")
         end
-        printstyled("```\n", color=:blue)
+        printstyled("```\n", color = :blue)
         println("---------------------")
     end
     if length(fs) == 1

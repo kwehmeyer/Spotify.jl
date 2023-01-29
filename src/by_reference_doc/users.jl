@@ -116,7 +116,7 @@ function users_get_current_user_top_items(;type = "artists",
         time_range == "short_term"
     u1 = "me/top/" * urlstring(type)
     u2 = urlstring(; time_range, limit, offset)
-    url = delimit(u1, u2)
+    url = build_query_string(u1, u2)
     spotify_request(url; scope = "user-top-read", additional_scope = "user-read-email")
 end
 
@@ -129,7 +129,7 @@ end
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-followed
 
 # Implemented in follow.jl
-# follow_get(type="artist", limit=20)
+# follow_get(type="artist", limit = 20)
 
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/check-current-user-follows

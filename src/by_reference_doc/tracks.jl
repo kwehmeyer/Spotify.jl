@@ -113,7 +113,7 @@ end
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-track
 
 """
-    tracks_get(track_id; market="")
+    tracks_get(track_id; market = "")
 
 **Summary**: Get a spotify catalog information for a single track identified by it's unique Spotify ID.
 
@@ -121,7 +121,7 @@ end
 - `track_id` : The Spotify ID for the track.
 
 # Optional keywords
-- `market::String` : An ISO 3166-1 alpha-2 country code. If a country code is specified,
+- `market`         : An ISO 3166-1 alpha-2 country code. If a country code is specified,
                      only episodes that are available in that market will be returned.
                      Default is set to "US".
 
@@ -138,10 +138,10 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 18 entries:
   :external_urls => {…
 ```
 """
-function tracks_get_single(track_id; market="")
+function tracks_get_single(track_id; market = "")
     u = "tracks/$track_id"
     a = urlstring(; market)
-    url = delimit(u, a)
+    url = build_query_string(u, a)
     return spotify_request(url)
 end
 
@@ -149,7 +149,7 @@ end
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-several-tracks
 
 """
-    tracks_get_multiple(ids; market="")
+    tracks_get_multiple(ids; market = "")
 
 **Summary**: Get Spotify catalog information for multiple tracks based on their Spotify IDs.
 
@@ -157,21 +157,21 @@ end
 - `ids` : A comma-separated list of the Spotify IDs.
 
 # Optional keywords
-- `market::String` : An ISO 3166-1 alpha-2 country code. If a country code is specified,
+- `market`         : An ISO 3166-1 alpha-2 country code. If a country code is specified,
                      only episodes that are available in that market will be returned.
                      Default is set to "US".
 
 # Example
 ```julia-repl
-julia> tracks_get_multiple("4iV5W9uYEdYUVa79Axb7Rh,1301WleyT98MSxVHPZCA6")[1]
+julia> tracks_get_multiple(ids = "4iV5W9uYEdYUVa79Axb7Rh,1301WleyT98MSxVHPZCA6")[1]
 JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
   :tracks => Union{Nothing, JSON3.Object}[{…
 ```
 """
-function tracks_get_multiple(ids; market="")
-    u = "tracks/$tracks"
-    a = urlstring(; market)
-    url = delimit(u, a)
+function tracks_get_multiple(;ids, market = "")
+    u = "tracks"
+    a = urlstring(; ids, market)
+    url = build_query_string(u, a)
     return spotify_request(url)
 end
 
@@ -179,13 +179,13 @@ end
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-saved-tracks
 
 """
-    tracks_get_saved(;limit=20, market="", offset=0)
+    tracks_get_saved(;limit = 20, market = "", offset = 0)
 
 **Summary**: Get a list of the songs saved in the current Spotify user's 'Your Music' library.
 
 # Optional keywords
 - `limit`          : Maximum number of items to return, default is set to 20
-- `market::String` : An ISO 3166-1 alpha-2 country code. If a country code is specified,
+- `market`         : An ISO 3166-1 alpha-2 country code. If a country code is specified,
                      only episodes that are available in that market will be returned.
                      Default is set to "US".
 - `offset` : Index of the first item to return, default is set to 0
@@ -200,10 +200,10 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
   :next     => "https://api.spotify.com/v1/me/tracks?offset=20&limit=20&market=US"
 ```
 """
-function tracks_get_saved(;limit=20, market="", offset=0)
+function tracks_get_saved(;limit = 20, market = "", offset = 0)
     u = "me/tracks"
     a = urlstring(; market, offset)
-    url = delimit(u, a)
+    url = build_query_string(u, a)
     return spotify_request(url, scope = "user-library-read")
 end
 
@@ -267,11 +267,11 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 2 entries:
 ```
 """
 function tracks_get_recommendations(seeds_dict::Dict; 
-                              track_attributes_dict = Dict{String, String}(), limit=50, market="")
+                              track_attributes_dict = Dict{String, String}(), limit = 50, market = "")
     u = "recommendations" 
     a1 = urlstring(seeds_dict)
     a2 = urlstring(track_attributes_dict)
     a3 = urlstring(;limit, market)
-    url = delimit(u, a1, a2, a3)
+    url = build_query_string(u, a1, a2, a3)
     return spotify_request(url)
 end

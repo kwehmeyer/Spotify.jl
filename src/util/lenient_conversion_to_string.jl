@@ -29,11 +29,11 @@ function urlstring(s)
 end
 
 """
-    delimit(xs::Vararg{String,N} where N)
+    build_query_string(xs::Vararg{String,N} where N)
 
 Includes separators if needed, for urlstrings.
 """
-function delimit(xs::Vararg{String,N} where N)
+function build_query_string(xs::Vararg{String,N} where N)
     sf = first(xs)
     if sf == ""
         throw("The first argument can not be an empty string")
@@ -48,20 +48,18 @@ function delimit(xs::Vararg{String,N} where N)
         first(xs) * "?" * join(others, "&")
     end
 end
+
 ###
 
 function bodystring(;kwds...)
-    #println("1----------")
     isempty(kwds) && return ""
     bodystring(kwds)
 end
 function bodystring(kwp::Pair)
-    #println("2----------")
     s = bodystring(kwp[1]) * ": " * bodystring(kwp[2])
     s
 end
 function bodystring(kwval::Vector)
-    #println("3----------")
     s = "["
     parts = ["$(bodystring(v))" for v in kwval]
     s *= join(parts, ", ")
@@ -69,7 +67,6 @@ function bodystring(kwval::Vector)
     s
 end
 function bodystring(kwds::Base.Pairs)
-    #println("4----------")
     s = "{"
     parts = ["$(bodystring(p))" for p in kwds if p[2] !== "" && p[2] !== 0]
     s *= join(parts, ",")
@@ -77,29 +74,23 @@ function bodystring(kwds::Base.Pairs)
     s
 end
 function bodystring(s::Symbol)
-    #println("5----------")
     "\"$s\""
 end
 function bodystring(d::Dict)
-    #println("6----------")
     vect = map(zip(keys(d), values(d))) do (k,v)
         Symbol(k) => convert(String, v)
     end
     bodystring(vect)
 end
 function bodystring(s::T) where T<: Union{SpUri, SpId, SpCategoryId, SpUserId, SpUrl}
-    #println("7----------")
     "\"$(s.s)\""
 end
 function bodystring(s::String)
-    #println("8----------")
     "\"$s\""
 end
 function bodystring(s::Bool)
-    #println("9----------")
     "$s"
 end
 function bodystring(s::T) where T<:Number
-    #println("10----------")
     "$s"
 end

@@ -1,15 +1,15 @@
 using Spotify, Spotify.Player, Spotify.Tracks
-# Note, we don't change LOGSTATE and get lots of output.
+# Note, we don't change LOGSTATE and so get lots of output.
 json = player_get_state()[1]
 @assert json != JSON3.Object() "None playing (on any device)"
 it = json.item
 trackid = SpId(it.id)
 af = tracks_get_audio_features(trackid)[1]
 begin
-    printstyled(rpad("Currently playing: ", 20), color=:light_black)
-    printstyled(rpad(it.name, 80), color=:green)
+    printstyled(rpad("Currently playing: ", 20), color = :light_black)
+    printstyled(rpad(it.name, 80), color = :green)
     for ar in it.artists
-        printstyled(rpad(ar.name, 40), color=:blue)
+        printstyled(rpad(ar.name, 40), color = :blue)
     end
     print("\n")
 end
