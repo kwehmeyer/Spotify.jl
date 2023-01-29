@@ -149,11 +149,11 @@ end
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-several-tracks
 
 """
-    tracks_get_multiple(ids; market = "")
+    tracks_get_multiple(;ids, market = "")
 
 **Summary**: Get Spotify catalog information for multiple tracks based on their Spotify IDs.
 
-# Arguments
+# Keyword arguments
 - `ids` : A comma-separated list of the Spotify IDs.
 
 # Optional keywords
@@ -275,3 +275,40 @@ function tracks_get_recommendations(seeds_dict::Dict;
     url = build_query_string(u, a1, a2, a3)
     return spotify_request(url)
 end
+
+
+## https://developer.spotify.com/documentation/web-api/reference/library/remove-tracks-user/
+@doc """
+# Remove Tracks for Current User
+**Summary**: Remove one or more tracks for the current user's 'Your Music' library.\n
+
+`track_ids` _Required_: A comma-separated list of the Spotify IDs. Maximum 50.\n
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/library/remove-tracks-user/)
+""" ->
+function tracks_remove_from_library(track_ids)
+    return spotify_request("me/tracks?ids=$track_ids", method = "DELETE")
+end
+
+
+
+## https://developer.spotify.com/documentation/web-api/reference/library/save-tracks-user/
+@doc """
+# Save Tracks for Current User
+** Summary**: Save one or more tracks to the current user's 'Your Music' library.\n
+
+`track_ids` _Required_: A comma-separated list of Spotify IDs. Maximum 50. \n
+
+# Note
+- Scope was unsufficient, also when accessed through the web console:
+┌ Info: 403 (code meaning): Forbidden - The server understood the request, but is refusing to fulfill it.
+└               (response message): Insufficient client scope
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/library/save-tracks-user/)
+""" ->
+function tracks_save_library(track_ids)
+    return spotify_request("me/tracks?ids=$track_ids", method = "PUT")
+end
+
+
+

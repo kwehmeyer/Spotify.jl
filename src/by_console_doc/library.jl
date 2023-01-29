@@ -24,92 +24,37 @@ library_check_saved_albums(album_ids) = album_get_contains(album_ids)
 
 #### DELETE ####
 
-## https://developer.spotify.com/documentation/web-api/reference/library/remove-albums-user/
-@doc """
-# Remove Albums for Current User
-**Summary**: Remove one or more albums for the current user's 'Your Music' library.\n
-
-`album_ids` _Required_: A comma-separated list of the Spotify IDs. Maximum 50.\n
-
-[Reference](https://developer.spotify.com/documentation/web-api/reference/library/remove-albums-user/)
-""" ->
+"Same as album_remove_from_library in Albums"
 function library_remove_albums(album_ids)
-    return spotify_request("me/albums?ids=$album_ids", method = "DELETE")
+    album_remove_from_library(album_ids)
 end
 
 
-
-## https://developer.spotify.com/documentation/web-api/reference/library/remove-shows-user/
-@doc """
-# Remove Shows for Current User
-**Summary**: Remove one or more shows for the current user's library.\n
-
-`show_ids` _Required_: A comma-separated list of the Spotify IDs. Maximum 50.\n
-
-[Reference](https://developer.spotify.com/documentation/web-api/reference/library/remove-shows-user/)
-""" ->
+"Same as show_remove_from_library"
 function library_remove_shows(show_ids)
-    return spotify_request("me/shows?ids=$show_ids", method = "DELETE")
+    show_remove_from_library(show_ids)
 end
 
-
-## https://developer.spotify.com/documentation/web-api/reference/library/remove-tracks-user/
-@doc """
-# Remove Tracks for Current User
-**Summary**: Remove one or more tracks for the current user's 'Your Music' library.\n
-
-`track_ids` _Required_: A comma-separated list of the Spotify IDs. Maximum 50.\n
-
-[Reference](https://developer.spotify.com/documentation/web-api/reference/library/remove-tracks-user/)
-""" ->
+"Same as tracks_remove_from_library"
 function library_remove_tracks(track_ids)
-    return spotify_request("me/tracks?ids=$track_ids", method = "DELETE")
+    tracks_remove_from_library(track_ids)
 end
 
 #### PUT #####
 
-## https://developer.spotify.com/documentation/web-api/reference/library/save-albums-user/
-@doc """
-# Save Albums for Current User
-** Summary**: Save one or more albums to the current user's 'Your Music' library.\n
-
-`album_ids` _Required_: A comma-separated list of Spotify IDs. Maximum 50. \n
-
-[Reference](https://developer.spotify.com/documentation/web-api/reference/library/save-albums-user/)
-""" ->
-function library_save_album(album_ids)
-    return spotify_request("me/albums?ids=$album_ids", method = "PUT")
-end
-
-
-## https://developer.spotify.com/documentation/web-api/reference/library/save-shows-user/
-@doc """
-# Save Shows for Current User
-** Summary**: Save one or more shows to the current user's library.\n
-
-`shows_ids` _Required_: A comma-separated list of Spotify IDs. Maximum 50. \n
-
-[Reference](https://developer.spotify.com/documentation/web-api/reference/library/save-shows-user/)
-""" ->
-function library_save_show(show_ids)
-    return spotify_request("me/shows?ids=$show_ids", method = "PUT")
-end
-
-
-## https://developer.spotify.com/documentation/web-api/reference/library/save-tracks-user/
-@doc """
-# Save Tracks for Current User
-** Summary**: Save one or more tracks to the current user's 'Your Music' library.\n
-
-`track_ids` _Required_: A comma-separated list of Spotify IDs. Maximum 50. \n
-
-# Note
-- Scope was unsufficient, also when accessed through the web console:
-┌ Info: 403 (code meaning): Forbidden - The server understood the request, but is refusing to fulfill it.
-└               (response message): Insufficient client scope
-
-[Reference](https://developer.spotify.com/documentation/web-api/reference/library/save-tracks-user/)
-""" ->
+"Same as tracks_save_library"
 function library_save_track(track_ids)
-    return spotify_request("me/tracks?ids=$track_ids", method = "PUT")
+    tracks_save_library(track_ids)
+end
+
+
+"Same as show_save_library"
+function library_save_show(show_ids)
+    show_save_library(show_ids)
+end
+
+
+"Same as album_save_library"
+function library_save_album(album_ids)
+    album_save_library(album_ids)
 end

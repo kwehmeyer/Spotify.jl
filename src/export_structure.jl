@@ -12,6 +12,8 @@
     @_ie album_get_saved
     @_ie album_get_single
     @_ie album_get_tracks
+    @_ie album_remove_from_library
+    @_ie album_save_library
     @_ie artist_get
     @_ie artist_get_albums
     @_ie artist_get_related_artists
@@ -25,11 +27,6 @@
     @_ie episodes_get_multiple
     @_ie episodes_get_saved
     @_ie episodes_get_single
-    @_ie follow_get
-    @_ie follow_get_users
-    @_ie follow_check
-    @_ie follow_check_playlist
-    @_ie follow_playlist
     @_ie genres_get
     @_ie library_check_saved_albums
     @_ie library_check_saved_shows
@@ -68,6 +65,8 @@
     @_ie show_get_multiple
     @_ie show_get_saved
     @_ie show_get_single
+    @_ie show_remove_from_library
+    @_ie show_save_library
     @_ie top_artists
     @_ie top_tracks
     @_ie tracks_get_audio_analysis
@@ -77,11 +76,18 @@
     @_ie tracks_get_recommendations
     @_ie tracks_get_saved
     @_ie tracks_get_single
-    @_ie unfollow_artists_users
-    @_ie unfollow_playlist
+    @_ie tracks_remove_from_library
+    @_ie tracks_save_library
+    @_ie users_check_current_follows
+    @_ie users_check_follows_playlist
+    @_ie users_follow_artists_users
+    @_ie users_follow_playlist
     @_ie users_get_current_profile
     @_ie users_get_current_user_top_items
+    @_ie users_get_follows
     @_ie users_get_profile
+    @_ie users_unfollow_artists_users
+    @_ie users_unfollow_playlist
 =#
 # Export: See below each submodule
 
@@ -108,6 +114,8 @@ baremodule Albums
     @_ie album_get_saved
     @_ie album_get_single
     @_ie album_get_tracks
+    @_ie album_remove_from_library
+    @_ie album_save_library
 end
 export Albums
 
@@ -119,17 +127,6 @@ baremodule Artists
     @_ie artist_top_tracks
 end
 export Artists
-
-baremodule Browse # From 'console'
-    import ..@_ie
-    @_ie category_get_single
-    @_ie category_get_multiple
-    @_ie category_get_new_releases
-    @_ie category_get_playlist
-    @_ie category_get_featured_playlist
-    @_ie tracks_get_recommendations
-end
-export Browse
 
 baremodule Categories
     import ..@_ie
@@ -149,18 +146,6 @@ baremodule Episodes
     @_ie episodes_get_single
 end
 export Episodes
-
-baremodule Follow # From 'console'
-    import ..@_ie
-    @_ie follow_get
-    @_ie follow_get_users
-    @_ie follow_check
-    @_ie follow_check_playlist
-    @_ie follow_playlist
-    @_ie unfollow_artists_users
-    @_ie unfollow_playlist
-end
-export Follow
 
 baremodule Genres
     import ..@_ie
@@ -190,13 +175,6 @@ baremodule Markets
     @_ie markets_get
 end
 export Markets
-
-baremodule Personalization # From 'Console'
-    import ..@_ie
-    @_ie top_artists
-    @_ie top_tracks
-end
-export Personalization
 
 baremodule Player
     import ..@_ie
@@ -239,6 +217,8 @@ baremodule Shows
     @_ie show_get_multiple
     @_ie show_get_saved
     @_ie show_get_single
+    @_ie show_remove_from_library
+    @_ie show_save_library
 end
 export Shows
 
@@ -251,14 +231,23 @@ baremodule Tracks
     @_ie tracks_get_saved
     @_ie tracks_get_single
     @_ie tracks_get_recommendations
+    @_ie tracks_remove_from_library
+    @_ie tracks_save_library
 end
 export Tracks
 
 baremodule Users
     import ..@_ie
+    @_ie users_check_current_follows
+    @_ie users_check_follows_playlist
+    @_ie users_follow_artists_users
+    @_ie users_follow_playlist
     @_ie users_get_current_profile
     @_ie users_get_current_user_top_items
+    @_ie users_get_follows
     @_ie users_get_profile
+    @_ie users_unfollow_artists_users
+    @_ie users_unfollow_playlist
 end
 export Users
 

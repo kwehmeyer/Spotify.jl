@@ -172,3 +172,30 @@ julia> album_get_contains("382ObEPsp2rxGrnsizN5TX,1A2GTWGtFfWp7KSQTwWOyo")[1]
 function album_get_contains(album_ids)
     return spotify_request("me/albums/contains?ids=$album_ids"; scope = "user-library-read")
 end
+
+## https://developer.spotify.com/documentation/web-api/reference/library/remove-albums-user/
+@doc """
+# Remove Albums for Current User
+**Summary**: Remove one or more albums for the current user's 'Your Music' library.\n
+
+`album_ids` _Required_: A comma-separated list of the Spotify IDs. Maximum 50.\n
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/library/remove-albums-user/)
+""" ->
+function album_remove_from_library(album_ids)
+    return spotify_request("me/albums?ids=$album_ids", method = "DELETE")
+end
+
+
+## https://developer.spotify.com/documentation/web-api/reference/library/save-albums-user/
+@doc """
+# Save Albums for Current User
+** Summary**: Save one or more albums to the current user's 'Your Music' library.\n
+
+`album_ids` _Required_: A comma-separated list of Spotify IDs. Maximum 50. \n
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/library/save-albums-user/)
+""" ->
+function album_save_library(album_ids)
+    return spotify_request("me/albums?ids=$album_ids", method = "PUT")
+end

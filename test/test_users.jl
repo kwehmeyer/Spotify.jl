@@ -1,7 +1,6 @@
 # Run tests on functions in:
 # src/by_reference_doc/users.jl
 # src/by_reference_doc/follow.jl
-# src/by_reference_doc/personalization.jl
 
 @testset verbose = true "GET-request endpoints for users" begin
     
@@ -26,9 +25,9 @@
     @test ~isempty(Spotify.follow_artists()[1])
 
     # Check if current user follows a given artist
-    @test ~isempty(Spotify.follow_check("artist", "7fxBPUc2bTUgl7GLuqjajk")[1])
+    @test ~isempty(Spotify.users_check_current_follows("artist", "7fxBPUc2bTUgl7GLuqjajk")[1])
 
     # Check if given users follow a given playlist
-    @test ~isempty(Spotify.follow_check_playlist(playlist_id, user_id)[1])    
+    @test ~isempty(Spotify.users_check_follows_playlist(playlist_id, user_id)[1])    
 
 end

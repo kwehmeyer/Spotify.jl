@@ -20,9 +20,9 @@ module Spotify
 ✓. Refine DEFAULT_IMPLICIT_GRANT, check from fresh start using select_calls()
 5. Possibly delete help text, refer to Spotify instead? OR update properly.
 6. Revisit the type system. Delete it, or decide on if it needs to contain prefixes.
-7. Use duck typing in all request wrapping functions. Because 'bodystring' and 'urlstring' 
+✓. Use duck typing in all request wrapping functions. Because 'bodystring' and 'urlstring' 
    methods specialize on types, and names / defaults provide user the info actually needed.
-8. Add spaces around '='. Not obvious choice, but easier to maintain: Same rule everywhere.
+✓. Add spaces around '='. Not obvious choice, but easier to maintain: Same rule everywhere.
 9. Move by_console_doc/follow to by_reference_doc/users
 10. Drop default values: country = "US", locale = "en" 
 11. Standardize Dates.now usage. Utilities?
@@ -159,27 +159,17 @@ include("by_reference_doc/player.jl")
 include("by_reference_doc/markets.jl")
 
 
-# The below are structured by the 'Console' tab (beside 'Docs')
+# The below is structured by the 'Console' tab (beside 'Docs')
 # https://developer.spotify.com/console/
-# Browse
-include("by_console_doc/browse.jl")
 
 # Library
 include("by_console_doc/library.jl")
-
-# Personalization
-include("by_console_doc/personalization.jl")
-
-# Follow
-include("by_console_doc/follow.jl")
 
 
 # Export structure
 include("export_structure.jl")
 
 function __init__()
-    #success = authorize()
-    #success && 
     apply_and_wait_for_implicit_grant()
 end
 

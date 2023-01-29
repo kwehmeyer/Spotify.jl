@@ -113,7 +113,6 @@ end
 
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/check-users-saved-shows
-
 """
     show_get_contains(ids)
 
@@ -129,4 +128,33 @@ end
 """
 function show_get_contains(show_ids)
     return spotify_request("me/shows/contains?ids=$show_ids"; scope = "user-library-read")
+end
+
+
+
+## https://developer.spotify.com/documentation/web-api/reference/library/remove-shows-user/
+"""
+# Remove Shows for Current User
+**Summary**: Remove one or more shows for the current user's library.
+
+`show_ids` _Required_: A comma-separated list of the Spotify IDs. Maximum 50.
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/library/remove-shows-user/)
+"""
+function show_remove_from_library(show_ids)
+    return spotify_request("me/shows?ids=$show_ids", method = "DELETE")
+end
+
+
+## https://developer.spotify.com/documentation/web-api/reference/library/save-shows-user/
+@doc """
+# Save Shows for Current User
+** Summary**: Save one or more shows to the current user's library.
+
+`shows_ids` _Required_: A comma-separated list of Spotify IDs. Maximum 50.
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/library/save-shows-user/)
+""" 
+function show_save_library(show_ids)
+    return spotify_request("me/shows?ids=$show_ids", method = "PUT")
 end

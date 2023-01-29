@@ -98,15 +98,15 @@ end
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/add-tracks-to-playlist
 """
-    playlist_add_tracks_to_playlist(playlist_id, track_uris; position::Int = 0)
+    playlist_add_tracks_to_playlist(playlist_id, track_uris; position = 0)
 
 **Summary**: Add one or more items to a user's playlist.
 
 # Arguments
-- `playlist_id` The Spotify ID of the playlist.
-- `track_uris`   A maximum of 100 items can be added in one request.
+- `playlist_id`:  The Spotify ID of the playlist.
+- `track_uris`:   A maximum of 100 items can be added in one request.
 # Optional keywords
-- `position`::Int     The position to insert the items, a zero-based index.
+- `position`:     The position to insert the items, a zero-based index.
     For example, to insert the items in the first position: position = 0;
     to insert the items in the third position: position = 2.
     The default value is -1, meaning we omit the argument in the API call.
@@ -159,7 +159,7 @@ end
 """
     playlist_remove_playlist_item(playlist_id; track_uris)
 
-**Summary**: Remove one or more items from a user's playlist. For 'deleting playlists', see 'unfollow_artists_users'.
+**Summary**: Remove one or more items from a user's playlist. For 'deleting playlists', see 'users_unfollow_artists_users'.
 
 # Arguments
 - `playlist_id` The Spotify ID of the playlist.

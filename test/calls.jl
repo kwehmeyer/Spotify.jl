@@ -5,7 +5,7 @@ Sequence could matter ?
 #using Test
 using Spotify
 using Albums, Artists, Browse, Episodes, Follow, Library
-using Markets, Personalization, Player, Playlists, Search
+using Markets, Player, Playlists, Search
 using  Shows, Tracks, UsersProfile, Objects
 
 #= Albums =#
@@ -36,13 +36,13 @@ recommendations_dict_parser(track_attributes::Dict)
 episodes_get(episode_id, market = "")
 
 #= Follow =#
-follow_check(type, ids)
-follow_check_playlist(playlist_id, ids)
+users_check_current_follows(type, ids)
+users_check_follows_playlist(playlist_id, ids)
 follow_artists(type = "artist", limit = 20)
 follow_artists_users(type, ids)
-follow_playlist(playlist_id)
-unfollow_artists_users(type, ids)
-unfollow_playlist(playlist_id)
+users_follow_playlist(playlist_id)
+users_unfollow_artists_users(type, ids)
+users_unfollow_playlist(playlist_id)
 
 #= Library =#
 library_get_saved_tracks(limit = 20, offset = 0, market = "")

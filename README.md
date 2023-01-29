@@ -14,9 +14,9 @@
 ## Progress...
 Right now, 40 API functions have been written, roughly tested and organized by sub-modules as defined in Spotify's [documentation](https://developer.spotify.com/documentation/general/):
 
-* Albums, Artists, Browse, Episodes, Follow, Library
-* Markets, Personalization, Player, Playlists, Search
-* Shows, Tracks, UsersProfile, ~~(Objects)~~
+* Albums, Artists, Browse, Episodes, Library
+* Markets, Player, Playlists, Search
+* Shows, Tracks, UsersProfile
 
 Help wanted in adding the still-missing functions!
 

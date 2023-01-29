@@ -1,6 +1,6 @@
-# Run tests on functions in src/by_reference_doc/browse.jl
-
-using Spotify.Browse
+# Run tests on functions in src/by_reference_doc/categories.jl
+ 
+using Spotify.Categories
 
 
 #category_get_multiple(;country = "", locale = "", limit = 20, offset = 0)
