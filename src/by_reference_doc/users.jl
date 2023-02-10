@@ -1,7 +1,3 @@
-
-
-
-
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/check-current-user-follows
 """
     users_check_current_follows(item_type, ids)
@@ -20,7 +16,7 @@ julia> users_check_current_follows("artist", "7fxBPUc2bTUgl7GLuqjajk")[1]
 ```
 """
 function users_check_current_follows(item_type, ids)
-    return spotify_request("me/following/contains?type=$item_type&ids=$ids"; scope = "user-follow-read")
+    spotify_request("me/following/contains?type=$item_type&ids=$ids"; scope = "user-follow-read")
 end
 
 
@@ -47,10 +43,8 @@ julia> users_check_follows_playlist("3cEYpjA9oz9GiPac4AsH4n", "jmperezperez, the
 ```
 """
 function users_check_follows_playlist(playlist_id, user_ids)
-    return spotify_request("playlists/$playlist_id/followers/contains?ids=$user_ids"; scope = "playlist-read-private")
+    spotify_request("playlists/$playlist_id/followers/contains?ids=$user_ids"; scope = "playlist-read-private")
 end
-
-
 
 ## https://developer.spotify.com/documentation/web-api/reference/follow/follow-artists-users/
 @doc """
@@ -63,9 +57,7 @@ end
 [Reference](https://developer.spotify.com/documentation/web-api/reference/follow/follow-artists-users/)
 """ ->
 function users_follow_artists_users(type, ids)
-    #@show "me/following?type=$type&ids=$ids"
-   #return spotify_request("me/following/contains?type=$item_type&ids=$ids"; scope = "user-follow-read")
-    return spotify_request("me/following?type=$type&ids=$ids", "PUT"; scope = "user-follow-modify")
+    spotify_request("me/following?type=$type&ids=$ids", "PUT"; scope = "user-follow-modify")
 end
 
 
@@ -98,16 +90,18 @@ function users_follow_playlist(playlist_id; public = false)
     body = bodystring(;public)
     scope  = "playlist-modify-private"
     additional_scope = "playlist-modify-public"
-    return spotify_request(url, "PUT"; body, scope, additional_scope)
+    spotify_request(url, "PUT"; body, scope, additional_scope)
 end
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-current-users-profile
 
+## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-current-users-profile
 """
     users_get_current_profile()
 
     **Summary**: Get detailed profile information about the current user
                 (including the current user's username).
+    
+    The returned object contains more info when granted scopes: user-read-private and  user-read-email.
 
 # Example
 ```julia-repl
@@ -128,14 +122,11 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 12 entries:
 ```
 """
 function users_get_current_profile()
-
-    spotify_request("me"; scope = "user-read-private")
-
+    spotify_request("me"; scope = "user-read-private", additional_scope = "user-read-email")
 end
 
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-top-artists-and-tracks
-
 """
     users_get_current_user_top_items(;type = "artists", time_range = "medium_term", limit = 20, offset = 0)
 
@@ -214,12 +205,11 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, SubArray{UInt64, 1, Vector{UInt64}, 
 ```
 """
 function users_get_follows(;item_type = "artist", limit = 20)
-    return spotify_request("me/following?type=$item_type&limit=$limit"; scope = "user-follow-read")
+    spotify_request("me/following?type=$item_type&limit=$limit"; scope = "user-follow-read")
 end
 
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-profile
-
 """
     users_get_profile(user_id)
 
@@ -246,25 +236,29 @@ function users_get_profile(user_id)
     spotify_request("users/$user_id")
 end
 
-
-
 ## https://developer.spotify.com/documentation/web-api/reference/follow/unfollow-artists-users/
-@doc """
-# Unfollow Artists or Users
-**Summary**: Remove the current user as a follower of one or more artists or other Spotify users.\n
+"""
+    users_unfollow_artists_users(artist_ids; type = "artist")
 
-`type` _Required_: The ID type: either `artist` or `user`. \n
-`ids` _Required_: A comma-separated list of the artists or users Spotify IDs. Maximum 50.\n
+**Summary**: Remove the current user as a follower of one or more artists or other Spotify users.
 
+# Arguments
+- `artist_ids` _Required_: A comma-separated list of the artists or users Spotify IDs. Maximum 50.
+
+# Optional keyword arguments
+
+`type`:  Either "artist" (default) or "user". 
+
+```julia-repl
+julia> users_unfollow_artists_users("2CIMQHirSU0MQqyYHq0eOx, 57dN52uHvrHOxijzpIgu3E, 1vCWHaC5f2uS3yhpwWbIA6")[1]
+{}
+```
 [Reference](https://developer.spotify.com/documentation/web-api/reference/follow/unfollow-artists-users/)
-""" ->
-function users_unfollow_artists_users(type, ids)
-    # TODO fix
-    throw("Not yet implemented and kind of dangerous. Fix the body and the url!")
-    body = "{\"public\": $public}"
-    scope  = "playlist-modify-private"
-    additional_scope = "playlist-modify-public"
-    return spotify_request("me/following?type=$type&ids=$ids", "DELETE"; scope = "user-follow-modify")
+""" 
+function users_unfollow_artists_users(artist_ids; type = "artist")
+    url = "me/following?type=$type"
+    body = bodystring(;ids = artist_ids)
+    spotify_request(url, "DELETE"; body, scope = "user-follow-modify")
 end
 
 
@@ -281,6 +275,6 @@ function users_unfollow_playlist(playlist_id)
     body = "{\"public\": $public}"
     scope  = "playlist-modify-private"
     additional_scope = "playlist-modify-public"
-    throw("Not yet implemented and kind of dangerous. Fix the body and the url!")
-    return spotify_request("playlists/$playlist_id/followers", method = "DELETE"; scope = "playlist-modify-private")
+    throw("TODO Not yet implemented and kind of dangerous. Fix the body and the url!")
+    spotify_request("playlists/$playlist_id/followers", "DELETE"; scope = "playlist-modify-private")
 end

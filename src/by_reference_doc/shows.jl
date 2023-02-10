@@ -1,9 +1,8 @@
 # Shows are the same as podcasts (series) on Spotify
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-show
-
 """
-    show_get(show_id; market = "")
+    show_get(show_id; market = get_user_country())
 
 **Summary**: Get a Spotify catalog information for a single show identified by it's unique Spotify ID.
 
@@ -12,7 +11,9 @@
 
 # Optional keywords
 - `market` : An ISO 3166-1 alpha-2 country code. If a country code is specified, only shows
-             and episodes that are available in that market will be returned.
+             and episodes that are available in that market will be returned. If market is 
+             not provided, the content is considered unavailable for the client.
+             Default value is taken from user's .ini file.
 
 # Example
 ```julia-repl
@@ -24,7 +25,7 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 18 entries:
   :episodes             => {…
 ```
 """
-function show_get_single(show_id; market = "")
+function show_get_single(show_id; market = get_user_country())
     u = "shows/$show_id"
     a = urlstring(;market)
     url = build_query_string(u, a)
@@ -33,9 +34,8 @@ end
 
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-multiple-shows
-
 """
-    show_get_multiple(ids; market = "")
+    show_get_multiple(ids; market = get_user_country())
 
 **Summary**: Get Spotify catalog information for several shows based on their Spotify IDs.
 
@@ -44,7 +44,9 @@ end
 
 # Optional keywords
 - `market` : An ISO 3166-1 alpha-2 country code. If a country code is specified, only shows
-             and episodes that are available in that market will be returned.
+             and episodes that are available in that market will be returned. If market is 
+             not provided, the content is considered unavailable for the client.
+             Default value is taken from user's .ini file.
 
 # Example
 ```julia-repl
@@ -53,7 +55,7 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
   :shows => JSON3.Object[{…
 ```
 """
-function show_get_multiple(ids; market = "")
+function show_get_multiple(ids; market = get_user_country())
     u = "shows"
     a = urlstring(; ids = ids, market)
     url = build_query_string(u, a)
@@ -63,7 +65,7 @@ end
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-shows-episodes
 """
-    show_get_episodes(show_id; market = "", limit = 20, offset = 0)
+    show_get_episodes(show_id; market = get_user_country(), limit = 20, offset = 0)
 
 **Summary**: Get Spotify catalog information about a show’s episodes. Optional parameters
              can be used to limit the number of episodes returned.
@@ -72,9 +74,9 @@ end
 - `show_id` : The Spotify ID for the show
 
 # Optional keywords
-- `market`         : An ISO 3166-1 alpha-2 country code. If a country code is specified,
-                     only episodes that are available in that market will be returned.
-                     Default is set to "US".
+- `market`         : An ISO 3166-1 alpha-2 country code. If market is not provided, the content 
+                     is considered unavailable for the client.
+                     Default value is taken from user's .ini file.
 - `limit`          : Maximum number of items to return, default is set to 20. (0 < limit <= 50)
 - `offset`         : Index of the first item to return, default is set to 0
 
@@ -87,7 +89,7 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
   :limit    => 20
 ```
 """
-function show_get_episodes(show_id; market = "", limit = 20, offset = 0)
+function show_get_episodes(show_id; market = get_user_country(), limit = 20, offset = 0)
     u = "shows/$show_id"
     a = urlstring(;market, limit, offset)
     url = build_query_string(u, a)
@@ -139,7 +141,7 @@ end
 └               (response message): Insufficient client scope
 """
 function show_get_contains(show_ids)
-    return spotify_request("me/shows/contains?ids=$show_ids"; scope = "user-library-read", additional_scope="user-library-modify")
+    spotify_request("me/shows/contains?ids=$show_ids"; scope = "user-library-read", additional_scope="user-library-modify")
 end
 
 ## https://developer.spotify.com/documentation/web-api/reference/library/remove-shows-user/
@@ -152,7 +154,7 @@ end
 [Reference](https://developer.spotify.com/documentation/web-api/reference/library/remove-shows-user/)
 """
 function show_remove_from_library(show_ids)
-    return spotify_request("me/shows?ids=$show_ids", method = "DELETE", scope="user-library-modify")
+    spotify_request("me/shows?ids=$show_ids", "DELETE", scope="user-library-modify")
 end
 
 
@@ -161,10 +163,10 @@ end
 # Save Shows for Current User
 ** Summary**: Save one or more shows to the current user's library.
 
-`shows_ids` _Required_: A comma-separated list of Spotify IDs. Maximum 50.
+`show_ids` _Required_: A comma-separated list of Spotify IDs. Maximum 50.
 
 [Reference](https://developer.spotify.com/documentation/web-api/reference/library/save-shows-user/)
 """ 
 function show_save_library(show_ids)
-    return spotify_request("me/shows?ids=$show_ids", method = "PUT", scope="user-library-modify")
+    spotify_request("me/shows?ids=$show_ids", "PUT", scope="user-library-modify")
 end

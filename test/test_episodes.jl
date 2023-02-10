@@ -1,6 +1,6 @@
 # Run tests on functions in src/by_reference_doc/episodes.jl
 
-using Test, Spotify, Spotify.Episodes
+using Test, Spotify.Episodes
 
 @testset verbose = true "GET-request endpoints for episodes" begin
 
@@ -8,8 +8,8 @@ using Test, Spotify, Spotify.Episodes
     episode_id = SpEpisodeId()
 
     # Cycle through different input keywords for testing
-    markets = ["US", "NL", "DE"]
-    offsets = [7, 14]
+    markets = ["US", "NL", "DE", ""]
+    offsets = [7, 14, 0]
 
     @testset "For market = $(market_id)" for market_id in markets
 

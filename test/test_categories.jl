@@ -1,13 +1,13 @@
 # Run tests on functions in src/by_reference_doc/categories.jl
  
-using Test, Spotify, Spotify.Categories
+using Test, Spotify.Categories
 
 @testset verbose = true "GET-request endpoints for browse categories" begin
     # Input arguments from composite types defined in src/types.jl
     category_id = SpCategoryId()
     # Cycle through different input keywords for testing
-    countries = ["US", "NL", "DE"]
-    offsets = [14, 42]
+    countries = ["US", "NL", "DE", ""]
+    offsets = [14, 42, 0]
 
     @testset "For country = $(country_id)" for country_id in countries
 
@@ -22,15 +22,7 @@ using Test, Spotify, Spotify.Categories
 
     end
 
-    # Create input dicts for recommendation function
-    seeds = Dict("seed_artists" => "0YC192cP3KPCRWx8zr8MfZ")
-    track_attributes = Dict("max_danceability" => "0.80", "max_energy" => "0.60")
-
-    @test ~isempty(recommendations_get(seeds, track_attributes = track_attributes)[1])
-
 end
-
-
 
         
 

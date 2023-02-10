@@ -1,6 +1,6 @@
 # Run tests on functions in src/by_reference_doc/playlists.jl
 
-using Test, Spotify, Spotify.Playlists
+using Test, Spotify.Playlists
 @testset verbose = true "GET-request endpoints for playlists" begin
     
     # Input arguments from composite types defined in src/types.jl
@@ -9,31 +9,31 @@ using Test, Spotify, Spotify.Playlists
     category_id = SpCategoryId()
 
     # Cycle through different input keywords for testing
-    countries = ["US", "NL", "DE"]
-    offsets = [10, 35]
+    countries = ["US", "NL", "DE", ""]
+    offsets = [10, 35, 0]
 
     # Start test blocks
-    @test ! isempty(Spotify.playlist_get(playlist_id)[1])
+    @test ! isempty(playlist_get(playlist_id)[1])
 
-    @test !isempty(Spotify.playlist_get_current_user(; offset = 0)[1])
+    @test !isempty(playlist_get_current_user(; offset = 0)[1])
 
     @testset "For offset = $(num_offset)" for num_offset in offsets
 
-        @test ~isempty(Spotify.playlist_get_tracks(playlist_id; offset = num_offset)[1])
-        @test ~isempty(Spotify.playlist_get_user(user_id; offset = num_offset)[1])
+        @test ~isempty(playlist_get_tracks(playlist_id; offset = num_offset)[1])
+        @test ~isempty(playlist_get_user(user_id; offset = num_offset)[1])
 
         # Works okay second time
-        @test ~isempty(Spotify.playlist_get_current_user(; offset = num_offset)[1])
+        @test ~isempty(playlist_get_current_user(; offset = num_offset)[1])
     end
 
     @testset "For country = $(country_id)" for country_id in countries
 
-        @test ~isempty(Spotify.playlist_get_featured(country = country_id)[1])
-        @test ~isempty(Spotify.playlist_get_category(category_id; country = country_id)[1])
+        @test ~isempty(playlist_get_featured(country = country_id)[1])
+        @test ~isempty(playlist_get_category(category_id; country = country_id)[1])
 
     end
 
-    @test ~isempty(Spotify.playlist_get_cover_image(playlist_id)[1])
+    @test ~isempty(playlist_get_cover_image(playlist_id)[1])
 
 end
 
@@ -41,6 +41,6 @@ end
 
 @testset "Test 404 Not Found exception" begin
 
-    @test_logs (:info,  "404 (code meaning): Not Found - The requested resource could not be found. This error can be due to a temporary or permanent condition. \n\t\t(response message): Not found.") match_mode=:any Spotify.playlist_get_tracks("37i9dQZF1E4vUblDJzzkV3")[1]
+    @test_logs (:info,  "404 (code meaning): Not Found - The requested resource could not be found. This error can be due to a temporary or permanent condition. \n\t\t(response message): Not found.") match_mode=:any playlist_get_tracks("37i9dQZF1E4vUblDJzzkV3")[1]
     
 end

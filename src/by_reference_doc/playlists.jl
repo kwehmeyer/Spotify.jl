@@ -155,7 +155,6 @@ end
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/reorder-or-replace-playlists-tracks
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/remove-tracks-playlist
-
 """
     playlist_remove_playlist_item(playlist_id; track_uris)
 
@@ -190,8 +189,6 @@ function playlist_remove_playlist_item(playlist_id; track_uris)
     body = bodystring(;uris = track_uris)
     spotify_request(url, "DELETE"; body, scope= "playlist-modify-private")
 end
-
-
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-list-of-current-users-playlists
 """
@@ -291,18 +288,15 @@ function playlist_create_playlist(name; user_id = SpUserId(), public = true, col
     method = "POST"
     url = "users/$user_id/playlists"
     body = bodystring(;name, description, public, collaborative)
-   # body = """{"name": "$name", "description": "$description",  "public": $public, "collaborative": $collaborative}"""
     spotify_request(url, method; body,
         scope = "playlist-modify-public",
         additional_scope = "playlist-modify-private")
 end
 
-
-
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-featured-playlists
 """
     playlist_get_featured(;country = "", limit = 20, locale = "",
-                               offset = 0, timestamp = "$(Dates.now())")
+                               offset = 0, timestamp = now())
 
 **Summary**: Get a list of Spotify featured playlists (shown, for example, on a Spotify player's 'Browse' tab).
 
@@ -314,11 +308,9 @@ end
 - `locale`         : The desired language, consisting of a lowercase ISO 639-1 language code and an uppercase
                     ISO 3166-1 alpha-2 country code, joined by an underscore. For example: es_MX, meaning "Spanish (Mexico)".
                     Provide this parameter if you want the results returned in a particular language (where available).
-                    Default is set to "en_US".
 - `offset`         : Index of the first item to return, default is set to 0
-- `timestamp` : A timestamp in ISO 8601 format: yyyy-MM-ddTHH:mm:ss. Use this parameter to specify the user's local time
-                        to get results tailored for that specific date and time in the day.
-                        Default is set to user's current time.
+- `timestamp`      : A timestamp in ISO 8601 format: yyyy-MM-ddTHH:mm:ss. Use this parameter to specify the user's local time
+                     to get results tailored for that specific date and time in the day. Default is set to user's current time.
 
 # Example
 ```julia-repl
@@ -329,7 +321,7 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 2 entries:
 ```
 """
 function playlist_get_featured(;country = "", limit = 20, locale = "",
-                               offset = 0, timestamp = "")
+                               offset = 0, timestamp = now())
     assert_locale(locale)
     u = "browse/featured-playlists"
     a = urlstring(;country, limit, locale, offset, timestamp)

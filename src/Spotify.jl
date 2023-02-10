@@ -15,22 +15,59 @@ module Spotify
 # TODO:
 #=
 ✓. Add more fields to Logstate
-2. Replace code with 'urlstring', 'bodystring'. Partly done, e.g. in Player.
-3. Change function arguments to optional. Especially country codes. Partly done, see Player.
+✓. Replace code with 'urlstring', 'bodystring'. Partly done, e.g. in Player.
+✓. Change function arguments to optional. 
 ✓. Refine DEFAULT_IMPLICIT_GRANT, check from fresh start using select_calls()
 5. Possibly delete help text, refer to Spotify instead? OR update properly.
 6. Revisit the type system. Delete it, or decide on if it needs to contain prefixes.
 ✓. Use duck typing in all request wrapping functions. Because 'bodystring' and 'urlstring' 
    methods specialize on types, and names / defaults provide user the info actually needed.
 ✓. Add spaces around '='. Not obvious choice, but easier to maintain: Same rule everywhere.
-9. Move by_console_doc/follow to by_reference_doc/users
-10. Drop default values: country = "US", locale = "en" 
-11. Standardize Dates.now usage. Utilities?
+✓. Move by_console_doc/follow to by_reference_doc/users
+✓. Drop default values: country = "US", locale = "en" 
+✓. Standardize Dates.now usage. Utilities?
 12. In inline docs, use a short form of JSON display that doesn't include request strings.
-    This makes source code hard to search in. 
-13. Drop 'return' in in all request wrapping functions.
+    This makes source code hard to search in.  withenv("LINES" => 10, "COLUMNS" => 80) do
+                    select_calls()
+                end
+✓. Drop 'return' in in all request wrapping functions.
 ✓.  Drop unnecessary dependencies URIs and Parameters
 15. Use the name-based parameter defaults in tests. See paramname_default_dic.jl
+16. Fix this issue:
+julia> Spotify.spotcred().ig_scopes
+    7-element Vector{String}:
+    "user-read-private"
+    "user-modify-playback-state"
+    "user-read-playback-state"
+    "playlist-modify-private"
+    "playlist-read-private"
+    "user-read-playback-position"
+    "user-library-read"
+✓. For tests, include "" as well as eg. "DE"
+18. Revisit paramname_default. Check select_calls() for all.
+✓. Drop Spotify. in tests.
+20. Shows, too, need the 'market' argument. Consider renaming to 'homemarket', and provide
+    the 'artist_top_tracks' default argument. Use 'homemarket' both places, if this is thought to be smart.
+21. Finish debugging and delete CHECKUSED constant after running everything in 'select_calls'.
+22. Add feature to miniplayer: 0-9 select position in current song.
+23. Add reference link to inline docs. Regex replacement. See 'users_unfollow_artists_users'.
+24. print_as_console_input should type vectors with brakcets (?)
+25. Add example, uniquify playlist entries.
+
+julia> Spotify.expiring_in()
+3489 seconds
+
+julia> authorize()
+┌ Info: Client credentials expire in 3600 seconds.
+│           You can inspect with `Spotify.spotcred()`, `Spotify.expiring_in()`,
+└            or e.g. `Spotify.credentials_contain_scope("user-read-private")`
+true
+
+julia> Spotify.spotcred().ig_scopes
+String[]
+
+
+
 =#
 using HTTP, Dates, IniFile, HTTP, JSON3, Sockets
 using Logging: with_logger, NullLogger
@@ -106,6 +143,8 @@ const DEFAULT_IMPLICIT_GRANT = ["user-read-private",
                                "playlist-modify-private",
                                "playlist-read-private"]
 
+const DEFAULT_VALUES = Dict{Symbol, Any}()
+
 # Every API call is made through this
 include("request.jl")
 
@@ -170,6 +209,12 @@ include("by_console_doc/library.jl")
 
 # Export structure
 include("export_structure.jl")
+
+# Populate dictionary for select_calls() menu
+let
+    dic = include(joinpath(@__DIR__, "lookup/paramname_default_dic.jl"))
+    merge!(DEFAULT_VALUES, dic)
+end
 
 function __init__()
     apply_and_wait_for_implicit_grant()

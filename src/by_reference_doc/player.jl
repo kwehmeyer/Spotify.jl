@@ -1,5 +1,4 @@
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-information-about-the-users-current-playback
-
 """
     player_get_state(;additional_types = "track", market = "")
 
@@ -41,7 +40,6 @@ end
 
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-users-available-devices
-
 """
     player_get_devices()
 
@@ -63,14 +61,11 @@ julia> player_get_devices()[1]["devices"]
 ```
 """
 function player_get_devices()
-
     spotify_request("me/player/devices"; scope = "user-read-playback-state")
-
 end
 
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-the-users-currently-playing-track
-
 """
     player_get_current_track(;additional_types = "track", market = "")
 
@@ -96,7 +91,6 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
 ```
 """
 function player_get_current_track(;additional_types = "track", market = "")
-
     u = "me/player/currently-playing"
     a = urlstring(;additional_types, market)
     url = build_query_string(u, a)
@@ -105,7 +99,6 @@ end
 
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-recently-played
-
 """
     player_get_recent_tracks(;duration = 1, limit = 20)
 
@@ -157,10 +150,6 @@ function player_pause(;device_id = "")
 end
 
 
-
-
-
-
 #https://developer.spotify.com/documentation/web-api/reference/#/operations/start-a-users-playback
 """
     player_resume_playback(;device_id = "", context_uri = "", uris = "", offset = 0, position_ms = 0)
@@ -171,7 +160,7 @@ end
 - `device_id`     The id of the device this command is targeting. If not supplied, the user's currently active device is the target. Example value:
 "0d1841b0976bae2a3a310dd74c0f3df354899bc8"
 - `context_uri`   Spotify URI of the context to play. Valid contexts are albums, artists & playlists. {context_uri:"spotify:album:1Je1IMUlBXcx1Fz0WE7oPT"}
-- `uris`          Array of strings. This is formed to JSON locally.
+- `uris`          Vector of strings or SpUri. This is formed to JSON locally.
 - `offset`        Indicates from where in the context playback should start. Only available when context_uri corresponds to an album or playlist object 
     "position" is zero based and can’t be negative. Example: "offset": {"position": 5} "uri" is a string representing the uri of the item to start at. 
                   Example: "offset": {"uri": "spotify:track:1301WleyT98MSxVHPZCA6M"}
@@ -181,11 +170,11 @@ end
 
 ```julia-repl
 julia> player_resume_playback(uris= [\"spotify:track:4iV5W9uYEdYUVa79Axb7Rh\", \"spotify:track:1301WleyT98MSxVHPZCA6M\"])
-```
+``` 
 ... which is equivalent to this more formal input style:
 
 ```julia-repl
-julia> sids = ["4iV5W9uYEdYUVa79Axb7Rh", "1301WleyT98MSxVHPZCA6M"];
+julia> sids = SpUri.(["4iV5W9uYEdYUVa79Axb7Rh", "1301WleyT98MSxVHPZCA6M"]);
 
 julia> uris = SpUri.(sids);
 
@@ -222,8 +211,7 @@ function player_skip_to_next(;device_id = "")
     u = "me/player/next"
     a = urlstring(;device_id)
     url = build_query_string(u, a)
-    body = bodystring(;)
-    spotify_request(url, "POST"; body, scope = "user-modify-playback-state")
+    spotify_request(url, "POST"; scope = "user-modify-playback-state")
 end
 
 
@@ -239,7 +227,6 @@ function player_skip_to_previous(;device_id = "")
     u = "me/player/previous"
     a = urlstring(;device_id)
     url = build_query_string(u, a)
-    body = bodystring(;)
-    spotify_request(url, "POST"; body, scope = "user-modify-playback-state")
+    spotify_request(url, "POST"; scope = "user-modify-playback-state")
 end
 

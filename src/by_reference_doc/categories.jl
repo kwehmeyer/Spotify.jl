@@ -1,5 +1,5 @@
 "Same as playlist_get_featured in Playlists"
-function category_get_featured_playlist(;country = "US", locale = "en", limit = 50, offset = 0, timestamp = string(now())[1:19])
+function category_get_featured_playlist(;country = "", locale = "", limit = 50, offset = 0, timestamp = now())
     playlist_get_featured(;country, locale, limit, offset, timestamp)
 end
 

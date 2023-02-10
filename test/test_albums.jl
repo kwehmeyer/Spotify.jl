@@ -1,6 +1,6 @@
 # Run tests on functions in src/by_reference_doc/albums.jl
 
-using Test, Spotify, Spotify.Albums
+using Test, Spotify.Albums
 
 @testset verbose = true "GET-request endpoints for albums" begin
 
@@ -8,8 +8,8 @@ using Test, Spotify, Spotify.Albums
     album_id = SpAlbumId()
 
     # Cycle through different input keywords for testing
-    markets = ["US", "NL", "DE"]
-    offsets = [5, 18]
+    markets = ["US", "NL", "DE", ""]
+    offsets = [0, 5, 18]
 
     @testset "For market = $(market_id)" for market_id in markets
 

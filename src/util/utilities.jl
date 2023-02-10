@@ -90,6 +90,9 @@ function argumentnames_by_function_dic()
     # Build the dictionary.
     d = Dict{Symbol, Tuple}()
     for f in funcnames
+        if f == :users_unfollow_artists_users
+            @show f
+        end
         meths = methods(eval(f))
         @assert length(meths) == 1 "Expected one method defined for \n$meths \n - is semicolon missing in function signature?"
         str = meths[1].slot_syms
@@ -104,8 +107,9 @@ function argumentnames_by_function_dic()
     d
 end
 
+
 function default_values(argnames::NTuple{N, Symbol}) where N
-    defaultvalue_by_paramname = include(joinpath(@__DIR__, "../lookup/paramname_default_dic.jl"))
+    defaultvalue_by_paramname = DEFAULT_VALUES
     map(pnam -> get(defaultvalue_by_paramname, pnam, ""), argnames)
 end
 function default_values(argnames::Tuple{})
@@ -180,6 +184,7 @@ function select_functions()
 end
 print_as_console_input(io::IO, argval) = show(io, MIME("text/plain"), argval)
 function print_as_console_input(io::IO, v::Vector)
+    # TODO Probably replace with brackets included. But think first.
     print(io, "\"")
     for val in v[1:end - 1]
         show(io, val)

@@ -19,7 +19,7 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 10 entries:
 ```
 """
 function artist_get(artist_id)
-    return spotify_request("artists/$artist_id")
+    spotify_request("artists/$artist_id")
 end
 
 
@@ -68,7 +68,7 @@ end
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-artists-top-tracks
 
 """
-    artist_top_tracks(artist_id; market = "")
+    artist_top_tracks(artist_id, market = "")
 
 **Summary**: Get Spotify catalog information about an artist's top tracks by country.
 
@@ -81,9 +81,16 @@ end
                    the request header, the country associated with the user account will take priority over 
                    this parameter.
 
-                   Note: If neither market or user country are provided, the content is considered unavailable 
+                   API note: "If neither market or user country are provided, the content is considered unavailable 
                    for the client. Users can view the country that is associated with their account in the 
-                   account settings.
+                   account settings."
+
+                   Spotify.jl note: If no market is specified, we unexpectedly get 'missing country parameter'.
+                   We do not want this behaviour to be general for all calls with an optional "market" argument.
+                   A default 'market = ""' is acceptable for all other API calls with 'market'.
+
+                   Hence, for this function, we internally replace:
+                      market = ""  => users_get_current_profile()[1].country
 
 # Example
 ```julia-repl
@@ -92,9 +99,12 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
   :tracks => JSON3.Object[{…
 ```
 """
-function artist_top_tracks(artist_id; market = "US")
-    #return spotify_request("artists/$artist_id/top-tracks?country=$country")
+function artist_top_tracks(artist_id; market = "")
     u = "artists/$artist_id/top-tracks"
+    if market == ""
+        up, _ = users_get_current_profile()
+        market = up.country
+    end
     a = urlstring(;market)
     url = build_query_string(u, a)
     spotify_request(url)
@@ -119,5 +129,5 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
 ```
 """
 function artist_get_related_artists(artist_id)
-    return spotify_request("artists/$artist_id/related-artists")
+    spotify_request("artists/$artist_id/related-artists")
 end

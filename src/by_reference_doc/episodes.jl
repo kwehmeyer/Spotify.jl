@@ -61,7 +61,10 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
 ```
 """
 function episodes_get_multiple(episode_ids; market = "")
-    return spotify_request("episodes?ids=$episode_ids&market=$market")
+    u = "episodes"
+    a = urlstring(;ids = episode_ids, market)
+    url = build_query_string(u, a)
+    spotify_request(url)
 end
 
 
@@ -95,7 +98,6 @@ function episodes_get_saved(;limit = 20, market = "", offset = 0)
     u = "me/episodes"
     a = urlstring(;limit, market, offset)
     url = build_query_string(u, a)
-    #spotify_request(url; scope = "user-read-playback-position", additional_scope = "user-library-read")
     spotify_request(url; scope = "user-library-read")
 end
 
@@ -121,5 +123,5 @@ julia> episodes_get_contains("77o6BIVlYM3msb4MMIL1jH,0Q86acNRm6V9GYx55SXKwf")[1]
 ```
 """
 function episodes_get_contains(episode_ids)
-    return spotify_request("me/episodes/contains?ids=$episode_ids"; scope = "user-library-read")
+    spotify_request("me/episodes/contains?ids=$episode_ids"; scope = "user-library-read")
 end

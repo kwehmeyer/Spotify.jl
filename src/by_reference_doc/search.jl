@@ -1,5 +1,4 @@
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/search
-
 """
     search_get(q; item_type = "track,artist", include_external = "",
                     limit = 20, market = "", offset = 0)
@@ -33,10 +32,10 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 2 entries:
   :tracks  => {…
 ```
 """
-function search_get(;q, type = "track,artist", include_external = "",
+function search_get(q; type = "track,artist", include_external = "",
                     limit = 20, market = "", offset = 0)
     u = "search"
-    a = urlstring(; q, type, include_external, limit, market, offset)
+    a = urlstring(; q = q, type, include_external, limit, market, offset)
     url = build_query_string(u, a)
     spotify_request(url)
 end

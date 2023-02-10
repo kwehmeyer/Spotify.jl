@@ -28,8 +28,6 @@ function on_non_empty_enter(s)
     nothing
 end
 
-
-
 # To enter this new repl mode 'minimode', user must be at start of line, just as with the other
 # interface modes.
 function triggermini(state::LineEdit.MIState, repl::LineEditREPL, char::AbstractString)

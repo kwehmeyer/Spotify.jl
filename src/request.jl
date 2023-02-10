@@ -4,7 +4,8 @@
 const RESP_DIC = include("lookup/response_codes_dic.jl")
 """
     spotify_request(url_ext::String, method::String= "GET"; 
-                    scope = "client-credentials", additional_scope = "")
+                    scope = "client-credentials", additional_scope = "", 
+                    body = "", logstate = LOGSTATE)
      -> (r::JSON3.Object, retry_in_seconds::Int)
 
 Access the Spotify Web API. This is called by every function 
@@ -13,7 +14,7 @@ Error results return an empty Object.
 Errors are written to 'stderr', expect for 'API rate limit exceeded', as 
 the output would typically occur in the middle of recursive calls.
 """
-function spotify_request(url_ext::String, method::String= "GET"; 
+function spotify_request(url_ext::String, method::String = "GET"; 
     scope = "client-credentials", additional_scope = "", body = "",
     logstate = LOGSTATE)
     if method == "PUT" || method == "DELETE" || method == "POST"
@@ -91,7 +92,7 @@ function spotify_request(url_ext::String, method::String= "GET";
         end
     end
     response_body = resp.body |> String
-    if method == "PUT"
+    if method == "PUT" || method == "DELETE"
         if ! (resp.status == 204 && ! logstate.empty_response)
             code_meaning = get(RESP_DIC, Int(resp.status), "")
             msg = "$(resp.status): $code_meaning"

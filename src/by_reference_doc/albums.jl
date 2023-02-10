@@ -71,9 +71,9 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
 ```
 """
 function album_get_tracks(album_id; limit = 20, offset = 0, market = "")
-    u1 = "albums/$album_id/tracks"
-    u2 = urlstring(; limit, offset, market)
-    url = build_query_string(u1, u2)
+    u = "albums/$album_id/tracks"
+    a = urlstring(; limit, offset, market)
+    url = build_query_string(u, a)
     spotify_request(url)
 end
 
@@ -104,10 +104,9 @@ julia> album_get_multiple([SpId("5XgEM5g3xWEwL4Zr6UjoLo"), SpId("2rpT0freJsmUmmP
 
 """
 function album_get_multiple(album_ids; market = "")
-    u1 = "albums?ids="
-    u2 = urlstring(album_ids)
-    u3 = urlstring(;market)
-    url = build_query_string(u1, u2, u3)
+    u = "albums"
+    a = urlstring(;ids = album_ids, market)
+    url = build_query_string(u, a)
     spotify_request(url)
 end
 
@@ -141,9 +140,9 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
 ```
 """
 function album_get_saved(;limit = 20, market = "", offset = 0)
-    u1 = "me/albums"
-    u2 = urlstring(;limit, market, offset) #"me/albums?limit=$limit&market=$market&offset=$offset"
-    url = build_query_string(u1, u2)
+    u = "me/albums"
+    a = urlstring(;limit, market, offset)
+    url = build_query_string(u, a)
     spotify_request(url; scope = "user-library-read")
 end
 
@@ -168,7 +167,7 @@ julia> album_get_contains("382ObEPsp2rxGrnsizN5TX,1A2GTWGtFfWp7KSQTwWOyo")[1]
 ```
 """
 function album_get_contains(album_ids)
-    return spotify_request("me/albums/contains?ids=$album_ids"; scope = "user-library-read")
+    spotify_request("me/albums/contains?ids=$album_ids"; scope = "user-library-read")
 end
 
 ## https://developer.spotify.com/documentation/web-api/reference/library/remove-albums-user/
@@ -181,7 +180,7 @@ end
 [Reference](https://developer.spotify.com/documentation/web-api/reference/library/remove-albums-user/)
 """ ->
 function album_remove_from_library(album_ids)
-    return spotify_request("me/albums?ids=$album_ids", method = "DELETE")
+    spotify_request("me/albums?ids=$album_ids", "DELETE")
 end
 
 
@@ -195,5 +194,5 @@ end
 [Reference](https://developer.spotify.com/documentation/web-api/reference/library/save-albums-user/)
 """ ->
 function album_save_library(album_ids)
-    return spotify_request("me/albums?ids=$album_ids", method = "PUT")
+    spotify_request("me/albums?ids=$album_ids", "PUT")
 end

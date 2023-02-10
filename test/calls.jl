@@ -25,7 +25,7 @@ category_get_playlist(category_id, country = "US", limit = 20, offset = 0)
 category_get_several(country = "US", locale = "en", limit = 20, offset = 0)
 category_get_new_releases(country = "US", locale = "en", limit = 20, offset = 0)
 category_get_featured_playlist(country = "US", locale = "en", limit = 50, offset = 0, timestamp = string(now())[1:19])
-recommendations_get(
+tracks_recommendations_get(
     seeds,
     track_attributes,
     limit = 50,
@@ -56,7 +56,7 @@ library_remove_albums(album_ids)
 library_remove_shows(show_ids)
 library_remove_tracks(track_ids)
 library_save_album(album_ids)
-library_save_show(shows_ids)
+library_save_show(show_ids)
 library_save_track(track_ids)
 
 #= Personalization =#

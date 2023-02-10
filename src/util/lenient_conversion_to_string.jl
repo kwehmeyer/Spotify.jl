@@ -1,30 +1,25 @@
 function urlstring(;kwds...)
-    #println("-1")
     isempty(kwds) && return ""
     urlstring(kwds)
 end
 function urlstring(kwds::Base.Pairs)
-    #println("-2")
     iter = collect(kwds)
     parts = ["$(urlstring(k))=$(urlstring(v))" for (k,v) in iter if v !== "" && v !== 0 && v !== -1]
     join(parts, "&")
 end
 
 function urlstring(d::Dict)
-    #println("-3")
     parts = ["$(urlstring(k))=$(urlstring(v))" for (k,v) in d if v !== "" && v !== 0 && v !== -1]
     s = join(parts, "&")
 end
 function urlstring(v::Vector)
-    #println("-4")
     vs = urlstring.(v)
-    s = join(vs, "%2C")
-    #"\"" * s * "\""
-    s
+    join(vs, "%2C")
 end
-
+function urlstring(d::DateTime)
+    string(d)[1:19] # Whole seconds
+end
 function urlstring(s)
-    #println("-5")
     "$s"
 end
 
@@ -69,7 +64,7 @@ end
 function bodystring(kwds::Base.Pairs)
     s = "{"
     parts = ["$(bodystring(p))" for p in kwds if p[2] !== "" && p[2] !== 0]
-    s *= join(parts, ",")
+    s *= join(parts, ',')
     s *= "}"
     s
 end
@@ -82,11 +77,20 @@ function bodystring(d::Dict)
     end
     bodystring(vect)
 end
-function bodystring(s::T) where T<: Union{SpUri, SpId, SpCategoryId, SpUserId, SpUrl}
+function bodystring(s::T) where T<: Union{SpUri, SpId, SpCategoryId, SpUserId, SpUrl, SpArtistId}
     "\"$(s.s)\""
 end
 function bodystring(s::String)
-    "\"$s\""
+    if is_string_vector(s)
+        "\"$s\""
+    elseif is_string_separable(s)
+        sv = "["
+        parts = ["\"$(sp)\"" for sp in split(s, ',')]
+        sv *= join(parts, ',')
+        sv *= "]"
+    else
+        "\"$s\""
+    end
 end
 function bodystring(s::Bool)
     "$s"
@@ -94,3 +98,5 @@ end
 function bodystring(s::T) where T<:Number
     "$s"
 end
+is_string_vector(s::String) = startswith(s, '[') && endswith(s, ']')
+is_string_separable(s::String) = (length(split(s, ',')) > 1)

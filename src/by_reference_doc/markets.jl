@@ -13,7 +13,5 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
 ```
 """
 function markets_get()
-
     spotify_request("markets")
-
 end
