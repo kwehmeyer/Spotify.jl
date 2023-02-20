@@ -25,7 +25,7 @@ for batchno = 0:200
     l = length(json.items)
     l == 0 && break
     for item in json.items
-        if item.owner.display_name == string(SpUserId())
+        if item.owner.display_name == get_user_name()
             println(item.name)
             push!(playlists, SpPlaylistId(item.id))
             push!(playlistnames, item.name)

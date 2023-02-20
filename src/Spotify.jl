@@ -15,59 +15,38 @@ module Spotify
 # TODO:
 #=
 ✓. Add more fields to Logstate
-✓. Replace code with 'urlstring', 'bodystring'. Partly done, e.g. in Player.
+✓. Replace code with 'urlstring', 'bodystring'. 
 ✓. Change function arguments to optional. 
 ✓. Refine DEFAULT_IMPLICIT_GRANT, check from fresh start using select_calls()
-5. Possibly delete help text, refer to Spotify instead? OR update properly.
-6. Revisit the type system. Delete it, or decide on if it needs to contain prefixes.
-✓. Use duck typing in all request wrapping functions. Because 'bodystring' and 'urlstring' 
+✓. Possibly delete help text, refer to Spotify instead? OR update properly.
+✓. Revisit the type system. Delete it, or decide on if it needs to contain prefixes.
+✓. Use duck typing in all request wrapping functions. Because 'body_string' and 'urlstring' 
    methods specialize on types, and names / defaults provide user the info actually needed.
 ✓. Add spaces around '='. Not obvious choice, but easier to maintain: Same rule everywhere.
 ✓. Move by_console_doc/follow to by_reference_doc/users
 ✓. Drop default values: country = "US", locale = "en" 
 ✓. Standardize Dates.now usage. Utilities?
-12. In inline docs, use a short form of JSON display that doesn't include request strings.
+✓. In inline docs, use a short form of JSON display that doesn't include request strings.
     This makes source code hard to search in.  withenv("LINES" => 10, "COLUMNS" => 80) do
                     select_calls()
                 end
 ✓. Drop 'return' in in all request wrapping functions.
 ✓.  Drop unnecessary dependencies URIs and Parameters
-15. Use the name-based parameter defaults in tests. See paramname_default_dic.jl
-16. Fix this issue:
-julia> Spotify.spotcred().ig_scopes
-    7-element Vector{String}:
-    "user-read-private"
-    "user-modify-playback-state"
-    "user-read-playback-state"
-    "playlist-modify-private"
-    "playlist-read-private"
-    "user-read-playback-position"
-    "user-library-read"
+✓. Use the name-based parameter defaults in tests. See paramname_default_dic.jl
 ✓. For tests, include "" as well as eg. "DE"
-18. Revisit paramname_default. Check select_calls() for all.
+✓. Revisit paramname_default. Check select_calls() for all.
 ✓. Drop Spotify. in tests.
-20. Shows, too, need the 'market' argument. Consider renaming to 'homemarket', and provide
+✓. Shows, too, need the 'market' argument. Consider renaming to 'homemarket', and provide
     the 'artist_top_tracks' default argument. Use 'homemarket' both places, if this is thought to be smart.
-21. Finish debugging and delete CHECKUSED constant after running everything in 'select_calls'.
+✓. Finish debugging and delete CHECKUSED constant after running everything in 'select_calls'.
 22. Add feature to miniplayer: 0-9 select position in current song.
 23. Add reference link to inline docs. Regex replacement. See 'users_unfollow_artists_users'.
-24. print_as_console_input should type vectors with brakcets (?)
+24. print_as_console_input should type vectors with brakcets. Eg. album_get_multiple("5XgEM5g3xWEwL4Zr6UjoLo, 2rpT0freJsmUmmPluVWqg5")
+    is not OK.
+    Mostly fixed, but double brackets appear with vectors of strings.
 25. Add example, uniquify playlist entries.
-
-julia> Spotify.expiring_in()
-3489 seconds
-
-julia> authorize()
-┌ Info: Client credentials expire in 3600 seconds.
-│           You can inspect with `Spotify.spotcred()`, `Spotify.expiring_in()`,
-└            or e.g. `Spotify.credentials_contain_scope("user-read-private")`
-true
-
-julia> Spotify.spotcred().ig_scopes
-String[]
-
-
-
+✓.  Include color in type definition, not show methods?
+27. Print calls in menus in the same manner as after they've run, with colours.
 =#
 using HTTP, Dates, IniFile, HTTP, JSON3, Sockets
 using Logging: with_logger, NullLogger
@@ -78,7 +57,7 @@ using REPL.TerminalMenus
 import Base: show, show_vector, typeinfo_implicit
 export authorize, apply_and_wait_for_implicit_grant, get_user_name
 export select_calls, strip_embed_code, LOGSTATE
-export SpUri, SpId, SpCategoryId, SpUserId, SpUrl, SpPlaylistId, SpAlbumId
+export SpId, SpCategoryId, SpPlaylistId, SpAlbumId, SpTrackId
 export SpArtistId, SpShowId, SpEpisodeId
 export JSON3
 "For the client credentials flow"

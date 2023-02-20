@@ -28,6 +28,6 @@ using Test, Spotify.Albums
 
     end    
 
-    @test ~isempty(album_get_contains("$(album_id),5XgEM5g3xWEwL4Zr6UjoLo"))
+    @test ~isempty(album_get_contains(["$(album_id)","5XgEM5g3xWEwL4Zr6UjoLo"]))
 
 end

@@ -1,6 +1,7 @@
 # Run tests on functions in src/by_reference_doc/artist.jl
 
 using Test, Spotify.Artists
+using Spotify: SpArtistId
 
 @testset verbose = true "GET-request endpoints for artists" begin
     
@@ -21,7 +22,11 @@ using Test, Spotify.Artists
 
         end
 
-        @test ~isempty(artist_top_tracks(artist_id, market = country_id)[1])
+        if country_id == ""
+            @test ~isempty(artist_top_tracks(artist_id)[1])
+        else
+            @test ~isempty(artist_top_tracks(artist_id, market = country_id)[1])
+        end
 
     end
 

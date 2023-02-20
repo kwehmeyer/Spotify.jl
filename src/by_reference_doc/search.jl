@@ -7,10 +7,10 @@
              shows or episodes that match a keyword string. Note: Audiobooks are only 
              available for the US, UK, Ireland, New Zealand and Australia markets.
 
-# Keyword arguments
+# Arguments
 - `q`                 : Search query, e.g. "Coldplay".
 
-# Optional keywords
+# Optional keywords arguments
 - `type` :         A comma-separated list of item types to search across. Search results include
                    hits from all the specified item types. For example, item_type = "album,tarck" returns
                    both albums and tracks with the search query included in their name.

@@ -112,21 +112,16 @@ function launch_async_single_grant_receiving_server()
     spotcred().ig_access_token = ""
     close_server_when_ready_task = @async begin
         wait_for_ig_access()
-        # @info "Closing server" # Redundant, said elsewhere.
         close(server[])
         "Server is closed, and this string can be inspected in this task's result field."
     end
-    #listen_task = @async HTTP.serve(receive_grant_as_request,
-    #                              host(), port();
-    #                              server = server[],
-    #                              stream =false)
-    listen_task = with_logger(NullLogger()) do # We're not interested in HTTPs conversation with REPL.
+    # We're not interested in HTTPs conversation with REPL, so use the NullLogger.
+    listen_task = with_logger(NullLogger()) do 
         @async HTTP.serve(receive_grant_as_request,
                                   host(), port();
                                   server = server[],
                                   stream =false)
     end
-
     listen_task, close_server_when_ready_task
 end
 
@@ -161,7 +156,6 @@ function launch_a_browser_that_asks_for_implicit_grant(;scopes::Vector{String} =
                 break
             end
         end
-        @assert comm != `` "Could not find a browser"
         run(comm, wait = false)
     end
     if Sys.islinux()
@@ -231,12 +225,21 @@ function browser_path_windows(shortname)
     return ""
 end
 
+
 "Constructs windows launch command"
 function launch_command_windows(shortbrowsername; url = DEFAULT_REDIRECT_URI)
     pt = browser_path_windows(shortbrowsername)
     if pt == ""
         return ``
     else
-        return Cmd( [ pt, url])
+        if shortbrowsername !== "chrome"
+            return Cmd( [ pt, url])
+        else
+            # Dark mode is also a windows setting, so specifying this here is dubious practice.
+            # However, Spotify is dark by default, so flashing a white screen in user's eyes can
+            # be quite irritating.
+            # Note, this command-line swith only has an effect if this is the first Chrome tab we're opening.
+            return Cmd( [ pt, url, "--force-dark-mode"])
+        end
     end
 end

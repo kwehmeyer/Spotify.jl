@@ -42,7 +42,8 @@
 """
 function playlist_get(playlist_id; additional_types = "track", fields = "",
                       market = "")
-    u = "playlists/$(playlist_id)"
+    pli = SpPlaylistId(playlist_id)
+    u = "playlists/$pli"
     a  = urlstring(;additional_types, fields, market)
     url = build_query_string(u, a)
     spotify_request(url)
@@ -89,7 +90,8 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
 """
 function playlist_get_tracks(playlist_id; additional_types = "track", fields = "",
                              limit = 20, offset = 0, market = "")
-    u = "playlists/$(playlist_id)/tracks"
+    pli = SpPlaylistId(playlist_id)
+    u = "playlists/$pli/tracks"
     a = urlstring(;additional_types, fields, limit, offset, market)
     url = build_query_string(u, a)
     spotify_request(url; scope = "playlist-read-private")
@@ -98,13 +100,13 @@ end
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/add-tracks-to-playlist
 """
-    playlist_add_tracks_to_playlist(playlist_id, track_uris; position = 0)
+    playlist_add_tracks_to_playlist(playlist_id, track_ids; position = -1)
 
 **Summary**: Add one or more items to a user's playlist.
 
 # Arguments
 - `playlist_id`:  The Spotify ID of the playlist.
-- `track_uris`:   A maximum of 100 items can be added in one request.
+- `track_ids`:   A maximum of 100 items can be added in one request.
 # Optional keywords
 - `position`:     The position to insert the items, a zero-based index.
     For example, to insert the items in the first position: position = 0;
@@ -113,39 +115,51 @@ end
     When omitted, the items will be appended to the playlist. Items are added in the order they
     are listed in the query string or request body.
 
-# Example
+# Example (continued from `playlist_create_playlist`)
 ```julia-repl
-playlist_add_tracks_to_playlist("3cEYpjA9oz9GiPac4AsH4n", ["spotify:track:4m6P9J3czb5hiMIuNsWeVO", "spotify:track:619OpJGKpAOrp5rM4Gcs65"])[1]
-    POST https://api.spotify.com/v1/playlists/3cEYpjA9oz9GiPac4AsH4n/tracks   \\{"uris": ["spotify:track:4m6P9J3czb5hiMIuNsWeVO", "spotify:track:619OpJGKpAOrp5rM4Gcs65"]}
-    scopes in current credentials: ["user-read-private", "user-read-email", "user-follow-read", "user-library-read", "user-read-playback-state", "user-read-recently-played", "user-top-read", "playlist-modify-public", "playlist-modify-private", "playlist-read-private"]
-┌ Info: 403 (code meaning): Forbidden - The server understood the request, but is refusing to fulfill it.
-└               (response message): You cannot add tracks to a playlist you don't own.
-    This code may be triggered by insufficient authorization scope(s).
-    Consider: `Spotify.apply_and_wait_for_implicit_grant()`  scope(s) required for this API call: playlist-modify-public playlist-modify-private
-    scopes in current credentials: ["user-read-private", "user-read-email", "user-follow-read", "user-library-read", "user-read-playback-state", "user-read-recently-played", "user-top-read", "playlist-modify-public", "playlist-modify-private", "playlist-read-private"]
+julia> track_ids = SpTrackId.(["4m6P9J3czb5hiMIuNsWeVO", "619OpJGKpAOrp5rM4Gcs65"])
+2-element Vector{SpTrackId}:
+ spotify:track:4m6P9J3czb5hiMIuNsWeVO
+ spotify:track:619OpJGKpAOrp5rM4Gcs65
+
+julia> playlist_add_tracks_to_playlist(myownplaylistid, track_ids)[1]
+JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
+  :snapshot_id => "Myw3OTkwNGExNzExNjA2ZWRhMDBkYjgwOWEwNzgzNGY2ZTRiODU3ZTkz"
+
+julia> # Cleanup: See `playlist_remove_playlist_item`
 ```
 
-Or, more formally
+Or, for one of your own playlists,
 ```julia-repl
-julia> myownplaylist = playlist_get_current_user()[1].items[1].id |> SpId
-"2Se75n0Lh0Nod77qxHImrd"
+julia> function get_my_own_playlist()                                                                                                                                                                                                                                                      
+            pls = playlist_get_current_user()[1]                                                                                                                                                                                                                                               
+            for p in pls.items                                                                                                                                                                                                                                                                 
+                if p.owner.id == Spotify.get_user_name()                                                                                                                                                                                                                                        
+                    return p                                                                                                                                                                                                                                                                    
+                end                                                                                                                                                                                                                                                                             
+            end                                                                                                                                                                                                                                                                                 
+            nothing
+        end
+julia> myownplaylistid = get_my_own_playlist().id |> SpPlaylistId
+spotify:playlist:6VX6WsbD9CpEGMAxuQEbm3
 
-julia> track_uris = SpUri.(["4m6P9J3czb5hiMIuNsWeVO", "619OpJGKpAOrp5rM4Gcs65"]);
+julia> track_ids = SpTrackId.(["4m6P9J3czb5hiMIuNsWeVO", "619OpJGKpAOrp5rM4Gcs65"]);
 
-julia> playlist_add_tracks_to_playlist(myownplaylist, track_uris)
-    POST https://api.spotify.com/v1/playlists/2Se75n0Lh0Nod77qxHImrd/tracks   \\{"uris": ["spotify:track:4m6P9J3czb5hiMIuNsWeVO", "spotify:track:619OpJGKpAOrp5rM4Gcs65"]}
-    scopes in current credentials: ["user-read-private", "user-read-email", "user-follow-read", "user-library-read", "user-read-playback-state", "user-read-recently-played", "user-top-read", "playlist-modify-public", "playlist-modify-private", "playlist-read-private"]
-({
-"snapshot_id": "MyxlMjg3ZGEyNWFlZjhmOTQxM2UzYzcxZTEzOTZkNWY4OGQ5M2M3NmU0"
-}, 0)
+julia> playlist_add_tracks_to_playlist(myownplaylistid, track_ids)[1]
+JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
+  :snapshot_id => "MTEsOWE1MjA0M2IxMDlhYjFjM2M2OGE0YTBlOWM4MTY1OGVjYWU2NWQxMw=="
+
+julia> # Cleanup: See `playlist_remove_playlist_item`
 ```
 """
-function playlist_add_tracks_to_playlist(playlist_id, track_uris; position = -1)
+function playlist_add_tracks_to_playlist(playlist_id, track_ids; position = -1)
     method = "POST"
-    u = "playlists/$playlist_id/tracks"
+    pli = SpPlaylistId(playlist_id)
+    u = "playlists/$pli/tracks"
     a = urlstring(;position)
     url = build_query_string(u, a)
-    body = bodystring(;uris = track_uris)
+    uris = SpTrackId.(track_ids)
+    body = body_string(;uris)
     spotify_request(url, method; body,
         scope = "playlist-modify-public",
         additional_scope = "playlist-modify-private")
@@ -156,37 +170,28 @@ end
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/remove-tracks-playlist
 """
-    playlist_remove_playlist_item(playlist_id; track_uris)
+    playlist_remove_playlist_item(playlist_id, track_ids)
 
 **Summary**: Remove one or more items from a user's playlist. For 'deleting playlists', see 'users_unfollow_artists_users'.
 
 # Arguments
 - `playlist_id` The Spotify ID of the playlist.
-- `track_uris`   A maximum of 100 items can be removed in one request.
+- `track_ids`   A maximum of 100 items can be removed in one request.
 
-# Example (to be run after `playlist_create_playlist`)
+# Example (to be run after examples in `playlist_create_playlist` and `playlist_add_tracks_to_playlist`.
 ```julia-repl
-julia> playlist = ans
-JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 15 entries:
-  :collaborative => false
-  :description   => ""
-  :external_urls => {…
-  :followers     => {…
-  ⋮              => ⋮
-
-julia> track_uris = json.tracks.items .|> t -> t.track.uri
-2-element Vector{String}:
- "spotify:track:1vMMlstAC32gQJSY20rKTI"
- "spotify:track:3bFoGv8y90y4fnaVwI3vSe"
-
-julia> playlist_remove_playlist_item(playlist_id; track_uris)[1]
+julia> playlist_remove_playlist_item(myownplaylistid, track_ids)[1]
 JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
-  :snapshot_id => "NCxhMmY2NzJhZWJiMTc4NjczNDUyY2E2ZjIyMTRjZTlmZjRlMTY2Nzll"
+  :snapshot_id => "NCwwNWI4YjdjODk5OWI1MGRlZTIzYjdjYzY4ZDhkMzczZDMyYzQ1YTRl"
+
+julia> # Cleanup: This example is continued under `Spotify.Users.users_unfollow_playlist`.
 ```
 """
-function playlist_remove_playlist_item(playlist_id; track_uris)
-    url = "playlists/$playlist_id/tracks"
-    body = bodystring(;uris = track_uris)
+function playlist_remove_playlist_item(playlist_id, track_ids)
+    pli = SpPlaylistId(playlist_id)
+    url = "playlists/$pli/tracks"
+    uris = SpTrackId.(track_ids)
+    body = body_string(;uris)
     spotify_request(url, "DELETE"; body, scope= "playlist-modify-private")
 end
 
@@ -255,26 +260,24 @@ end
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/create-playlist
 """
-    playlist_create_playlist(name; user_id = SpUserId(), public = true, collaborative = false, description = "")
+    playlist_create_playlist(playlist_name; user_id = get_user_name(), public = true, collaborative = false, description = "")
 
 **Summary**: Create a playlist for a Spotify user. (The playlist will be empty until you add tracks.)
 
 # Arguments
-- `name` :   The name for the new playlist, for example "Your Coolest Playlist". This name does not need to be unique; a user may have several playlists with the same name.
+- `playlist_name` :   The name for the new playlist, for example "Your Coolest Playlist". This name does not need to be unique; a user may have several playlists with the same name.
 
 # Optional keywords
-- `user_id`                 Defaults to SpUserId(), from the .ini file
+- `user_id`                 Defaults to get_user_name(), from the .ini file
 - `public`::Boolean         Defaults to true. If true the playlist will be public, if false it will be private. To be able to create private playlists, the user must have granted the playlist-modify-private scope
 - `collaborative`::Boolean  Defaults to false. If true the playlist will be collaborative. Note: to create a collaborative playlist you must also set public to false. To create collaborative playlists you must have granted playlist-modify-private and playlist-modify-public scopes.
 - `description`     Value for playlist description as displayed in Spotify Clients and in the Web API.
 
 # Example
 ```
-julia> user_id = get_user_name();
-
 julia> description = "Songs about orcs learning to code after being laid off from the mines of Mordor";
 
-julia> playlist_create_playlist("Temporary private playlist")[1]
+julia> playlist = playlist_create_playlist("Temporary private playlist"; description)[1]
 JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 15 entries:
   :collaborative => false
   :description   => nothing
@@ -282,12 +285,17 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 15 entries:
   :followers     => {…
   :href          => "https://api.spotify.com/v1/playlists/6VX6WsbD9CpEGMAxuQEbm3"
   ⋮              => ⋮
+
+julia> myownplaylistid = playlist.id |> SpPlaylistId
+spotify:playlist:0akFdMBfiqbkAUSY5hTYKs
+
+julia> # Cleanup: See `playlist_add_tracks_to_playlist`, or skip straight to `Spotify.Users.users_unfollow_playlist`
 ```
 """
-function playlist_create_playlist(name; user_id = SpUserId(), public = true, collaborative = false, description = "")
+function playlist_create_playlist(playlist_name; user_id = get_user_name(), public = true, collaborative = false, description = "")
     method = "POST"
     url = "users/$user_id/playlists"
-    body = bodystring(;name, description, public, collaborative)
+    body = body_string(;name = playlist_name, description, public, collaborative)
     spotify_request(url, method; body,
         scope = "playlist-modify-public",
         additional_scope = "playlist-modify-private")
@@ -332,12 +340,12 @@ end
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-categories-playlists
 """
-    playlist_get_category(category_id; country = "", limit = 20, offset = 0)
+    playlist_get_category(category_name; country = "", limit = 20, offset = 0)
 
 **Summary**: Get a list of Spotify playlists tagged with a particular category.
 
 # Arguments
-- `category_id`   : The unique string identifying the Spotify category, e.g. "dinner", "party" etc.
+- `category_name`   : The unique string identifying the Spotify category, e.g. "dinner", "party" etc.
 
 # Optional keywords
 - `country`       : An ISO 3166-1 alpha-2 country code. Provide this parameter if you want
@@ -353,8 +361,8 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
 :playlists => {…
 ```
 """
-function playlist_get_category(category_id; country = "", limit = 20, offset = 0)
-    u = "browse/categories/$category_id/playlists"
+function playlist_get_category(category_name; country = "", limit = 20, offset = 0)
+    u = "browse/categories/$category_name/playlists"
     a = urlstring(;country, limit, offset)
     url = build_query_string(u, a)
     spotify_request(url)
@@ -382,7 +390,8 @@ julia> playlist_get_cover_image("37i9dQZF1E4vUblDJbCkV3")[1]
 ```
 """
 function playlist_get_cover_image(playlist_id)
-    spotify_request("playlists/$playlist_id/images")
+    pli = SpPlaylistId(playlist_id)
+    spotify_request("playlists/$pli/images")
 end
 
 # TODO playlist_upload_custom_cover()

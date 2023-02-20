@@ -44,59 +44,13 @@ function build_query_string(xs::Vararg{String,N} where N)
     end
 end
 
-###
-
-function bodystring(;kwds...)
-    isempty(kwds) && return ""
-    bodystring(kwds)
+# Alternative approach here:
+function body_string(;kwds...)
+    dic = Dict(kwds)
+    fi = filter(p -> p[2] !== 0 && !isempty(p[2]), dic)
+    isempty(fi) && return ""
+    body_string(fi)
 end
-function bodystring(kwp::Pair)
-    s = bodystring(kwp[1]) * ": " * bodystring(kwp[2])
-    s
+function body_string(s)
+    write(s)
 end
-function bodystring(kwval::Vector)
-    s = "["
-    parts = ["$(bodystring(v))" for v in kwval]
-    s *= join(parts, ", ")
-    s *= "]"
-    s
-end
-function bodystring(kwds::Base.Pairs)
-    s = "{"
-    parts = ["$(bodystring(p))" for p in kwds if p[2] !== "" && p[2] !== 0]
-    s *= join(parts, ',')
-    s *= "}"
-    s
-end
-function bodystring(s::Symbol)
-    "\"$s\""
-end
-function bodystring(d::Dict)
-    vect = map(zip(keys(d), values(d))) do (k,v)
-        Symbol(k) => convert(String, v)
-    end
-    bodystring(vect)
-end
-function bodystring(s::T) where T<: Union{SpUri, SpId, SpCategoryId, SpUserId, SpUrl, SpArtistId}
-    "\"$(s.s)\""
-end
-function bodystring(s::String)
-    if is_string_vector(s)
-        "\"$s\""
-    elseif is_string_separable(s)
-        sv = "["
-        parts = ["\"$(sp)\"" for sp in split(s, ',')]
-        sv *= join(parts, ',')
-        sv *= "]"
-    else
-        "\"$s\""
-    end
-end
-function bodystring(s::Bool)
-    "$s"
-end
-function bodystring(s::T) where T<:Number
-    "$s"
-end
-is_string_vector(s::String) = startswith(s, '[') && endswith(s, ']')
-is_string_separable(s::String) = (length(split(s, ',')) > 1)

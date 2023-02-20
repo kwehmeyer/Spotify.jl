@@ -1,7 +1,7 @@
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-episode
 
 """
-    episodes_get_single(episode_id; market = "")
+    episodes_get_single(episode_id; market = get_user_country())
 
 **Summary**: Get Spotify catalog information for a single episode identified by its unique Spotify ID.
 
@@ -9,7 +9,8 @@
 - `episode_id` : The Spotify ID for the episode_id
 
 # Optional keywords
-- `market` : An ISO 3166-1 alpha-2 country code. If a country code is specified, only content
+- `market` : Default is `get_user_country()`.
+             An ISO 3166-1 alpha-2 country code. If a country code is specified, only content
              that is available in that market will be returned. If a valid user access token 
              is specified in the request header, the country associated with the user account 
              will take priority over this parameter. Note: If neither market or user country 
@@ -27,8 +28,9 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 19 entries:
   :external_urls        => {…
 ```
 """
-function episodes_get_single(episode_id; market = "")
-    u = "episodes/$episode_id"
+function episodes_get_single(episode_id; market = get_user_country())
+    eid = SpEpisodeId(episode_id)
+    u = "episodes/$eid"
     a = urlstring(;market)
     url = build_query_string(u, a)
     spotify_request(url; scope = "user-read-playback-position")
@@ -38,7 +40,7 @@ end
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-multiple-episodes
 
 """
-    episodes_get_multiple(episode_ids; market = "")
+    episodes_get_multiple(episode_ids; market = get_user_country())
 
 **Summary**: Get Spotify catalog information for several episodes based on their Spotify IDs.
 
@@ -46,7 +48,8 @@ end
 - `episode_ids` : A comma-separated list of the Spotify IDs for the episodes. Maximum: 50 IDs.
 
 # Optional keywords
-- `market` : An ISO 3166-1 alpha-2 country code. If a country code is specified, only content
+- `market` : Default: get_user_country().
+             An ISO 3166-1 alpha-2 country code. If a country code is specified, only content
              that is available in that market will be returned. If a valid user access token 
              is specified in the request header, the country associated with the user account 
              will take priority over this parameter. Note: If neither market or user country 
@@ -55,14 +58,15 @@ end
 
 # Example
 ```julia-repl
-julia> episodes_get_multiple("77o6BIVlYM3msb4MMIL1jH,0Q86acNRm6V9GYx55SXKwf")[1]
+julia> episodes_get_multiple(["77o6BIVlYM3msb4MMIL1jH", "0Q86acNRm6V9GYx55SXKwf"])[1]
 JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
   :episodes => JSON3.Object[{…
 ```
 """
-function episodes_get_multiple(episode_ids; market = "")
+function episodes_get_multiple(episode_ids; market = get_user_country())
+    eids = SpEpisodeId.(episode_ids)
     u = "episodes"
-    a = urlstring(;ids = episode_ids, market)
+    a = urlstring(;ids = eids, market)
     url = build_query_string(u, a)
     spotify_request(url)
 end
@@ -115,7 +119,7 @@ end
 
 # Example
 ```julia-repl
-julia> episodes_get_contains("77o6BIVlYM3msb4MMIL1jH,0Q86acNRm6V9GYx55SXKwf")[1]
+julia> episodes_get_contains(["77o6BIVlYM3msb4MMIL1jH", "0Q86acNRm6V9GYx55SXKwf"])[1]
 
 2-element JSON3.Array{Bool, Base.CodeUnits{UInt8, String}, Vector{UInt64}}:
  0
@@ -123,5 +127,9 @@ julia> episodes_get_contains("77o6BIVlYM3msb4MMIL1jH,0Q86acNRm6V9GYx55SXKwf")[1]
 ```
 """
 function episodes_get_contains(episode_ids)
-    spotify_request("me/episodes/contains?ids=$episode_ids"; scope = "user-library-read")
+    eids = SpEpisodeId.(episode_ids)
+    u = "me/episodes/contains"
+    a = urlstring(ids = eids)
+    url = build_query_string(u, a)
+    spotify_request(url; scope = "user-library-read")
 end

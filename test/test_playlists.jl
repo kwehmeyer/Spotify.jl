@@ -1,11 +1,13 @@
 # Run tests on functions in src/by_reference_doc/playlists.jl
 
 using Test, Spotify.Playlists
+using Spotify: SpPlaylistId, SpCategoryId, SpTrackId, get_user_name
+using Spotify.Users: users_unfollow_playlist
 @testset verbose = true "GET-request endpoints for playlists" begin
     
     # Input arguments from composite types defined in src/types.jl
     playlist_id = SpPlaylistId()
-    user_id = SpUserId()
+    user_id = get_user_name()
     category_id = SpCategoryId()
 
     # Cycle through different input keywords for testing
@@ -43,4 +45,18 @@ end
 
     @test_logs (:info,  "404 (code meaning): Not Found - The requested resource could not be found. This error can be due to a temporary or permanent condition. \n\t\t(response message): Not found.") match_mode=:any playlist_get_tracks("37i9dQZF1E4vUblDJzzkV3")[1]
     
+end
+
+@testset "Create, populate, depopulate, unrefer a private playlist." begin
+    description = "Songs about orcs learning to code after being laid off from the mines of Mordor"
+    playlist = playlist_create_playlist("Temporary private playlist"; description)[1]
+    @test ! isempty(playlist)
+    myownplaylistid = playlist.id |> SpPlaylistId
+    track_ids = SpTrackId.(["4m6P9J3czb5hiMIuNsWeVO", "619OpJGKpAOrp5rM4Gcs65"])
+    snapshot = playlist_add_tracks_to_playlist(myownplaylistid, track_ids)[1]
+    @test ! isempty(snapshot)
+    snapshot = playlist_remove_playlist_item(myownplaylistid, track_ids)[1]
+    @test ! isempty(snapshot)
+    noresponse = users_unfollow_playlist(myownplaylistid)[1]
+    @test isempty(noresponse)
 end

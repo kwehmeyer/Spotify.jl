@@ -47,17 +47,9 @@ end
 
 # Example
 ```julia-repl
-julia> player_get_devices()[1]["devices"]
-2-element JSON3.Array{JSON3.Object, Base.CodeUnits{UInt8, String}, SubArray{UInt64, 1, Vector{UInt64}, Tuple{UnitRange{Int64}}, true}}:
-{
-                   "id": "your_device_id",
-            "is_active": false,
-   "is_private_session": false,
-        "is_restricted": false,
-                 "name": "Web Player (Chrome)",
-                 "type": "Computer",
-       "volume_percent": 100
-}
+julia> player_get_devices()[1]
+JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
+  :devices => JSON3.Object[{…
 ```
 """
 function player_get_devices()
@@ -141,6 +133,19 @@ end
 - `device_id`   The id of the device this command is targeting. If not supplied, the user's currently active device is the target.
     Example value:
     "0d1841b0976bae2a3a310dd74c0f3df354899bc8"
+
+# Example
+
+```julia-repl
+julia> device_id = player_get_devices()[1].devices[1].id;
+
+julia> player_pause(;device_id)
+({}, 0)
+
+julia> player_pause() # Fails because we already paused, see `player_resume_playback`
+┌ Info: 403 (code meaning): Forbidden - The server understood the request, but is refusing to fulfill it.
+└               (response message): Player command failed: Restriction violated
+```
 """
 function player_pause(;device_id = "")
     u = "me/player/pause"
@@ -160,7 +165,7 @@ end
 - `device_id`     The id of the device this command is targeting. If not supplied, the user's currently active device is the target. Example value:
 "0d1841b0976bae2a3a310dd74c0f3df354899bc8"
 - `context_uri`   Spotify URI of the context to play. Valid contexts are albums, artists & playlists. {context_uri:"spotify:album:1Je1IMUlBXcx1Fz0WE7oPT"}
-- `uris`          Vector of strings or SpUri. This is formed to JSON locally.
+- `uris`          Vector of arguments to (queue and) play. Accepts string types (with prefixes like 'spotify:track:') or types like SpTrackId, SpEpisodeId.
 - `offset`        Indicates from where in the context playback should start. Only available when context_uri corresponds to an album or playlist object 
     "position" is zero based and can’t be negative. Example: "offset": {"position": 5} "uri" is a string representing the uri of the item to start at. 
                   Example: "offset": {"uri": "spotify:track:1301WleyT98MSxVHPZCA6M"}
@@ -169,33 +174,42 @@ end
 # Examples
 
 ```julia-repl
-julia> player_resume_playback(uris= [\"spotify:track:4iV5W9uYEdYUVa79Axb7Rh\", \"spotify:track:1301WleyT98MSxVHPZCA6M\"])
+julia> context_uri = SpAlbumId("1XORY4rQNhqkZxTze6Px90")
+spotify:album:1XORY4rQNhqkZxTze6Px90
+
+julia> offset = Dict("position" => 35) # Song no.
+Dict{String, Int64} with 1 entry:
+  "position" => 35
+julia> position_ms = 59000
+59000
+julia> player_resume_playback(;context_uri, offset, position_ms)[1]
+{}
 ``` 
-... which is equivalent to this more formal input style:
+We can alternatively specify a sequence of tracks, here no. 1 and 35 from the same album.
+We can set the starting position for the first of those: 
 
 ```julia-repl
-julia> sids = SpUri.(["4iV5W9uYEdYUVa79Axb7Rh", "1301WleyT98MSxVHPZCA6M"]);
+julia> uris = SpTrackId.(["4SFBV7SRNG2e2kyL1F6kjU", "46J1vycWdEZPkSbWUdwMZQ"])
+2-element Vector{SpTrackId}:
+ spotify:track:4SFBV7SRNG2e2kyL1F6kjU
+ spotify:track:46J1vycWdEZPkSbWUdwMZQ
 
-julia> uris = SpUri.(sids);
+julia> player_resume_playback(;uris, position_ms = 82000)[1]
+{}
 
-julia> player_resume_playback(; uris)
-    PUT https://api.spotify.com/v1/me/player/play/?   \\{"uris": ["spotify:track:4iV5W9uYEdYUVa79Axb7Rh", "spotify:track:1301WleyT98MSxVHPZCA6M"]}
-    scopes in current credentials: ["user-read-private", "user-read-email", "user-follow-read", "user-library-read", "user-read-playback-state", "user-read-recently-played", "user-top-read", "user-modify-playback-state"]
-[ Info: 204: No Content - The request has succeeded but returns no message body.
-({}, 0)
-```
-
-Single tracks must also be enclosed in vector brackets:
-
-```julia-repl
-player_resume_playback(; uris = [SpUri("2knANHszLdV409tIWivfVR")])
 ```
 """
-function player_resume_playback(;device_id = "", context_uri = "", uris = "", offset = 0, position_ms = 0)
+function player_resume_playback(;device_id = "", context_uri::S = "", uris::T = "", offset = 0, position_ms = 0) where {S, T}
     u = "me/player/play"
     a = urlstring(;device_id)
     url = build_query_string(u, a)
-    body = bodystring(;context_uri, uris, offset, position_ms)
+    if ! (T  <: Union{AbstractString, Vector{String}, Vector{SpTrackId}, Vector{SpEpisodeId}})
+        @warn "unexpected uris argument: $T"
+    end
+    if ! (S  <: Union{AbstractString, SpAlbumId, SpArtistId, SpPlaylistId})
+        @warn "unexpected context_uri argument: $S"
+    end
+    body = body_string(;context_uri, uris, offset, position_ms)
     spotify_request(url, "PUT"; body, scope= "user-modify-playback-state")
 end
 

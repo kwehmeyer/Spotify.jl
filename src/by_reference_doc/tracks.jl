@@ -19,7 +19,8 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
 ```
 """
 function tracks_get_audio_analysis(track_id)
-    spotify_request("audio-analysis/$track_id")
+    tid = SpTrackId(track_id)
+    spotify_request("audio-analysis/$tid")
 end
 
 
@@ -106,7 +107,8 @@ valence
 A measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry).
 """
 function tracks_get_audio_features(track_id)
-    spotify_request("audio-features/$track_id")
+    tid = SpTrackId(track_id)
+    spotify_request("audio-features/$tid")
 end
 
 
@@ -122,7 +124,6 @@ end
 # Optional keywords
 - `market`         : An ISO 3166-1 alpha-2 country code. If a country code is specified,
                      only episodes that are available in that market will be returned.
-                     Default is set to "US".
 
 # Example
 ```julia-repl
@@ -138,7 +139,8 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 18 entries:
 ```
 """
 function tracks_get_single(track_id; market = "")
-    u = "tracks/$track_id"
+    tid = SpTrackId(track_id)
+    u = "tracks/$tid"
     a = urlstring(; market)
     url = build_query_string(u, a)
     spotify_request(url)
@@ -147,7 +149,7 @@ end
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-several-tracks
 """
-    tracks_get_multiple(;ids, market = "")
+    tracks_get_multiple(; track_ids, market = "")
 
 **Summary**: Get Spotify catalog information for multiple tracks based on their Spotify IDs.
 
@@ -157,7 +159,6 @@ end
 # Optional keywords
 - `market`         : An ISO 3166-1 alpha-2 country code. If a country code is specified,
                      only episodes that are available in that market will be returned.
-                     Default is set to "US".
 
 # Example
 ```julia-repl
@@ -166,7 +167,8 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
   :tracks => Union{Nothing, JSON3.Object}[{…
 ```
 """
-function tracks_get_multiple(;ids, market = "")
+function tracks_get_multiple(;track_ids, market = "")
+    ids = SpTrackId.(track_ids)
     u = "tracks"
     a = urlstring(; ids, market)
     url = build_query_string(u, a)
@@ -184,7 +186,6 @@ end
 - `limit`          : Maximum number of items to return, default is set to 20
 - `market`         : An ISO 3166-1 alpha-2 country code. If a country code is specified,
                      only episodes that are available in that market will be returned.
-                     Default is set to "US".
 - `offset` : Index of the first item to return, default is set to 0
 
 # Example
@@ -221,15 +222,20 @@ julia> tracks_get_contains("4iV5W9uYEdYUVa79Axb7Rh, 4VqPOruhp5EdPBeR92t6lQ")[1]
  0
 ```
 """
-function tracks_get_contains(ids)
-    spotify_request("me/tracks/contains?ids=$ids"; scope = "user-library-read")
+function tracks_get_contains(track_ids)
+    ids = SpTrackId.(track_ids)
+    u = "me/tracks/contains"
+    a = urlstring(; ids)
+    url = build_query_string(u, a)
+    spotify_request(url, scope = "user-library-read")
 end
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-recommendations
 """
-    tracks_get_recommendations(seeds; track_attributes, limit = 50, market = "")
+    tracks_get_recommendations(seeds_dict::Dict; 
+        track_attributes::Dict = Dict{String, String}(), limit = 50, market = "")
 
-**Summary**: Get Recommendations Based on Seeds
+**Summary**: Get Recommendations based on Seeds
 
 # Optional keywords
 - `seeds_dict`       : A dictionary containing keys (seed_genres, seed_artists, seed_tracks) and values for each key being seeds
@@ -273,33 +279,52 @@ end
 
 
 ## https://developer.spotify.com/documentation/web-api/reference/library/remove-tracks-user/
-@doc """
-# Remove Tracks for Current User
-**Summary**: Remove one or more tracks for the current user's 'Your Music' library.\n
+"""
+    tracks_remove_from_library(track_ids)
 
-`track_ids` _Required_: A comma-separated list of the Spotify IDs. Maximum 50.\n
+**Summary**: Remove one or more tracks for the current user's 'Your Music' library.
+
+`track_ids` _Required_: A comma-separated list of the Spotify IDs. Maximum 50.
+
+# Example
+```
+julia> tracks_remove_from_library(["0WdUHon5tYn2aKve13psfy", "619OpJGKpAOrp5rM4Gcs65"])[1]
+{}
+```
 
 [Reference](https://developer.spotify.com/documentation/web-api/reference/library/remove-tracks-user/)
-""" ->
+"""
 function tracks_remove_from_library(track_ids)
-    spotify_request("me/tracks?ids=$track_ids", "DELETE")
+    method = "DELETE"
+    ids = SpTrackId.(track_ids)
+    u = "me/tracks"
+    a = urlstring(; ids)
+    url = build_query_string(u, a)
+    spotify_request(url, method; scope = "user-library-modify")
 end
 
 ## https://developer.spotify.com/documentation/web-api/reference/library/save-tracks-user/
-@doc """
-# Save Tracks for Current User
-** Summary**: Save one or more tracks to the current user's 'Your Music' library.\n
+"""
+    tracks_save_library(track_ids)
 
-`track_ids` _Required_: A comma-separated list of Spotify IDs. Maximum 50. \n
+** Summary**: Save one or more tracks to the current user's 'Your Music' library.
 
-# Note
-- Scope was unsufficient, also when accessed through the web console:
-┌ Info: 403 (code meaning): Forbidden - The server understood the request, but is refusing to fulfill it.
-└               (response message): Insufficient client scope
+`track_ids` _Required_: A comma-separated list of Spotify IDs. Maximum 50.
+
+# Example
+```
+julia> tracks_save_library(["0WdUHon5tYn2aKve13psfy", "619OpJGKpAOrp5rM4Gcs65"])[1]
+{}
+```
 
 [Reference](https://developer.spotify.com/documentation/web-api/reference/library/save-tracks-user/)
-""" ->
+"""
 function tracks_save_library(track_ids)
-    spotify_request("me/tracks?ids=$track_ids", "PUT")
+    method = "PUT"
+    ids = SpTrackId.(track_ids)
+    u = "me/tracks"
+    a = urlstring(; ids)
+    url = build_query_string(u, a)
+    spotify_request(url, method; scope = "user-library-modify")
 end
 

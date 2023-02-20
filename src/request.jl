@@ -30,20 +30,21 @@ function spotify_request(url_ext::String, method::String = "GET";
         # Warnings enough were issued already.
         return JSON3.Object(), 0
     end
+    # A template in case we don't get a response from HTTP.
     resp = HTTP.Messages.Response()
     try
         if method == "GET"
             resp = HTTP.request(method, url, [authorizationfield])
         elseif method == "POST" || method == "PUT" || method == "DELETE"
-            #@assert method !== "DELETE" "Delete requests are currently out of order"
             resp = HTTP.request(method, url, [authorizationfield], body)
         else
             throw("unexpected method")
         end
-        # This request was OK, so this feedback is included for transparency and review.
+        # Since execution did not skip to 'catch', this request was OK. Log the successfull request.
         request_to_stdout(method, url, body, authorizationfield, logstate, true)
     catch e
-        request_to_stdout(method, url, body, authorizationfield, logstate, false)
+        error_logstate = Logstate(logstate.authorization, true, logstate.empty_response)
+        request_to_stdout(method, url, body, authorizationfield, error_logstate, false)
         if  e isa HTTP.ExceptionRequest.StatusError && e.status ∈ keys(RESP_DIC) #[400, 401, 403, 404, 429]
             response_body = e.response.body |> String
             code_meaning = get(RESP_DIC, Int(e.status), "")
@@ -58,7 +59,7 @@ function spotify_request(url_ext::String, method::String = "GET";
             if e.status == 400  # e.g. when a search query is empty
                 return JSON3.Object(), 0
             elseif e.status == 403
-                printstyled("  This code may be triggered by insufficient authorization scope(s).\n Consider: `apply_and_wait_for_implicit_grant()`", color = :red)
+                printstyled("  This message may have been triggered by insufficient authorization scope(s).\n Consider: `apply_and_wait_for_implicit_grant()`", color = :red)
                 printstyled("  scope(s) required for this API call: ", scope, " ", additional_scope, "\n", color = :red)
                 printstyled("     scopes in current credentials: ", spotcred().ig_scopes, "\n", color = :red)
                 logstate.authorization && printstyled("               authorization field: ", authorizationfield, "\n", color = :red)
@@ -93,12 +94,16 @@ function spotify_request(url_ext::String, method::String = "GET";
     end
     response_body = resp.body |> String
     if method == "PUT" || method == "DELETE"
-        if ! (resp.status == 204 && ! logstate.empty_response)
+        if response_body == "" && resp.status ∈ [200, 201, 202, 203, 204]
+            return JSON3.Object(), 0
+        elseif resp.status ∈ [200, 201, 202, 203, 204]
+            return JSON3.read(response_body), 0
+        else
             code_meaning = get(RESP_DIC, Int(resp.status), "")
             msg = "$(resp.status): $code_meaning"
             @info msg
+            return JSON3.Object(), 0
         end
-        return JSON3.Object(), 0
     else
         if resp.status == 204
             # This may occur if, for example, user is not associated with the requested country 

@@ -78,6 +78,30 @@ function is_module_loaded(m::Symbol)
     is_function_loaded(f)
 end
 
+function find_parameter_names(f)
+    meths = methods(eval(f))
+    @assert length(meths) == 1 "Expected one method defined for \n$meths \n - is semicolon missing in function signature?"
+    meth = meths[1]
+    #=
+    printstyled("$f\n", color=:yellow)
+    for fn in fieldnames(typeof(meth))
+        if ! (fn in [:external_mt, :source, :unspecialized, :generator, :root_blocks, :ccallable, 
+                :primary_world, :deleted_world, :invokes, :recursion_relation, :file, :line,
+                :nroots_sysimg, :module, :called])
+            printstyled(".$fn", color=:green)
+            printstyled(" => ", color=:light_black)
+            val = getfield(meth, fn)
+            if val isa Vector{UInt8}
+                val = String(val)
+            end
+            printstyled(val, color=:green)
+            println("::$(typeof(val))")
+        end
+    end
+    =#
+    sls =     split(meth.slot_syms, "\0"; keepempty = false)
+    sls[2 : min(length(sls), meth.nargs )]
+end
 # Build a dictionary of implemented functions and their
 # argument names.
 function argumentnames_by_function_dic()
@@ -87,17 +111,10 @@ function argumentnames_by_function_dic()
     for submod in submods
         funcnames = vcat(funcnames, function_symbols_in_module(submod))
     end
-    # Build the dictionary.
+    # Find the values (the argument tuples). Build the dictionary.
     d = Dict{Symbol, Tuple}()
     for f in funcnames
-        if f == :users_unfollow_artists_users
-            @show f
-        end
-        meths = methods(eval(f))
-        @assert length(meths) == 1 "Expected one method defined for \n$meths \n - is semicolon missing in function signature?"
-        str = meths[1].slot_syms
-        str1 = replace(str, "#self#" => "")
-        parameter_names = split(str1, "\0"; keepempty = false)
+        parameter_names = find_parameter_names(f)
         if length(parameter_names)> 0
             parameter_symbols = Symbol.(parameter_names)
             parameter_tuple = Tuple(parameter_symbols)
@@ -182,16 +199,34 @@ function select_functions()
     fs = function_symbols_in_module(mods)
     function_menu(fs)
 end
-print_as_console_input(io::IO, argval) = show(io, MIME("text/plain"), argval)
+function print_as_console_input(io::IO, argval)
+   # println("\n\n")
+   # @show "1" argval
+   # print(io, "\"")
+    show(io, MIME("text/plain"), argval)
+   #show(io, argval)
+   print(io, "\"")
+end
+function print_as_console_input(io::IO, argval::SpType)
+   # println("\n\n")
+   # @show "1.5" argval
+   print(io, "\"")
+   # show(io, MIME("text/plain"), argval)
+   show(io, argval)
+   print(io, "\"")
+end
 function print_as_console_input(io::IO, v::Vector)
-    # TODO Probably replace with brackets included. But think first.
-    print(io, "\"")
+   # println("\n\n")
+   #     @show "2" v
+    print(io, "[")
     for val in v[1:end - 1]
-        show(io, val)
+        print_as_console_input(io, val)
+        #show(io, val)
         print(io, ", ")
     end
-    show(io, last(v))
-    print(stdout, "\"")
+    print_as_console_input(io, last(v))
+    #show(io, last(v))
+    print(io, "]")
 end
 function print_as_console_input(io::IO, fexpr::Expr)
     printstyled(io, "julia> ", color = :blue)
@@ -201,9 +236,13 @@ function print_as_console_input(io::IO, fexpr::Expr)
         # OK, just checking
     elseif length(fexpr.args) == 2
         argvals = fexpr.args[2]
+    #    println("\n\n")
+    #    @show "3" argvals
         print_as_console_input(io, argvals)
     elseif length(fexpr.args) > 2
         argvals = fexpr.args[2:end]
+     #   println("\n\n")
+     #   @show "4" argvals
         for val in argvals[1:end-1]
             print_as_console_input(io, val)
             print(io, ", ")

@@ -25,7 +25,12 @@ all_tests = ["test_int_format_strings.jl",
              "test_episodes.jl"]
    
 
-println("Running full test suite:")
+println("Running full test suite. NOTE: Have an active and playing player running on some device.")
+# Suppress problem-less requests. In case of http 'errors', relevant info is printed 
+# in red.
+LOGSTATE.authorization=false;LOGSTATE.request_string=false;LOGSTATE.empty_response=false
+
+using Spotify: LOGSTATE
 
 @time for file in all_tests
     println("\nNext: $file")

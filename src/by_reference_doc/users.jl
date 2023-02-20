@@ -5,18 +5,33 @@
 **Summary**: Check to see if the current user is following one or more artists or other Spotify users.
 
 # Arguments
-- `item_type` _Required_: The ID type, either `artist` or `user`.\n
-- `ids` _Required_: A comma separated list of the artist or user Spotify IDs to check. Maximum 50.\n
+- `ids` _Required_:     - A comma separated list of the artist. Maximum 50. 
+                        - a single user. 
+- `item_type` _Optional_: The ID type, either `artist` (default) or `user`.
 
 # Example
 ```julia-repl
-julia> users_check_current_follows("artist", "7fxBPUc2bTUgl7GLuqjajk")[1]
+julia> users_check_current_follows(["0YC192cP3KPCRWx8zr8MfZ"])[1]
 1-element JSON3.Array{Bool, Base.CodeUnits{UInt8, String}, Vector{UInt64}}:
- 1
+ 0
+
+ julia> users_check_current_follows("smedjan"; item_type = "user")[1]
+ 1-element JSON3.Array{Bool, Base.CodeUnits{UInt8, String}, Vector{UInt64}}:
+  0
 ```
 """
-function users_check_current_follows(item_type, ids)
-    spotify_request("me/following/contains?type=$item_type&ids=$ids"; scope = "user-follow-read")
+function users_check_current_follows(artist_ids; item_type = "artist")
+    if item_type == "artist"
+        ids = SpArtistId.(artist_ids)
+    elseif item_type == "user"
+        ids = artist_ids
+    else
+        throw(ArgumentError("item type"))
+    end
+    u = "me/following/contains"
+    a = urlstring(; type = item_type, ids)
+    url = build_query_string(u, a)
+    spotify_request(url; scope = "user-follow-read")
 end
 
 
@@ -32,42 +47,70 @@ end
 
 # Example
 ```julia-repl
-julia> users_check_follows_playlist("3cEYpjA9oz9GiPac4AsH4n", "jmperezperez, thelinmichael, wizzler")[1]
-     GET https://api.spotify.com/v1/playlists/3cEYpjA9oz9GiPac4AsH4n/followers/contains?ids=jmperezperez,thelinmichael,wizzler
-     scopes in current credentials: ["user-read-private", "user-read-email", "user-follow-read", "user-library-read", "user-read-playback-state", "user-read-recently-played", "user-top-read", "playlist-read-private"]
+julia> users_check_follows_playlist("3cEYpjA9oz9GiPac4AsH4n", ["jmperezperez", "thelinmichael", "wizzler"])[1]
 3-element JSON3.Array{Bool, Base.CodeUnits{UInt8, String}, Vector{UInt64}}:
  1
  0
  0
 ```
-```
 """
 function users_check_follows_playlist(playlist_id, user_ids)
-    spotify_request("playlists/$playlist_id/followers/contains?ids=$user_ids"; scope = "playlist-read-private")
+    pid = SpPlaylistId(playlist_id)
+    u = "playlists/$pid/followers/contains"
+    a = urlstring(; ids = user_ids)
+    url = build_query_string(u, a)
+    spotify_request(url; scope = "playlist-read-private")
 end
 
 ## https://developer.spotify.com/documentation/web-api/reference/follow/follow-artists-users/
-@doc """
+"""
+    users_follow_artists_users(artist_ids; type= "artist")
+
 # Follow Artists or Users
 **Summary**: Add the current user as a follower of one or more artists or other Spotify users.\n
 
-`type` _Required_: The ID type: either `artist` or `user`. \n
-`ids` _Required_: A comma-separated list of the artists or users Spotify IDs. Maximum 50.\n
+# Arguments
+`artist_ids` _Required_: A comma-separated list of the artists or users Spotify IDs. Maximum 50.
+`type` _Optional_: The ID type: either `artist` (default) or `user`
+
+
+# Example
+```julia-repl
+julia> artist_ids = SpArtistId.(["2CIMQHirSU0MQqyYHq0eOx", "57dN52uHvrHOxijzpIgu3E", "1vCWHaC5f2uS3yhpwWbIA6"])
+3-element Vector{SpArtistId}:
+ spotify:artist:2CIMQHirSU0MQqyYHq0eOx
+ spotify:artist:57dN52uHvrHOxijzpIgu3E
+ spotify:artist:1vCWHaC5f2uS3yhpwWbIA6
+
+julia> users_follow_artists_users(artist_ids)[1]
+{}
+
+julia> # Cleanup
+
+julia> users_unfollow_artists_users(artist_ids)
+{}
+```
 
 [Reference](https://developer.spotify.com/documentation/web-api/reference/follow/follow-artists-users/)
-""" ->
-function users_follow_artists_users(type, ids)
-    spotify_request("me/following?type=$type&ids=$ids", "PUT"; scope = "user-follow-modify")
+"""
+function users_follow_artists_users(artist_ids; type= "artist")
+    method = "PUT"
+    ids = SpArtistId.(artist_ids)
+    u = "me/following"
+    a = urlstring(; ids, type)
+    url = build_query_string(u, a)
+    spotify_request(url, method; scope = "user-follow-modify")
 end
 
 
 ## https://developer.spotify.com/documentation/web-api/reference/follow/follow-playlist/
-@doc """
-# Follow a Playlist
-**Summary**: Add the currend user as a follower of a playlist.
+"""
+    users_follow_playlist(playlist_id; public = false)
+
+**Summary**: Add the current user as a follower of a playlist.
 
 # Argument
--`playlist_id`: The Spotify ID of the playlist. Any playlist can be followed regardless of it's private/public status, as long as the ID is known.\n
+-`playlist_id`: The Spotify ID of the playlist. Any playlist can be followed regardless of it's private/public status, as long as the ID is known.
 
 # Optional argument
 - `public`:     Defaults to false. If true the playlist will be included in user's public playlists, 
@@ -75,22 +118,26 @@ end
 
 [Reference](https://developer.spotify.com/documentation/web-api/reference/follow/follow-playlist/)
 
-# Examples
+# Example
 ```julia-repl
-julia> playlist_id = SpPlaylistId("37i9dQZF1DX1rVvRgjX59F");
-julia> users_follow_playlist(playlist_id; public = false)
-    PUT https://api.spotify.com/v1/playlists/37i9dQZF1DX1rVvRgjX59F/followers   \\{"public": false}
-    scopes in current credentials: ["user-read-private", "user-read-email", "user-follow-read", "user-library-read", "user-read-playback-state", "user-read-recently-played", "user-top-read", "user-modify-playback-state", "playlist-modify-private", "playlist-modify-public"]
-[ Info: 200: OK - The request has succeeded. The client can read the result of the request in the body and the headers of the response.
-julia> 
+julia> playlist_id = SpPlaylistId("37i9dQZF1DX1rVvRgjX59F")
+spotify:playlist:37i9dQZF1DX1rVvRgjX59F
+
+julia> users_follow_playlist(playlist_id)[1]
+{}
+
+julia> users_unfollow_playlist(playlist_id)[1] # Cleanup
+{}
 ```
 """ 
 function users_follow_playlist(playlist_id; public = false)
-    url = "playlists/$playlist_id/followers"
-    body = bodystring(;public)
+    method = "PUT"
+    pid = SpPlaylistId(playlist_id)
+    url = "playlists/$pid/followers"
+    body = body_string(;public)
     scope  = "playlist-modify-private"
     additional_scope = "playlist-modify-public"
-    spotify_request(url, "PUT"; body, scope, additional_scope)
+    spotify_request(url, method; body, scope, additional_scope)
 end
 
 
@@ -182,30 +229,36 @@ end
 
 ## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-followed
 """
-    users_get_follows(;item_type = "artist", limit = 20)
+    users_get_follows(; limit = 20, after = "")
 
 **Summary**: Get the current user's followed artists.
 
 # Arguments
-- `item_type` _Required_: The ID type. Currently only `artist` is supported. Default `artist`.\n
-- `limit` _Optional_: The maximum number of items to return. Default 20, Minimum 1, Maximum 50. \n
+- `limit` _Optional_: The maximum number of items to return. Default 20, Minimum 1, Maximum 50. 
+- `after` _Optional_: The last artist ID retrieved from the previous request. 
 
 # Example
 ```julia-repl
-julia> users_get_follows()[1]["artists"]
-     GET https://api.spotify.com/v1/me/following?type=artist&limit=20
-     scopes in current credentials: ["user-read-private", "user-read-email", "user-follow-read", "user-library-read", "user-read-playback-state", "user-read-recently-played", "user-top-read", "user-follow-modify"]
-JSON3.Object{Base.CodeUnits{UInt8, String}, SubArray{UInt64, 1, Vector{UInt64}, Tuple{UnitRange{Int64}}, true}} with 6 entries:
-  :items   => JSON3.Object[{…
-  :next    => "https://api.spotify.com/v1/me/following?type=artist&after=6A43Djmhbe9100UwnI7epV&limit=20"
-  :total   => 24
-  :cursors => {…
-  :limit   => 20
-  :href    => "https://api.spotify.com/v1/me/following?type=artist&limit=20"
+julia> o = users_get_follows(;limit = 10)[1];
+
+julia> anames = [s.name for s in o.artists.items];
+
+julia> while rem(length(anames), 10)  == 0
+           id =  o.artists.items[end].id
+           o = users_get_follows(;after = id)[1]
+           anames = vcat(anames, [s.name for s in o.artists.items])
+end
+
+julia> julia> length(anames)
+26
 ```
 """
-function users_get_follows(;item_type = "artist", limit = 20)
-    spotify_request("me/following?type=$item_type&limit=$limit"; scope = "user-follow-read")
+function users_get_follows(; limit = 20, after = "")
+    type = "artist"
+    u = "me/following"
+    a = urlstring(; type, limit, after)
+    url = build_query_string(u, a)
+    spotify_request(url; scope = "user-follow-read")
 end
 
 
@@ -243,38 +296,61 @@ end
 **Summary**: Remove the current user as a follower of one or more artists or other Spotify users.
 
 # Arguments
-- `artist_ids` _Required_: A comma-separated list of the artists or users Spotify IDs. Maximum 50.
+- `artist_ids` _Required_: A comma-separated list of the artists' or users' Spotify IDs. Maximum 50.
 
 # Optional keyword arguments
 
-`type`:  Either "artist" (default) or "user". 
+- `type`:  Either "artist" (default) or "user". 
 
 ```julia-repl
-julia> users_unfollow_artists_users("2CIMQHirSU0MQqyYHq0eOx, 57dN52uHvrHOxijzpIgu3E, 1vCWHaC5f2uS3yhpwWbIA6")[1]
+julia> artist_ids = ["2CIMQHirSU0MQqyYHq0eOx", "57dN52uHvrHOxijzpIgu3E", "1vCWHaC5f2uS3yhpwWbIA6"]
+3-element Vector{String}:
+ "2CIMQHirSU0MQqyYHq0eOx"
+ "57dN52uHvrHOxijzpIgu3E"
+ "1vCWHaC5f2uS3yhpwWbIA6"
+
+julia> users_unfollow_artists_users(artist_ids])[1]
 {}
 ```
 [Reference](https://developer.spotify.com/documentation/web-api/reference/follow/unfollow-artists-users/)
 """ 
 function users_unfollow_artists_users(artist_ids; type = "artist")
-    url = "me/following?type=$type"
-    body = bodystring(;ids = artist_ids)
-    spotify_request(url, "DELETE"; body, scope = "user-follow-modify")
+    method = "DELETE"
+    u = "me/following"
+    a = urlstring(; type)
+    url = build_query_string(u, a)
+    ids = SpId.(artist_ids)
+    body = body_string(;ids)
+    spotify_request(url, method; body, scope = "user-follow-modify")
 end
 
 
 ## https://developer.spotify.com/documentation/web-api/reference/follow/unfollow-playlist/
-@doc """
-# Unfollow a Playlist
-**Summary**: Remove the current user as a follower of a playlist.\n
+"""
+    users_unfollow_playlist(playlist_id)
+
+**Summary**: Remove the current user as a follower of a playlist. If none are following, this substitutes for 'delete'.
 
 `playlist_id` _Required_: The Spotify ID of the playlist. Any playlist can be followed regardless of it's private/public status, as long as the ID is known.\n
 
+# Arguments
+- `playlist_id` The Spotify ID of the playlist.
+
+# Example 
+
+To be run after example in `playlist_create_playlist`, possibly also 'playlist_remove_playlist_item`.
+```julia-repl
+julia> users_unfollow_playlist(myownplaylistid)[1]
+{}
+```
+
+Also see `users_follow_playlist`
+
 [Reference](https://developer.spotify.com/documentation/web-api/reference/follow/unfollow-playlist/)
-""" ->
+"""
 function users_unfollow_playlist(playlist_id)
-    body = "{\"public\": $public}"
-    scope  = "playlist-modify-private"
-    additional_scope = "playlist-modify-public"
-    throw("TODO Not yet implemented and kind of dangerous. Fix the body and the url!")
-    spotify_request("playlists/$playlist_id/followers", "DELETE"; scope = "playlist-modify-private")
+    method = "DELETE"
+    pid = SpPlaylistId(playlist_id)
+    url = "playlists/$pid/followers"
+    spotify_request(url, method; scope= "playlist-modify-private")
 end
