@@ -1,5 +1,3 @@
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-available-markets
-
 """
     markets_get()
 
@@ -11,6 +9,8 @@ julia> markets_get()[1]
 JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
   :markets => ["AD", "AE", "AG", "AL", "AM", "AO", "AR", "AT", "AU", "AZ"  …
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-available-markets)
 """
 function markets_get()
     spotify_request("markets")

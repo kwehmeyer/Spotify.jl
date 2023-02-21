@@ -12,30 +12,64 @@
 
 
 ## Progress...
-Right now, 40 API functions have been written, roughly tested and organized by sub-modules as defined in Spotify's [documentation](https://developer.spotify.com/documentation/general/):
+Right now, 65 API wrapper functions and 12 aliases have been written, tested and organized by sub-modules as defined in Spotify's [documentation](https://developer.spotify.com/documentation/general/):
 
-* Albums, Artists, Browse, Episodes, Library
-* Markets, Player, Playlists, Search
-* Shows, Tracks, UsersProfile
+## What can you use this for?
 
-Help wanted in adding the still-missing functions!
+You can 
+  * play music through a mini-player REPL mode
+  * organize playlists based on audio analysis or each track's popularity in Japan
+  * control your music bias with the algorithm 
+  * build various social graphs or analyze statistics
+  * clean duplicates, tracks or you've come to dislike from all your playlists and the library
+  * search podcast metadata, cont podcast
+  * create your own visualizations from beat data
+  * make player interfaces
 
-Ouput from function calls is JSON3 objects, which can be readily manipulated in the REPL or in other packages.
+Easily find the right functions with the `select_calls` menu and the submodules:
 
-Input to all functions is basically strings, but some ad-hoc string types are defined. These provide potential input checking, and some assistance in finding dummy parameters. Dummy parameters are defined in the 'test' folder, but more accessible through the menu system, see below.
+* Albums, Artists, Categories, Episodes, Genres,
+* Library, Markets, Player, Playlists, Search
+* Shows, Tracks, Users, Profile
 
-## Example use
-### Installation
-The latest build can be installed via the registry 
-```julia
-(@v1.6) pkg> add Spotify
+## Getting started
+
+Loading:
+
+```julia-repl
+(@v1.8) pkg> add Spotify
+
+julia> using Spotify
 ```
 
-    using Spotify
+This creates 'spotify_credentials.ini' in your `homedir()`, along with instructions on how to input your user name and client credentials.
 
-This creates 'spotify_credentials.ini' in your `homedir()`, along with brief instructions on how to configure your 'client credentials'.
+```julia-repl
+julia> select_calls()
+```
 
-For repetitive debugging, the quickest syntax is (this function uses the low-level 'Client credentials' scope):
+This brings up a menu for exploration calls, which works best in the REPL. 
+
+
+## Wrapper API
+
+Wrapper functions require different permission scopes, which you grant as needed by pressing 'Accept' in a browser tab which pops up when needed. A granted scope lasts for one hour.
+
+The wrapper functions are duck-typed and will accept strings, vectors of strings or the types below. 
+Functions leniently convert input to these string-like types:
+
+* `SpPlaylistId`, `SpArtistId`, `SpTrackId`, `SpAlbumId`
+* `SpShowId`, `SpEpisodeId`, `SpId`, `SpCategoryId` 
+
+Ouput from all wrapper functions is a tuple: (`JSON3 object`, `wait_seconds`). 
+
+* `wait_seconds` is zero except if the API rate limit is temporarily exceeded
+* `JSON3 object` is an `object` / `dictionary` which is easy and fast to inspect and use. See the examples for some ideas
+
+Control of text feedback is provided, see `?LOGSTATE`.
+
+
+## Documentation and a bref example
 
 For more detail on setting up your credentials and getting keys please checkout [this page in the documentation](https://kwehmeyer.github.io/Spotify.jl/dev/authentication.html#Obtaining-API-Keys).
 
@@ -67,7 +101,6 @@ julia> tracks_get_audio_features("5gZ5YB5SryZdM0GV7mXzDJ")
 # To Do
 * [x] Inline Documentation needs to be completed
 * [x] Wiki 
-* [ ] Write tests --> In progress
+* [x] Write tests
 * [x] Set up CI
-* [x] Register the package  
-
+* [x] Register the package

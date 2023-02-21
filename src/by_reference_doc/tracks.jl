@@ -1,5 +1,3 @@
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-audio-analysis
-
 """
     tracks_get_audio_analysis(track_id)
 
@@ -17,14 +15,14 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
   :bars     => JSON3.Object[{…
   :beats    => JSON3.Object[{…
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-audio-analysis)
 """
 function tracks_get_audio_analysis(track_id)
     tid = SpTrackId(track_id)
     spotify_request("audio-analysis/$tid")
 end
 
-
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-audio-features
 
 """
     tracks_get_audio_features(track_id)
@@ -105,6 +103,8 @@ The Spotify URI for the track.
 valence
 >= 0, <= 1
 A measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry).
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-audio-features)
 """
 function tracks_get_audio_features(track_id)
     tid = SpTrackId(track_id)
@@ -112,7 +112,6 @@ function tracks_get_audio_features(track_id)
 end
 
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-track
 """
     tracks_get(track_id; market = "")
 
@@ -137,6 +136,8 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 18 entries:
   :external_ids  => {…
   :external_urls => {…
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-track)
 """
 function tracks_get_single(track_id; market = "")
     tid = SpTrackId(track_id)
@@ -147,7 +148,6 @@ function tracks_get_single(track_id; market = "")
 end
 
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-several-tracks
 """
     tracks_get_multiple(; track_ids, market = "")
 
@@ -166,6 +166,8 @@ julia> tracks_get_multiple(ids = "4iV5W9uYEdYUVa79Axb7Rh,1301WleyT98MSxVHPZCA6")
 JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
   :tracks => Union{Nothing, JSON3.Object}[{…
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-several-tracks)
 """
 function tracks_get_multiple(;track_ids, market = "")
     ids = SpTrackId.(track_ids)
@@ -176,7 +178,6 @@ function tracks_get_multiple(;track_ids, market = "")
 end
 
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-saved-tracks
 """
     tracks_get_saved(;limit = 20, market = "", offset = 0)
 
@@ -197,6 +198,8 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
   :limit    => 20
   :next     => "https://api.spotify.com/v1/me/tracks?offset=20&limit=20&market=US"
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-saved-tracks)
 """
 function tracks_get_saved(;limit = 20, market = "", offset = 0)
     u = "me/tracks"
@@ -205,7 +208,7 @@ function tracks_get_saved(;limit = 20, market = "", offset = 0)
     spotify_request(url, scope = "user-library-read")
 end
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/check-users-saved-tracks
+
 """
     tracks_get_contains(ids)
 
@@ -221,6 +224,8 @@ julia> tracks_get_contains("4iV5W9uYEdYUVa79Axb7Rh, 4VqPOruhp5EdPBeR92t6lQ")[1]
  0
  0
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/check-users-saved-tracks)
 """
 function tracks_get_contains(track_ids)
     ids = SpTrackId.(track_ids)
@@ -230,16 +235,16 @@ function tracks_get_contains(track_ids)
     spotify_request(url, scope = "user-library-read")
 end
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-recommendations
+
 """
-    tracks_get_recommendations(seeds_dict::Dict; 
+    tracks_get_recommendations(seeds_dict::Dict;
         track_attributes::Dict = Dict{String, String}(), limit = 50, market = "")
 
 **Summary**: Get Recommendations based on Seeds
 
 # Optional keywords
 - `seeds_dict`       : A dictionary containing keys (seed_genres, seed_artists, seed_tracks) and values for each key being seeds
-         delimited by a comma up to 5 seeds for each category. 
+         delimited by a comma up to 5 seeds for each category.
         Up to 5 seed values may be provided in any combination of seed_artists, seed_tracks and seed_genres.
             For example:
          Dict("seed_artists" => "s33dart1st,s33edart!st2", "seed_genres" => "g3nre1,genr32", "seed_tracks" => "trackid1,trackid2")
@@ -266,10 +271,12 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 2 entries:
   :tracks => JSON3.Object[{…
   :seeds  => JSON3.Object[{…
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-recommendations)
 """
-function tracks_get_recommendations(seeds_dict::Dict; 
+function tracks_get_recommendations(seeds_dict::Dict;
                               track_attributes::Dict = Dict{String, String}(), limit = 50, market = "")
-    u = "recommendations" 
+    u = "recommendations"
     a1 = urlstring(seeds_dict)
     a2 = urlstring(track_attributes)
     a3 = urlstring(;limit, market)
@@ -278,7 +285,6 @@ function tracks_get_recommendations(seeds_dict::Dict;
 end
 
 
-## https://developer.spotify.com/documentation/web-api/reference/library/remove-tracks-user/
 """
     tracks_remove_from_library(track_ids)
 
@@ -303,7 +309,7 @@ function tracks_remove_from_library(track_ids)
     spotify_request(url, method; scope = "user-library-modify")
 end
 
-## https://developer.spotify.com/documentation/web-api/reference/library/save-tracks-user/
+
 """
     tracks_save_library(track_ids)
 

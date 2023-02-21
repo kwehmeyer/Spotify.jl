@@ -1,5 +1,3 @@
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-episode
-
 """
     episodes_get_single(episode_id; market = get_user_country())
 
@@ -11,9 +9,9 @@
 # Optional keywords
 - `market` : Default is `get_user_country()`.
              An ISO 3166-1 alpha-2 country code. If a country code is specified, only content
-             that is available in that market will be returned. If a valid user access token 
-             is specified in the request header, the country associated with the user account 
-             will take priority over this parameter. Note: If neither market or user country 
+             that is available in that market will be returned. If a valid user access token
+             is specified in the request header, the country associated with the user account
+             will take priority over this parameter. Note: If neither market or user country
              are provided, the content is considered unavailable for the client.
              Users can view the country that is associated with their account in the account settings.
 
@@ -27,6 +25,8 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 19 entries:
   :explicit             => false
   :external_urls        => {…
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-episode)
 """
 function episodes_get_single(episode_id; market = get_user_country())
     eid = SpEpisodeId(episode_id)
@@ -36,8 +36,6 @@ function episodes_get_single(episode_id; market = get_user_country())
     spotify_request(url; scope = "user-read-playback-position")
 end
 
-
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-multiple-episodes
 
 """
     episodes_get_multiple(episode_ids; market = get_user_country())
@@ -50,9 +48,9 @@ end
 # Optional keywords
 - `market` : Default: get_user_country().
              An ISO 3166-1 alpha-2 country code. If a country code is specified, only content
-             that is available in that market will be returned. If a valid user access token 
-             is specified in the request header, the country associated with the user account 
-             will take priority over this parameter. Note: If neither market or user country 
+             that is available in that market will be returned. If a valid user access token
+             is specified in the request header, the country associated with the user account
+             will take priority over this parameter. Note: If neither market or user country
              are provided, the content is considered unavailable for the client.
              Users can view the country that is associated with their account in the account settings.
 
@@ -62,6 +60,8 @@ julia> episodes_get_multiple(["77o6BIVlYM3msb4MMIL1jH", "0Q86acNRm6V9GYx55SXKwf"
 JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
   :episodes => JSON3.Object[{…
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-multiple-episodes)
 """
 function episodes_get_multiple(episode_ids; market = get_user_country())
     eids = SpEpisodeId.(episode_ids)
@@ -72,7 +72,6 @@ function episodes_get_multiple(episode_ids; market = get_user_country())
 end
 
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-saved-episodes
 """
     episodes_get_saved(;limit = 20, market = "", offset = 0)
 
@@ -82,9 +81,9 @@ end
 # Optional keywords
 - `limit`  : Maximum number of items to return, default is set to 20
 - `market` : An ISO 3166-1 alpha-2 country code. If a country code is specified, only content
-             that is available in that market will be returned. If a valid user access token 
-             is specified in the request header, the country associated with the user account 
-             will take priority over this parameter. Note: If neither market or user country 
+             that is available in that market will be returned. If a valid user access token
+             is specified in the request header, the country associated with the user account
+             will take priority over this parameter. Note: If neither market or user country
              are provided, the content is considered unavailable for the client.
              Users can view the country that is associated with their account in the account settings.
 - `offset` : Index of the first item to return, default is set to 0
@@ -97,6 +96,8 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
   :href     => "https://api.spotify.com/v1/me/episodes?offset=0&limit=20&market=US"
   :items    => Union{}[]
   :limit    => 20
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-saved-episodes)
 """
 function episodes_get_saved(;limit = 20, market = "", offset = 0)
     u = "me/episodes"
@@ -105,8 +106,6 @@ function episodes_get_saved(;limit = 20, market = "", offset = 0)
     spotify_request(url; scope = "user-library-read")
 end
 
-
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/check-users-saved-episodes
 
 """
     episodes_get_contains(episode_ids)
@@ -125,6 +124,8 @@ julia> episodes_get_contains(["77o6BIVlYM3msb4MMIL1jH", "0Q86acNRm6V9GYx55SXKwf"
  0
  0
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/check-users-saved-episodes)
 """
 function episodes_get_contains(episode_ids)
     eids = SpEpisodeId.(episode_ids)

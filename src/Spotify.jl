@@ -40,8 +40,8 @@ module Spotify
     the 'artist_top_tracks' default argument. Use 'homemarket' both places, if this is thought to be smart.
 ✓. Finish debugging and delete CHECKUSED constant after running everything in 'select_calls'.
 22. Add feature to miniplayer: 0-9 select position in current song.
-23. Add reference link to inline docs. Regex replacement. See 'users_unfollow_artists_users'.
-24. print_as_console_input should type vectors with brakcets. Eg. album_get_multiple("5XgEM5g3xWEwL4Zr6UjoLo, 2rpT0freJsmUmmPluVWqg5")
+✓. Add reference link to inline docs. Regex replacement. See 'users_unfollow_artists_users'.
+24. print_as_console_input should type vectors with brackets. Eg. album_get_multiple("5XgEM5g3xWEwL4Zr6UjoLo, 2rpT0freJsmUmmPluVWqg5")
     is not OK.
     Mostly fixed, but double brackets appear with vectors of strings.
 25. Add example, uniquify playlist entries.
@@ -74,6 +74,7 @@ mutable struct Logstate
     request_string::Bool
     empty_response::Bool
 end
+
 
 """
 LOGSTATE mutable state

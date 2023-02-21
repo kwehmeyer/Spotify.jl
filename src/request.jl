@@ -120,6 +120,7 @@ function spotify_request(url_ext::String, method::String = "GET";
     end
 end
 
+
 """
     request_to_stdout(method, url, body, authorizationfield, logstate, no_mistake)
 

@@ -1,10 +1,9 @@
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/search
 """
     search_get(q; item_type = "track,artist", include_external = "",
                     limit = 20, market = "", offset = 0)
 
 **Summary**: Get Spotify catalog information about albums, artists, playlists, tracks,
-             shows or episodes that match a keyword string. Note: Audiobooks are only 
+             shows or episodes that match a keyword string. Note: Audiobooks are only
              available for the US, UK, Ireland, New Zealand and Australia markets.
 
 # Arguments
@@ -31,6 +30,8 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 2 entries:
   :artists => {…
   :tracks  => {…
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/search)
 """
 function search_get(q; type = "track,artist", include_external = "",
                     limit = 20, market = "", offset = 0)

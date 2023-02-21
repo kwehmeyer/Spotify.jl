@@ -1,4 +1,3 @@
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-playlist
 """
     playlist_get(playlist_id; additional_types = "track", fields = "",
     market = "")
@@ -39,6 +38,8 @@
     :type          => "playlist"
     :uri           => "spotify:playlist:37i9dQZF1E4vUblDJbCkV3"
   ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-playlist)
 """
 function playlist_get(playlist_id; additional_types = "track", fields = "",
                       market = "")
@@ -53,7 +54,7 @@ end
 # TODO playlist_change_details()
 # https://developer.spotify.com/documentation/web-api/reference/#/operations/change-playlist-details
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-playlists-tracks
+
 """
     playlist_get_tracks(playlist_id; additional_types = "track", limit = 50,
     offset = 0, market = "")
@@ -87,6 +88,8 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
 :previous => nothing
 :total    => 50
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-playlists-tracks)
 """
 function playlist_get_tracks(playlist_id; additional_types = "track", fields = "",
                              limit = 20, offset = 0, market = "")
@@ -98,7 +101,6 @@ function playlist_get_tracks(playlist_id; additional_types = "track", fields = "
 end
 
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/add-tracks-to-playlist
 """
     playlist_add_tracks_to_playlist(playlist_id, track_ids; position = -1)
 
@@ -131,13 +133,13 @@ julia> # Cleanup: See `playlist_remove_playlist_item`
 
 Or, for one of your own playlists,
 ```julia-repl
-julia> function get_my_own_playlist()                                                                                                                                                                                                                                                      
-            pls = playlist_get_current_user()[1]                                                                                                                                                                                                                                               
-            for p in pls.items                                                                                                                                                                                                                                                                 
-                if p.owner.id == Spotify.get_user_name()                                                                                                                                                                                                                                        
-                    return p                                                                                                                                                                                                                                                                    
-                end                                                                                                                                                                                                                                                                             
-            end                                                                                                                                                                                                                                                                                 
+julia> function get_my_own_playlist()
+            pls = playlist_get_current_user()[1]
+            for p in pls.items
+                if p.owner.id == Spotify.get_user_name()
+                    return p
+                end
+            end
             nothing
         end
 julia> myownplaylistid = get_my_own_playlist().id |> SpPlaylistId
@@ -151,6 +153,8 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
 
 julia> # Cleanup: See `playlist_remove_playlist_item`
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/add-tracks-to-playlist)
 """
 function playlist_add_tracks_to_playlist(playlist_id, track_ids; position = -1)
     method = "POST"
@@ -165,10 +169,7 @@ function playlist_add_tracks_to_playlist(playlist_id, track_ids; position = -1)
         additional_scope = "playlist-modify-private")
 end
 
-# TODO playlist_reorder_or_replace_tracks()
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/reorder-or-replace-playlists-tracks
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/remove-tracks-playlist
 """
     playlist_remove_playlist_item(playlist_id, track_ids)
 
@@ -186,6 +187,8 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
 
 julia> # Cleanup: This example is continued under `Spotify.Users.users_unfollow_playlist`.
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/remove-tracks-playlist)
 """
 function playlist_remove_playlist_item(playlist_id, track_ids)
     pli = SpPlaylistId(playlist_id)
@@ -195,7 +198,7 @@ function playlist_remove_playlist_item(playlist_id, track_ids)
     spotify_request(url, "DELETE"; body, scope= "playlist-modify-private")
 end
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-list-of-current-users-playlists
+
 """
     playlist_get_current_user(limit = 20, offset = 0)
 
@@ -217,6 +220,8 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
 :previous => nothing
 :total    => 2
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-list-of-current-users-playlists)
 """
 function playlist_get_current_user(;limit = 20, offset = 0)
     u = "me/playlists"
@@ -225,9 +230,9 @@ function playlist_get_current_user(;limit = 20, offset = 0)
     spotify_request(url;  scope = "playlist-read-private", additional_scope = "playlist-read-collaborative")
 end
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-list-users-playlists
+
 """
-playlist_get_user(user_id; limit = 20, offset = 0)
+    playlist_get_user(user_id; limit = 20, offset = 0)
 
 **Summary**: Get a list of the playlists owned or followed by a Spotify user.
 
@@ -250,6 +255,8 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
 :previous => nothing
 :total    => 98
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-list-users-playlists)
 """
 function playlist_get_user(user_id; limit = 20, offset = 0)
     u = "users/$user_id/playlists"
@@ -258,7 +265,7 @@ function playlist_get_user(user_id; limit = 20, offset = 0)
     spotify_request(url;  scope = "playlist-read-private", additional_scope = "playlist-read-collaborative")
 end
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/create-playlist
+
 """
     playlist_create_playlist(playlist_name; user_id = get_user_name(), public = true, collaborative = false, description = "")
 
@@ -291,6 +298,8 @@ spotify:playlist:0akFdMBfiqbkAUSY5hTYKs
 
 julia> # Cleanup: See `playlist_add_tracks_to_playlist`, or skip straight to `Spotify.Users.users_unfollow_playlist`
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/create-playlist)
 """
 function playlist_create_playlist(playlist_name; user_id = get_user_name(), public = true, collaborative = false, description = "")
     method = "POST"
@@ -301,7 +310,7 @@ function playlist_create_playlist(playlist_name; user_id = get_user_name(), publ
         additional_scope = "playlist-modify-private")
 end
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-featured-playlists
+
 """
     playlist_get_featured(;country = "", limit = 20, locale = "",
                                offset = 0, timestamp = now())
@@ -327,18 +336,19 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 2 entries:
 :message   => "Tuesday jams"
 :playlists => {…
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-featured-playlists)
 """
 function playlist_get_featured(;country = "", limit = 20, locale = "",
                                offset = 0, timestamp = now())
     assert_locale(locale)
     u = "browse/featured-playlists"
     a = urlstring(;country, limit, locale, offset, timestamp)
-    url = build_query_string(u, a)                             
+    url = build_query_string(u, a)
     spotify_request(url)
 end
 
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-categories-playlists
 """
     playlist_get_category(category_name; country = "", limit = 20, offset = 0)
 
@@ -360,6 +370,8 @@ julia> playlist_get_category("party")[1]
 JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
 :playlists => {…
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-categories-playlists)
 """
 function playlist_get_category(category_name; country = "", limit = 20, offset = 0)
     u = "browse/categories/$category_name/playlists"
@@ -369,7 +381,6 @@ function playlist_get_category(category_name; country = "", limit = 20, offset =
 end
 
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-playlist-cover
 """
     playlist_get_cover_image(playlist_id)
 
@@ -388,6 +399,8 @@ julia> playlist_get_cover_image("37i9dQZF1E4vUblDJbCkV3")[1]
     "width": nothing
 }
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-playlist-cover)
 """
 function playlist_get_cover_image(playlist_id)
     pli = SpPlaylistId(playlist_id)

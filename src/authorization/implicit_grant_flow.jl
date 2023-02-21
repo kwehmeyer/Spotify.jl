@@ -163,6 +163,7 @@ function launch_a_browser_that_asks_for_implicit_grant(;scopes::Vector{String} =
     end
 end
 
+
 """
     apply_and_wait_for_implicit_grant(;scopes::Vector{String} = DEFAULT_IMPLICIT_GRANT)
 

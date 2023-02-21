@@ -1,4 +1,3 @@
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-information-about-the-users-current-playback
 """
     player_get_state(;additional_types = "track", market = "")
 
@@ -7,11 +6,11 @@
 
 # Optional keywords
 - `additional_types` : "track" (default) or "episode"
-- `market`           : An ISO 3166-1 alpha-2 country code. If a country code is specified, only content 
-                       that is available in that market will be returned. If a valid user access token 
-                       is specified in the request header, the country associated with the user account 
-                       will take priority over this parameter. Note: If neither market or user country 
-                      are provided, the content is considered unavailable for the client.  Users can 
+- `market`           : An ISO 3166-1 alpha-2 country code. If a country code is specified, only content
+                       that is available in that market will be returned. If a valid user access token
+                       is specified in the request header, the country associated with the user account
+                       will take priority over this parameter. Note: If neither market or user country
+                      are provided, the content is considered unavailable for the client.  Users can
                       view the country that is associated with their account in the account settings.
                       NOTE: Default is set to "".
 
@@ -30,6 +29,8 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 10 entries:
   :actions                => {…
   :is_playing             => true
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-information-about-the-users-current-playback)
 """
 function player_get_state(;additional_types = "track", market = "")
     u = "me/player"
@@ -39,7 +40,6 @@ function player_get_state(;additional_types = "track", market = "")
 end
 
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-users-available-devices
 """
     player_get_devices()
 
@@ -51,13 +51,14 @@ julia> player_get_devices()[1]
 JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
   :devices => JSON3.Object[{…
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-users-available-devices)
 """
 function player_get_devices()
     spotify_request("me/player/devices"; scope = "user-read-playback-state")
 end
 
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-the-users-currently-playing-track
 """
     player_get_current_track(;additional_types = "track", market = "")
 
@@ -81,6 +82,8 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
   :actions                => {…
   :is_playing             => true
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-the-users-currently-playing-track)
 """
 function player_get_current_track(;additional_types = "track", market = "")
     u = "me/player/currently-playing"
@@ -90,7 +93,6 @@ function player_get_current_track(;additional_types = "track", market = "")
 end
 
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-recently-played
 """
     player_get_recent_tracks(;duration = 1, limit = 20)
 
@@ -110,6 +112,8 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 5 entries:
   :limit   => 20
   :href    => "https://api.spotify.com/v1/me/player/recently-played?after=1636410050&limit=20"
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-recently-played)
 """
 function player_get_recent_tracks(;duration = 1, limit = 20)
     u = "me/player/recently-played"
@@ -122,7 +126,6 @@ function player_get_recent_tracks(;duration = 1, limit = 20)
 end
 
 
-#https://developer.spotify.com/documentation/web-api/reference/#/operations/pause-a-users-playback
 """
     player_pause(;device_id = "")
 
@@ -146,6 +149,8 @@ julia> player_pause() # Fails because we already paused, see `player_resume_play
 ┌ Info: 403 (code meaning): Forbidden - The server understood the request, but is refusing to fulfill it.
 └               (response message): Player command failed: Restriction violated
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/pause-a-users-playback)
 """
 function player_pause(;device_id = "")
     u = "me/player/pause"
@@ -155,7 +160,6 @@ function player_pause(;device_id = "")
 end
 
 
-#https://developer.spotify.com/documentation/web-api/reference/#/operations/start-a-users-playback
 """
     player_resume_playback(;device_id = "", context_uri = "", uris = "", offset = 0, position_ms = 0)
 
@@ -166,8 +170,8 @@ end
 "0d1841b0976bae2a3a310dd74c0f3df354899bc8"
 - `context_uri`   Spotify URI of the context to play. Valid contexts are albums, artists & playlists. {context_uri:"spotify:album:1Je1IMUlBXcx1Fz0WE7oPT"}
 - `uris`          Vector of arguments to (queue and) play. Accepts string types (with prefixes like 'spotify:track:') or types like SpTrackId, SpEpisodeId.
-- `offset`        Indicates from where in the context playback should start. Only available when context_uri corresponds to an album or playlist object 
-    "position" is zero based and can’t be negative. Example: "offset": {"position": 5} "uri" is a string representing the uri of the item to start at. 
+- `offset`        Indicates from where in the context playback should start. Only available when context_uri corresponds to an album or playlist object
+    "position" is zero based and can’t be negative. Example: "offset": {"position": 5} "uri" is a string representing the uri of the item to start at.
                   Example: "offset": {"uri": "spotify:track:1301WleyT98MSxVHPZCA6M"}
 - `position_ms`   Integer
 
@@ -184,9 +188,9 @@ julia> position_ms = 59000
 59000
 julia> player_resume_playback(;context_uri, offset, position_ms)[1]
 {}
-``` 
+```
 We can alternatively specify a sequence of tracks, here no. 1 and 35 from the same album.
-We can set the starting position for the first of those: 
+We can set the starting position for the first of those:
 
 ```julia-repl
 julia> uris = SpTrackId.(["4SFBV7SRNG2e2kyL1F6kjU", "46J1vycWdEZPkSbWUdwMZQ"])
@@ -198,6 +202,8 @@ julia> player_resume_playback(;uris, position_ms = 82000)[1]
 {}
 
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/start-a-users-playback)
 """
 function player_resume_playback(;device_id = "", context_uri::S = "", uris::T = "", offset = 0, position_ms = 0) where {S, T}
     u = "me/player/play"
@@ -213,13 +219,15 @@ function player_resume_playback(;device_id = "", context_uri::S = "", uris::T = 
     spotify_request(url, "PUT"; body, scope= "user-modify-playback-state")
 end
 
-#https://developer.spotify.com/documentation/web-api/reference/#/operations/skip-users-playback-to-next-track
+
 """
     player_skip_to_next(;device_id = "")
 
 **Summary**: Skips to next track in the user’s queue.
 
 - device_id    The id of the device this command is targeting. If not supplied, the user's currently active device is the target.
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/skip-users-playback-to-next-track)
 """
 function player_skip_to_next(;device_id = "")
     u = "me/player/next"
@@ -229,13 +237,14 @@ function player_skip_to_next(;device_id = "")
 end
 
 
-# https://developer.spotify.com/documentation/web-api/reference/#/operations/skip-users-playback-to-previous-track
 """
     player_skip_to_previous(;device_id = "")
 
 **Summary**: Skips to previous track in the user’s queue.
 
 - device_id    The id of the device this command is targeting. If not supplied, the user's currently active device is the target.
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/skip-users-playback-to-previous-track)
 """
 function player_skip_to_previous(;device_id = "")
     u = "me/player/previous"

@@ -36,6 +36,7 @@ function get_state_print_feedback()
     st
 end
 
+
 """
     current_playing()
     -> String
@@ -118,6 +119,7 @@ function pause_unpause()
         ""
     end
 end
+
 
 """
     current_playlist()

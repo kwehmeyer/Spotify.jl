@@ -4,6 +4,7 @@ function credentials_contain_scope(single_scope::String)
     single_scope ∈ spotcred().ig_scopes || single_scope == ""
 end
 
+
 """
     get_authorization_field(;scope = "client-credentials", additional_scope = "")
 

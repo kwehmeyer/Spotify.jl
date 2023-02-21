@@ -9,7 +9,7 @@ function category_get_playlist(category_name; country = "", limit = 20, offset =
     playlist_get_category(category_name;  country, limit, offset)
 end
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-categories
+
 """
     category_get_multiple(;country = "", locale = "", limit = 20, offset = 0)
 
@@ -36,18 +36,20 @@ julia> category_get_multiple()[1].categories.items .|> i-> i.name
  ⋮
  "Rock"
  "Metal"
- "Sleep"```
+ "Sleep"
+ ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-categories)
 """
 function category_get_multiple(;country = "", locale = "", limit = 20, offset = 0)
     assert_locale(locale)
-    u = "browse/categories"                                                                                                                                                                  
-    a = urlstring(;country, locale, limit, offset)                                                                                                                                                       
-    url = build_query_string(u, a) 
+    u = "browse/categories"
+    a = urlstring(;country, locale, limit, offset)
+    url = build_query_string(u, a)
     spotify_request(url)
 end
 
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-new-releases
 """
     category_get_new_releases(;country = "", locale = "", limit = 20, offset = 0)
 
@@ -70,6 +72,8 @@ julia> category_get_new_releases()[1]
 JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
   :albums => {…
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-new-releases)
 """
 function category_get_new_releases(;country = "", locale = "", limit = 20, offset = 0)
     assert_locale(locale)
@@ -80,7 +84,6 @@ function category_get_new_releases(;country = "", locale = "", limit = 20, offse
 end
 
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-category
 """
     category_get_single(category_name; country = "", locale = "")
 
@@ -106,6 +109,8 @@ julia> category_get_single("party")[1].name
 julia> category_get_single("party", locale = "es_MX")[1].name
 "Fiesta"
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-category)
 """
 function category_get_single(category_name; country = "", locale = "")
     assert_locale(locale)

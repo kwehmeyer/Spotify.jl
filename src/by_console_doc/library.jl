@@ -22,7 +22,7 @@ library_check_saved_shows(show_ids) = show_get_contains(show_ids)
 library_check_saved_albums(album_ids) = album_get_contains(album_ids)
 
 
-#### DELETE ####
+#### DELETE method ####
 
 "Same as album_remove_from_library in Albums"
 function library_remove_albums(album_ids)
@@ -40,7 +40,7 @@ function library_remove_tracks(track_ids)
     tracks_remove_from_library(track_ids)
 end
 
-#### PUT #####
+#### PUT method #####
 
 "Same as tracks_save_library"
 function library_save_track(track_ids)

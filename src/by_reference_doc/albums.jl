@@ -1,5 +1,3 @@
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-album
-
 """
     album_get_single(album_id; market = "")
 
@@ -35,6 +33,8 @@
       :type                   => "album"
       :uri                    => "spotify:album:2O9mD7oKwBnhQZQUAJM6GM"
     ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-album)
 """
 function album_get_single(album_id; market = "")
     aid = SpAlbumId(album_id)
@@ -44,8 +44,6 @@ function album_get_single(album_id; market = "")
     spotify_request(url)
 end
 
-
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-albums-tracks
 
 """
     album_get_tracks(album_id; limit = 20, offset = 0, market = "")
@@ -73,6 +71,8 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
   :previous => nothing
   :total    => 12
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-albums-tracks)
 """
 function album_get_tracks(album_id; limit = 20, offset = 0, market = "")
     u = "albums/$album_id/tracks"
@@ -81,8 +81,6 @@ function album_get_tracks(album_id; limit = 20, offset = 0, market = "")
     spotify_request(url)
 end
 
-
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-multiple-albums
 
 """
     album_get_multiple(album_ids; market = "")
@@ -106,6 +104,8 @@ More formally,
 ```julia-repl
 julia> album_get_multiple(SpAlbumId.(["5XgEM5g3xWEwL4Zr6UjoLo", "2rpT0freJsmUmmPluVWqg5"]))[1]
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-multiple-albums)
 """
 function album_get_multiple(album_ids; market = "")
     u = "albums"
@@ -114,8 +114,6 @@ function album_get_multiple(album_ids; market = "")
     spotify_request(url)
 end
 
-
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-saved-albums
 
 """
     album_get_saved(;limit = 20, market = "", offset = 0)
@@ -142,6 +140,8 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
   :previous => nothing
   :total    => 33
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-saved-albums)
 """
 function album_get_saved(;limit = 20, market = "", offset = 0)
     u = "me/albums"
@@ -150,8 +150,6 @@ function album_get_saved(;limit = 20, market = "", offset = 0)
     spotify_request(url; scope = "user-library-read")
 end
 
-
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/check-users-saved-albums
 
 """
     album_get_contains(album_ids)
@@ -168,6 +166,8 @@ julia> album_get_contains(["2O9mD7oKwBnhQZQUAJM6GM", "3eLvDNfWAMpytqIp073FEc"])[
  0
  0
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/check-users-saved-albums)
 """
 function album_get_contains(album_ids)
     u = "me/albums/contains"
@@ -177,7 +177,7 @@ function album_get_contains(album_ids)
     spotify_request(url; scope = "user-library-read")
 end
 
-## https://developer.spotify.com/documentation/web-api/reference/library/remove-albums-user/
+
 """
     album_remove_from_library(album_ids)
 **Summary**: Remove one or more albums for the current user's 'Your Music' library.
@@ -203,7 +203,6 @@ function album_remove_from_library(album_ids)
 end
 
 
-## https://developer.spotify.com/documentation/web-api/reference/library/save-albums-user/
 """
     album_save_library(album_ids)
 

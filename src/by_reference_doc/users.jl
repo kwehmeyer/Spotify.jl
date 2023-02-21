@@ -1,12 +1,11 @@
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/check-current-user-follows
 """
     users_check_current_follows(item_type, ids)
 
 **Summary**: Check to see if the current user is following one or more artists or other Spotify users.
 
 # Arguments
-- `ids` _Required_:     - A comma separated list of the artist. Maximum 50. 
-                        - a single user. 
+- `ids` _Required_:     - A comma separated list of the artist. Maximum 50.
+                        - a single user.
 - `item_type` _Optional_: The ID type, either `artist` (default) or `user`.
 
 # Example
@@ -19,6 +18,8 @@ julia> users_check_current_follows(["0YC192cP3KPCRWx8zr8MfZ"])[1]
  1-element JSON3.Array{Bool, Base.CodeUnits{UInt8, String}, Vector{UInt64}}:
   0
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/check-current-user-follows)
 """
 function users_check_current_follows(artist_ids; item_type = "artist")
     if item_type == "artist"
@@ -35,7 +36,6 @@ function users_check_current_follows(artist_ids; item_type = "artist")
 end
 
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/check-if-user-follows-playlist
 """
     users_check_follows_playlist(playlist_id, user_id)
 
@@ -53,6 +53,8 @@ julia> users_check_follows_playlist("3cEYpjA9oz9GiPac4AsH4n", ["jmperezperez", "
  0
  0
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/check-if-user-follows-playlist)
 """
 function users_check_follows_playlist(playlist_id, user_ids)
     pid = SpPlaylistId(playlist_id)
@@ -62,7 +64,7 @@ function users_check_follows_playlist(playlist_id, user_ids)
     spotify_request(url; scope = "playlist-read-private")
 end
 
-## https://developer.spotify.com/documentation/web-api/reference/follow/follow-artists-users/
+
 """
     users_follow_artists_users(artist_ids; type= "artist")
 
@@ -103,7 +105,6 @@ function users_follow_artists_users(artist_ids; type= "artist")
 end
 
 
-## https://developer.spotify.com/documentation/web-api/reference/follow/follow-playlist/
 """
     users_follow_playlist(playlist_id; public = false)
 
@@ -113,7 +114,7 @@ end
 -`playlist_id`: The Spotify ID of the playlist. Any playlist can be followed regardless of it's private/public status, as long as the ID is known.
 
 # Optional argument
-- `public`:     Defaults to false. If true the playlist will be included in user's public playlists, 
+- `public`:     Defaults to false. If true the playlist will be included in user's public playlists,
                 if false it will remain private.
 
 [Reference](https://developer.spotify.com/documentation/web-api/reference/follow/follow-playlist/)
@@ -129,7 +130,7 @@ julia> users_follow_playlist(playlist_id)[1]
 julia> users_unfollow_playlist(playlist_id)[1] # Cleanup
 {}
 ```
-""" 
+"""
 function users_follow_playlist(playlist_id; public = false)
     method = "PUT"
     pid = SpPlaylistId(playlist_id)
@@ -141,13 +142,12 @@ function users_follow_playlist(playlist_id; public = false)
 end
 
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-current-users-profile
 """
     users_get_current_profile()
 
     **Summary**: Get detailed profile information about the current user
                 (including the current user's username).
-    
+
     The returned object contains more info when granted scopes: user-read-private and  user-read-email.
 
 # Example
@@ -167,13 +167,14 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 12 entries:
   :type             => "user"
   :uri              => "spotify:user:your_user_id"
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-current-users-profile)
 """
 function users_get_current_profile()
     spotify_request("me"; scope = "user-read-private", additional_scope = "user-read-email")
 end
 
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-top-artists-and-tracks
 """
     users_get_current_user_top_items(;type = "artists", time_range = "medium_term", limit = 20, offset = 0)
 
@@ -214,6 +215,8 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
   :href     => "https://api.spotify.com/v1/me/top/tracks"
   :next     => "https://api.spotify.com/v1/me/top/tracks?limit=20&offset=20"
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-top-artists-and-tracks)
 """
 function users_get_current_user_top_items(;type = "artists",
         time_range = "medium_term", limit = 20, offset = 0)
@@ -227,15 +230,15 @@ function users_get_current_user_top_items(;type = "artists",
     spotify_request(url; scope = "user-top-read", additional_scope = "user-read-email")
 end
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-followed
+
 """
     users_get_follows(; limit = 20, after = "")
 
 **Summary**: Get the current user's followed artists.
 
 # Arguments
-- `limit` _Optional_: The maximum number of items to return. Default 20, Minimum 1, Maximum 50. 
-- `after` _Optional_: The last artist ID retrieved from the previous request. 
+- `limit` _Optional_: The maximum number of items to return. Default 20, Minimum 1, Maximum 50.
+- `after` _Optional_: The last artist ID retrieved from the previous request.
 
 # Example
 ```julia-repl
@@ -252,6 +255,8 @@ end
 julia> julia> length(anames)
 26
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-followed)
 """
 function users_get_follows(; limit = 20, after = "")
     type = "artist"
@@ -262,7 +267,6 @@ function users_get_follows(; limit = 20, after = "")
 end
 
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-profile
 """
     users_get_profile(user_id)
 
@@ -284,12 +288,14 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 8 entries:
   :type          => "user"
   :uri           => "spotify:user:smedjan"
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-profile)
 """
 function users_get_profile(user_id)
     spotify_request("users/$user_id")
 end
 
-## https://developer.spotify.com/documentation/web-api/reference/follow/unfollow-artists-users/
+
 """
     users_unfollow_artists_users(artist_ids; type = "artist")
 
@@ -300,7 +306,7 @@ end
 
 # Optional keyword arguments
 
-- `type`:  Either "artist" (default) or "user". 
+- `type`:  Either "artist" (default) or "user".
 
 ```julia-repl
 julia> artist_ids = ["2CIMQHirSU0MQqyYHq0eOx", "57dN52uHvrHOxijzpIgu3E", "1vCWHaC5f2uS3yhpwWbIA6"]
@@ -313,7 +319,7 @@ julia> users_unfollow_artists_users(artist_ids])[1]
 {}
 ```
 [Reference](https://developer.spotify.com/documentation/web-api/reference/follow/unfollow-artists-users/)
-""" 
+"""
 function users_unfollow_artists_users(artist_ids; type = "artist")
     method = "DELETE"
     u = "me/following"
@@ -325,7 +331,6 @@ function users_unfollow_artists_users(artist_ids; type = "artist")
 end
 
 
-## https://developer.spotify.com/documentation/web-api/reference/follow/unfollow-playlist/
 """
     users_unfollow_playlist(playlist_id)
 
@@ -336,7 +341,7 @@ end
 # Arguments
 - `playlist_id` The Spotify ID of the playlist.
 
-# Example 
+# Example
 
 To be run after example in `playlist_create_playlist`, possibly also 'playlist_remove_playlist_item`.
 ```julia-repl

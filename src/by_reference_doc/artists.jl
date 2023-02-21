@@ -1,5 +1,3 @@
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-artist
-
 """
     artist_get(artist_id)
 
@@ -17,14 +15,14 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 10 entries:
   :genres        => ["german soundtrack", "soundtrack"]
   :href          => "https://api.spotify.com/v1/artists/0YC192cP3KPCRWx8zr8MfZ"
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-artist)
 """
 function artist_get(artist_id)
     arid = SpArtistId(artist_id)
     spotify_request("artists/$arid")
 end
 
-
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-artists-albums
 
 """
     artist_get_albums(artist_id; include_groups = "album", country = "", limit = 20, offset = 0)
@@ -62,6 +60,8 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 10 entries:
   :popularity    => 79
   ⋮              => ⋮
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-artists-albums)
 """
 function artist_get_albums(artist_id; include_groups = "", country = "", limit = 20, offset = 0)
     arid = SpArtistId(artist_id)
@@ -84,13 +84,13 @@ end
 
 # Optional keyword arguments
 - `market`       : Default is `get_user_country()`.
-                   An ISO 3166-1 alpha-2 country code. If a country code is specified, only content that is 
-                   available in that market will be returned. If a valid user access token is specified in 
-                   the request header, the country associated with the user account will take priority over 
+                   An ISO 3166-1 alpha-2 country code. If a country code is specified, only content that is
+                   available in that market will be returned. If a valid user access token is specified in
+                   the request header, the country associated with the user account will take priority over
                    this parameter.
 
-                   API note: "If neither market or user country are provided, the content is considered unavailable 
-                   for the client. Users can view the country that is associated with their account in the 
+                   API note: "If neither market or user country are provided, the content is considered unavailable
+                   for the client. Users can view the country that is associated with their account in the
                    account settings."
 
                    Spotify.jl note: If no market is specified, we unexpectedly get 'missing country parameter'.
@@ -103,6 +103,8 @@ julia> artist_top_tracks("0YC192cP3KPCRWx8zr8MfZ")[1]
 JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
   :tracks => JSON3.Object[{…
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-artists-albums)
 """
 function artist_top_tracks(artist_id; market = get_user_country())
     arid = SpArtistId(artist_id)
@@ -113,7 +115,6 @@ function artist_top_tracks(artist_id; market = get_user_country())
 end
 
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-artists-related-artists
 """
     artist_get_related_artists(artist_id)
 
@@ -129,6 +130,8 @@ julia> artist_get_related_artists("0YC192cP3KPCRWx8zr8MfZ")[1]
 JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
 :artists => JSON3.Object[{…
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-artists-related-artists)
 """
 function artist_get_related_artists(artist_id)
     arid = SpArtistId(artist_id)

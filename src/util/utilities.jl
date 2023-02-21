@@ -189,6 +189,8 @@ function function_menu(fs::Vector{Symbol})
     selected_loaded = setdiff(selset, selected_but_not_loaded)
     sort([fs[i] for i in selected_loaded])
 end
+
+
 """
     select_functions()
 
@@ -283,6 +285,7 @@ function make_default_calls_and_print(fs::Vector{Symbol})
     end
     return nothing
 end
+
 
 """
     select_calls()

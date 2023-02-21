@@ -1,6 +1,6 @@
 # Shows are the same as podcasts (series) on Spotify
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-show
+
 """
     show_get(show_id; market = get_user_country())
 
@@ -11,7 +11,7 @@
 
 # Optional keywords
 - `market` : An ISO 3166-1 alpha-2 country code. If a country code is specified, only shows
-             and episodes that are available in that market will be returned. If market is 
+             and episodes that are available in that market will be returned. If market is
              not provided, the content is considered unavailable for the client.
              Default value is taken from user's .ini file.
 
@@ -24,6 +24,8 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 18 entries:
   :description          => "Conversations about science, technology, history, philosophy and the nature of intelligence, …
   :episodes             => {…
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-show)
 """
 function show_get_single(show_id; market = get_user_country())
     sid = SpShowId(show_id)
@@ -34,7 +36,6 @@ function show_get_single(show_id; market = get_user_country())
 end
 
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-multiple-shows
 """
     show_get_multiple(ids; market = get_user_country())
 
@@ -45,7 +46,7 @@ end
 
 # Optional keywords
 - `market` : An ISO 3166-1 alpha-2 country code. If a country code is specified, only shows
-             and episodes that are available in that market will be returned. If market is 
+             and episodes that are available in that market will be returned. If market is
              not provided, the content is considered unavailable for the client.
              Default value is taken from user's .ini file.
 
@@ -63,6 +64,8 @@ julia> [s.name for s in shs.shows]
  "The Giant Beastcast"
  "The Filmcast (AKA The Slashfilmcast)"
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-multiple-shows)
 """
 function show_get_multiple(show_ids; market = get_user_country())
     ids = SpShowId.(show_ids)
@@ -73,7 +76,6 @@ function show_get_multiple(show_ids; market = get_user_country())
 end
 
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-shows-episodes
 """
     show_get_episodes(show_id; market = get_user_country(), limit = 20, offset = 0)
 
@@ -84,7 +86,7 @@ end
 - `show_id` : The Spotify ID for the show
 
 # Optional keywords
-- `market`         : An ISO 3166-1 alpha-2 country code. If market is not provided, the content 
+- `market`         : An ISO 3166-1 alpha-2 country code. If market is not provided, the content
                      is considered unavailable for the client.
                      Default value is taken from user's .ini file.
 - `limit`          : Maximum number of items to return, default is set to 20. (0 < limit <= 50)
@@ -110,6 +112,8 @@ julia> [s.name for s in ses.episodes.items]
  "#311 – Magatte Wade: Africa, Capitalism, Communism, and the Future of Humanity"
  "#310 – Andrew Bustamante: CIA Spy"
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-a-shows-episodes)
 """
 function show_get_episodes(show_id; market = get_user_country(), limit = 20, offset = 0)
     sid = SpShowId(show_id)
@@ -119,8 +123,6 @@ function show_get_episodes(show_id; market = get_user_country(), limit = 20, off
     spotify_request(url)
 end
 
-
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-saved-shows
 
 """
     show_get_saved(;limit = 20, offset = 0)
@@ -140,6 +142,8 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
   :items    => Union{}[]
   :limit    => 20
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-saved-shows)
 """
 function show_get_saved(;limit = 20, offset = 0)
     u = "me/shows"
@@ -149,7 +153,6 @@ function show_get_saved(;limit = 20, offset = 0)
 end
 
 
-## https://developer.spotify.com/documentation/web-api/reference/#/operations/check-users-saved-shows
 """
     show_get_contains(show_ids)
 
@@ -170,6 +173,8 @@ julia> show_get_contains(show_ids)[1]
  1
  1
 ```
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/check-users-saved-shows)
 """
 function show_get_contains(show_ids)
     ids = SpShowId.(show_ids)
@@ -179,7 +184,7 @@ function show_get_contains(show_ids)
     spotify_request(url; scope = "user-library-read", additional_scope="user-library-modify")
 end
 
-## https://developer.spotify.com/documentation/web-api/reference/library/remove-shows-user/
+
 """
     show_remove_from_library(show_ids)
 
@@ -205,7 +210,6 @@ function show_remove_from_library(show_ids)
 end
 
 
-## https://developer.spotify.com/documentation/web-api/reference/library/save-shows-user/
 """
     show_save_library(show_ids)
 # Save Shows for Current User
@@ -214,7 +218,7 @@ end
 `show_ids` _Required_: A comma-separated list of Spotify IDs. Maximum 50.
 
 [Reference](https://developer.spotify.com/documentation/web-api/reference/library/save-shows-user/)
-""" 
+"""
 function show_save_library(show_ids)
     method = "PUT"
     ids = SpShowId.(show_ids)
