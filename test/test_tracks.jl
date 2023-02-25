@@ -18,7 +18,7 @@ using Test, Spotify.Tracks
     @testset "For market = $(market_id)" for market_id in markets
 
         @test ~isempty(tracks_get_single(track_id, market = market_id)[1])
-        @test ~isempty(tracks_get_multiple(;track_ids, market = market_id)[1])
+        @test ~isempty(tracks_get_multiple(track_ids; market = market_id)[1])
         @test ~isempty(tracks_get_saved(market = market_id)[1])
 
     end

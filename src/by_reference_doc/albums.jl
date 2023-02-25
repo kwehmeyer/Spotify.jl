@@ -195,11 +195,12 @@ julia> album_remove_from_library(["2O9mD7oKwBnhQZQUAJM6GM", "3eLvDNfWAMpytqIp073
 [Reference](https://developer.spotify.com/documentation/web-api/reference/library/remove-albums-user/)
 """
 function album_remove_from_library(album_ids)
+    method = "DELETE"
     u = "me/albums"
     ids = SpAlbumId.(album_ids)
     a = urlstring(;ids)
     url = build_query_string(u, a)
-    spotify_request(url, "DELETE"; scope= "user-library-modify")
+    spotify_request(url, method; scope= "user-library-modify")
 end
 
 
@@ -222,9 +223,10 @@ julia> album_save_library(["2O9mD7oKwBnhQZQUAJM6GM", "3eLvDNfWAMpytqIp073FEc"])[
 [Reference](https://developer.spotify.com/documentation/web-api/reference/library/save-albums-user/)
 """
 function album_save_library(album_ids)
+    method = "PUT"
     u = "me/albums"
     ids = SpAlbumId.(album_ids)
     a = urlstring(;ids)
     url = build_query_string(u, a)
-    spotify_request(url, "PUT"; scope= "user-library-modify")
+    spotify_request(url, method; scope= "user-library-modify")
 end

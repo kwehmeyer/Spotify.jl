@@ -1,10 +1,3 @@
-export SpId, SpCategoryId, SpPlaylistId,  
-       SpArtistId, SpShowId, SpEpisodeId, SpTrackId, SpAlbumId
-import JSON3.write
-using StructTypes
-using StructTypes: CustomStruct
-import StructTypes: StructType, lower, lowertype
-import Base: isempty
 """
 All web API arguments are simple strings. Spotify.jl defines
 some types that have context-aware representations. Type
@@ -49,16 +42,15 @@ julia> Spotify.JSON3.write(track_id)
 
 
 """
-SpPlaylistId, SpTestId, SpTrackId, SpArtistId, SpId, SpAlbumId, SpCategoryId, SpEpisodeId, SpShowId
+SpPlaylistId, SpTrackId, SpArtistId, SpId, SpAlbumId, SpCategoryId, SpEpisodeId, SpShowId
 
-#### Move everything to keep below here.
+
 abstract type SpType end
 StructType(::Type{<:SpType}) = StructTypes.CustomStruct()
 lower(x::T) where {T <:SpType} = x.prefix * x.s
-#lowertype(x::T) where {T <:SpType} = String
 isempty(x::T) where {T <:SpType} = isempty(x.s)
 
-function checked_id_string(ls::String, allowed_prefix)
+function checked_id_string(ls::AbstractString, allowed_prefix)
     s =  startswith(ls, allowed_prefix) ? ls[length(allowed_prefix) + 1 : end] : ls
     if length(s) == 22
         if isid(s)
@@ -71,24 +63,11 @@ function checked_id_string(ls::String, allowed_prefix)
     end
 end
 checked_id_string(ls::SpType, allowed_prefix) = checked_id_string(string(ls), allowed_prefix)
-# REPL, instead of SpTestId("6rqhFgbbKwnb9MLmUQDhG6")
+# REPL, instead of Sp____Id("6rqhFgbbKwnb9MLmUQDhG6")
 show(io::IO,  ::MIME"text/plain", x::SpType) =   printstyled(io, x.prefix * x.s ; color = x.displaycolor)
 # String interpolation, also `urlstring`, `println`
 show(io::IO, x::SpType) =        printstyled(io, x.s; color = x.displaycolor)
-# Serialization, as in Spotify.JSON3.write 
-#write(x::SpType) =  x.prefix * x.s
-#write(io::IO, x::SpType) = write(io, write(x))
-#
-struct SpTestId <: SpType
-    s::String
-    prefix::String
-    displaycolor::Union{Symbol, Int}
-    function SpTestId(ls)
-        pref = "spotify:test:"
-        new(checked_id_string(ls, pref), pref, 219)
-    end
-end
-SpTestId() = SpTestId("512ojhOuo1ktJprKbVcKyQ")
+
 ####
 struct SpPlaylistId <: SpType
     s::String

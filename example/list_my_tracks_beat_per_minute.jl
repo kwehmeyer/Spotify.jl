@@ -20,8 +20,6 @@
 using Spotify
 using Spotify.Library
 using Spotify.Tracks
-LOGSTATE.authorization = false
-LOGSTATE.request_string = false
 function list_liked(io = stdout)
     # Throwaway warmup. This gets us the scopes we need. And if user is slow to
     # engage with the browser, this first call might be bothched anyway.

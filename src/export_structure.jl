@@ -47,10 +47,11 @@
     @_ie player_get_state
     @_ie player_pause 
     @_ie player_resume_playback
+    @_ie player_seek
     @_ie player_skip_to_next
     @_ie player_skip_to_previous
     @_ie playlist_add_tracks_to_playlist
-    @_ie  playlist_remove_playlist_item
+    @_ie playlist_change_details
     @_ie playlist_create_playlist
     @_ie playlist_get
     @_ie playlist_get_category
@@ -59,6 +60,7 @@
     @_ie playlist_get_featured
     @_ie playlist_get_tracks
     @_ie playlist_get_user
+    @_ie  playlist_remove_playlist_item
     @_ie search_get
     @_ie show_get_contains
     @_ie show_get_episodes
@@ -184,6 +186,7 @@ baremodule Player
     @_ie player_get_state
     @_ie player_pause   
     @_ie player_resume_playback
+    @_ie player_seek
     @_ie player_skip_to_next
     @_ie player_skip_to_previous
 end
@@ -192,7 +195,7 @@ export Player
 baremodule Playlists
     import ..@_ie
     @_ie playlist_add_tracks_to_playlist
-    @_ie  playlist_remove_playlist_item
+    @_ie playlist_change_details
     @_ie playlist_create_playlist
     @_ie playlist_get
     @_ie playlist_get_category
@@ -201,6 +204,7 @@ baremodule Playlists
     @_ie playlist_get_featured
     @_ie playlist_get_tracks
     @_ie playlist_get_user
+    @_ie  playlist_remove_playlist_item
 end
 export Playlists
 

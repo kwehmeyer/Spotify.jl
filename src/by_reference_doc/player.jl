@@ -153,10 +153,11 @@ julia> player_pause() # Fails because we already paused, see `player_resume_play
 [Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/pause-a-users-playback)
 """
 function player_pause(;device_id = "")
+    method = "PUT"
     u = "me/player/pause"
     a = urlstring(;device_id)
     url = build_query_string(u, a)
-    spotify_request(url, "PUT"; scope= "user-modify-playback-state")
+    spotify_request(url, method; scope= "user-modify-playback-state")
 end
 
 
@@ -206,6 +207,7 @@ julia> player_resume_playback(;uris, position_ms = 82000)[1]
 [Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/start-a-users-playback)
 """
 function player_resume_playback(;device_id = "", context_uri::S = "", uris::T = "", offset = 0, position_ms = 0) where {S, T}
+    method = "PUT"
     u = "me/player/play"
     a = urlstring(;device_id)
     url = build_query_string(u, a)
@@ -216,8 +218,38 @@ function player_resume_playback(;device_id = "", context_uri::S = "", uris::T = 
         @warn "unexpected context_uri argument: $S"
     end
     body = body_string(;context_uri, uris, offset, position_ms)
-    spotify_request(url, "PUT"; body, scope= "user-modify-playback-state")
+    spotify_request(url, method; body, scope= "user-modify-playback-state")
 end
+
+
+
+"""
+    player_seek(position_ms; device_id = "")
+
+**Summary**: Seeks to the given position in the user’s currently playing track.
+
+# Arguments
+
+- `position_ms`   The position in milliseconds to seek to. Must be a positive number. Passing in a position that is greater than the length of the track will cause the player to start playing the next song.
+
+# Optional keywords
+
+- `device_id`     The id of the device this command is targeting. If not supplied, the user's currently active device is the target. Example value:
+
+
+[Reference](https://developer.spotify.com/console/put-seek/)
+"""
+function player_seek(position_ms; device_id = "")
+    method = "PUT"
+    u = "me/player/seek"
+    # We would normally call 'urlstring' with both arguemts, but it
+    # drops keyword arguments if they are zero or ""
+    a1 = "position_ms = $position_ms"
+    a2 = urlstring(;position_ms = position_ms, device_id)
+    url = build_query_string(u, a1, a2)
+    spotify_request(url, method; scope = "user-modify-playback-state")
+end
+
 
 
 """
@@ -230,10 +262,11 @@ end
 [Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/skip-users-playback-to-next-track)
 """
 function player_skip_to_next(;device_id = "")
+    method = "POST"
     u = "me/player/next"
     a = urlstring(;device_id)
     url = build_query_string(u, a)
-    spotify_request(url, "POST"; scope = "user-modify-playback-state")
+    spotify_request(url, method; scope = "user-modify-playback-state")
 end
 
 
@@ -247,9 +280,10 @@ end
 [Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/skip-users-playback-to-previous-track)
 """
 function player_skip_to_previous(;device_id = "")
+    method = "POST"
     u = "me/player/previous"
     a = urlstring(;device_id)
     url = build_query_string(u, a)
-    spotify_request(url, "POST"; scope = "user-modify-playback-state")
+    spotify_request(url, method; scope = "user-modify-playback-state")
 end
 

@@ -1,8 +1,13 @@
-# This is included in 'mini_player.jl'
+# This is included as a part of 'mini_player.jl'
+#
+# We define a custom REPL-mode in order to avoid pressing Return
+# after every keypress. `read(stdin, 1)` just won't do.
 #
 # We'll make a new REPL interface mode for this,
 # based off the shell prompt (shell mode would
 # be entered by pressing ; at the julia> prompt).
+#
+#
 # Method based on 
 # https://erik-engheim.medium.com/exploring-julia-repl-internals-6b19667a7a62
 
@@ -11,10 +16,10 @@ function print_menu()
     b = text_colors[:bold]
     n = text_colors[:normal]
     menu = """
-       ¨e : exit mode.       ¨f or ¨→ : forward.    ¨b or ¨← : back.  ¨p: pause / unpause.
-       ¨del or ¨fn + ¨⌫ : delete from own playlist. ¨l: playlist.    ¨a: audio features.
+       ¨e : exit.    ¨f(¨→) : forward.  ¨b(¨←) : back.  ¨p: pause, play.  ¨0-9:  seek.
+       ¨a : analysis.   ¨l : playlist.      ¨del(¨fn + ¨⌫  ) : delete from playlist.
     """
-    menu = replace(menu, "¨" => b , ":" =>  "$n$l:", "." => ".$n", " or" => "$n$l or$n", "+" => "$n+")
+    menu = replace(menu, "¨" => b , ":" =>  "$n$l:", "." => ".$n", " or" => "$n$l or$n", "+" => "$n+", "(" => "$n(", ")" => "$n)")
     print(stdout, menu)
     print(stdout, n)
 end
@@ -23,7 +28,7 @@ end
 function on_non_empty_enter(s)
     print_menu()
     print(stdout, text_colors[:green])
-    println(stdout, "  " * current_playing())
+    println(stdout, "  " * current_playing_string())
     print(stdout, text_colors[:normal])
     nothing
 end
@@ -40,7 +45,7 @@ function triggermini(state::LineEdit.MIState, repl::LineEditREPL, char::Abstract
                 prompt_state.input_buffer = copy(iobuffer)
                 println(stdout)
                 print_menu()
-                s = current_playing()
+                s = current_playing_string()
                 printstyled(stdout, "\n  " * s * '\n', color = :green)
             end
         end
@@ -116,31 +121,34 @@ function wrap_command(state::REPL.LineEdit.MIState, repl::LineEditREPL, char::Ab
     c = char[1]
     if c == 'b' || char == "\e[D"
         player_skip_to_previous()
-            # If we call player_get_current_track() right
-            # after changing tracks, we might get the
-            # previous state.
-            # Ref. https://github.com/spotify/web-api/issues/821#issuecomment-381423071
-            sleep(1)
+        s = ""
+        # If we call player_get_current_track() right
+        # after changing tracks, we might get the
+        # previous state.
+        # Ref. https://github.com/spotify/web-api/issues/821#issuecomment-381423071
+        sleep(1)
     elseif c == 'f' || char == "\e[C"
         player_skip_to_next()
+        s = ""
         # Ref. https://github.com/spotify/web-api/issues/821#issuecomment-381423071
         sleep(1)
     elseif c == 'p'
-        pause_unpause()
+        s = pause_unpause()
     elseif c == 'l'
-        println(stdout, text_colors[:light_blue])
-        print(stdout, "  " * current_playlist())
-        println(stdout, text_colors[:normal])
+        s = "  " * current_playlist_context_string() * "\n"
     elseif char == "\e[3~"  || char == "\e\b"
-        delete_current_from_own_playlist()
+        # This call prints multi-line output
+        s = delete_current_playing_from_owned_context()
     elseif c == 'a'
-        println(stdout, text_colors[:light_blue])
-        print(stdout, current_audio_features())
-        println(stdout, text_colors[:normal])
+        s = "\n" * current_audio_features() * "\n"
+    elseif '0' <= c <= '9'
+        s = " " * seek_in_track(Meta.parse(string(c))) * "\n"
     end
-    println(stdout, text_colors[:green])
-    print(stdout, "  " * current_playing())
-    println(stdout, text_colors[:normal])
+    if s !== ""
+        printstyled(stdout, s, color = :light_blue)
+    end
+    scur = "  " * current_playing_string() * "\n"
+    printstyled(stdout, scur, color = :green)
 end
 
 # Single keystroke commands
@@ -150,6 +158,16 @@ let
     miniprompt.keymap_dict['p'] = wrap_command
     miniprompt.keymap_dict['l'] = wrap_command
     miniprompt.keymap_dict['a'] = wrap_command
+    miniprompt.keymap_dict['0'] = wrap_command
+    miniprompt.keymap_dict['1'] = wrap_command
+    miniprompt.keymap_dict['2'] = wrap_command
+    miniprompt.keymap_dict['3'] = wrap_command
+    miniprompt.keymap_dict['4'] = wrap_command
+    miniprompt.keymap_dict['5'] = wrap_command
+    miniprompt.keymap_dict['6'] = wrap_command
+    miniprompt.keymap_dict['7'] = wrap_command
+    miniprompt.keymap_dict['8'] = wrap_command
+    miniprompt.keymap_dict['9'] = wrap_command
     # The structure is nested for special keystrokes.
     special_dict = miniprompt.keymap_dict['\e']
     very_special_dict = special_dict['[']

@@ -1,3 +1,13 @@
+"""
+    urlstring
+
+Encodes the arguments as expected in a query string.
+
+Type info is seldom necessary, because the type of arguments
+is given by the API endpoint.
+
+Empty argument values => the argument name is considered redundant.
+"""
 function urlstring(;kwds...)
     isempty(kwds) && return ""
     urlstring(kwds)
@@ -25,6 +35,27 @@ end
 
 
 """
+    body_string
+
+Encodes the arguments as expected in a HTTP message body.
+
+Type info and strurcture is in JSON format.
+
+We define our own types through StructTypes and JSON3 in 'types.jl'.
+
+Empty values => the key is also considered redundant.
+"""
+function body_string(;kwds...)
+    dic = Dict(kwds)
+    fi = filter(p -> p[2] !== 0 && !isempty(p[2]), dic)
+    isempty(fi) && return ""
+    body_string(fi)
+end
+function body_string(s)
+    write(s)
+end
+
+"""
     build_query_string(xs::Vararg{String,N} where N)
 
 Includes separators if needed, for urlstrings.
@@ -43,15 +74,4 @@ function build_query_string(xs::Vararg{String,N} where N)
     else
         first(xs) * "?" * join(others, "&")
     end
-end
-
-# Alternative approach here:
-function body_string(;kwds...)
-    dic = Dict(kwds)
-    fi = filter(p -> p[2] !== 0 && !isempty(p[2]), dic)
-    isempty(fi) && return ""
-    body_string(fi)
-end
-function body_string(s)
-    write(s)
 end

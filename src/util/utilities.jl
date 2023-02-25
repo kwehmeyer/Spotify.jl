@@ -1,13 +1,26 @@
-"""
-    strip_embed_code(sdvs<substring>)
-    -> Spid(<substring>)
+""""
+    colored_repr(x)
+    -> String
 
-Get the interesting part for pasting:
-    
-Spotify app -> Right click -> Share -> Copy embed code to clipboard
+String which can be 'pretty-printed': colourful indication of types which after displaying
+can still be copied for parsing as strings.
 """
-strip_embed_code(s) = SpId(match(r"\b[a-zA-Z0-9]{22}", s).match)
-
+function colored_repr(x)
+    iob = IOBuffer()
+    show(IOContext(iob, :color => true), "text/plain", x)
+    '"' * String(take!(iob)) * '"'
+end
+function colored_repr(v::Vector)
+    vs = colored_repr.(v)
+    '[' * join(vs, ", ") * ']'
+end
+function colored_repr(t::Tuple)
+    ts = colored_repr.(t)
+    join(ts, ", ")
+end
+colored_repr(t::AbstractString) = '"' * t * '"'
+colored_repr(d::Dict) = "Dict(" * colored_repr(pairs(d)...)
+colored_repr(p::Pair) = colored_repr(p[1]) * " => " * colored_repr(p[2])
 
 function assert_locale(locale)
     # Spotify ignores this incorrect value.
@@ -47,7 +60,7 @@ end
 
 """
    is_function_loaded(foo::Symbol)
-   
+
 ```julia-repl
 julia> using Spotify.Library
 julia> Spotify.is_function_loaded(:library_get_saved_shows)
@@ -61,7 +74,7 @@ is_function_loaded(foo::Symbol) = isdefined(Main, foo)
 
 """
    is_module_loaded(foo::Symbol)
-   
+
 ```julia-repl
 julia> using Spotify.Library
 julia> Spotify.is_module_loaded(:Library)
@@ -82,26 +95,10 @@ function find_parameter_names(f)
     meths = methods(eval(f))
     @assert length(meths) == 1 "Expected one method defined for \n$meths \n - is semicolon missing in function signature?"
     meth = meths[1]
-    #=
-    printstyled("$f\n", color=:yellow)
-    for fn in fieldnames(typeof(meth))
-        if ! (fn in [:external_mt, :source, :unspecialized, :generator, :root_blocks, :ccallable, 
-                :primary_world, :deleted_world, :invokes, :recursion_relation, :file, :line,
-                :nroots_sysimg, :module, :called])
-            printstyled(".$fn", color=:green)
-            printstyled(" => ", color=:light_black)
-            val = getfield(meth, fn)
-            if val isa Vector{UInt8}
-                val = String(val)
-            end
-            printstyled(val, color=:green)
-            println("::$(typeof(val))")
-        end
-    end
-    =#
     sls =     split(meth.slot_syms, "\0"; keepempty = false)
     sls[2 : min(length(sls), meth.nargs )]
 end
+
 # Build a dictionary of implemented functions and their
 # argument names.
 function argumentnames_by_function_dic()
@@ -159,22 +156,47 @@ function module_menu()
     sort([sms[i] for i in selset])
 end
 
+
+
+
+
+"colored_function_call_string(loaded, funcsymb, names_by_func) - String"
+function colored_function_call_string(loaded, funcsymb, names_by_func)
+    if loaded
+        argnames = get(names_by_func, funcsymb, ())
+        argvals = default_values(argnames)
+        colored_function_call_string(funcsymb, argvals)
+    else
+        "\e[31m $funcsymb \e[39m"
+    end
+end
+"colored_function_call_string(funcsymb, argvals) -> String"
+function colored_function_call_string(funcsymb, argvals)
+    # with the large variation in function name lengths, it's better
+    # to align lists on the first paranthesis.
+    strf = lpad("$funcsymb", 32)
+    "$strf($(colored_repr(argvals)))"
+end
+
+
+
+
+
+
+"menu_items(funcsymbs, funcloaded, names_by_func) -> Vector{String}"
+function menu_items(funcsymbs, funcloaded, names_by_func)
+    map(zip(funcsymbs, funcloaded)) do (f, loaded)
+        colored_function_call_string(loaded, f, names_by_func)
+    end
+end
+
 "Called by `select_functions`"
 function function_menu(fs::Vector{Symbol})
     length(fs) == 0 && return fs
     ls = is_function_loaded.(fs)
     selected = [i for (i,l) in enumerate(ls) if l]
     names_by_func = argumentnames_by_function_dic()
-    menuitems = map(zip(fs, ls)) do (f, loaded)
-        if loaded
-            strf = lpad("$f", 32)
-            argnames = get(names_by_func, f, ())
-            argvals = default_values(argnames)
-            "$strf   $(lpad("$argnames", 43))   $argvals"
-        else
-            "\e[31m $f \e[39m"
-        end
-    end
+    menuitems = menu_items(fs, ls, names_by_func)
     menu = MultiSelectMenu(menuitems; selected, pagesize = length(menuitems), charset = :unicode)
     msg = "Pick function "
     if  !all(ls)
@@ -201,65 +223,8 @@ function select_functions()
     fs = function_symbols_in_module(mods)
     function_menu(fs)
 end
-function print_as_console_input(io::IO, argval)
-   # println("\n\n")
-   # @show "1" argval
-   # print(io, "\"")
-    show(io, MIME("text/plain"), argval)
-   #show(io, argval)
-   print(io, "\"")
-end
-function print_as_console_input(io::IO, argval::SpType)
-   # println("\n\n")
-   # @show "1.5" argval
-   print(io, "\"")
-   # show(io, MIME("text/plain"), argval)
-   show(io, argval)
-   print(io, "\"")
-end
-function print_as_console_input(io::IO, v::Vector)
-   # println("\n\n")
-   #     @show "2" v
-    print(io, "[")
-    for val in v[1:end - 1]
-        print_as_console_input(io, val)
-        #show(io, val)
-        print(io, ", ")
-    end
-    print_as_console_input(io, last(v))
-    #show(io, last(v))
-    print(io, "]")
-end
-function print_as_console_input(io::IO, fexpr::Expr)
-    printstyled(io, "julia> ", color = :blue)
-    f = fexpr.args[1]
-    print(io, "$f(")
-    if length(fexpr.args) == 1
-        # OK, just checking
-    elseif length(fexpr.args) == 2
-        argvals = fexpr.args[2]
-    #    println("\n\n")
-    #    @show "3" argvals
-        print_as_console_input(io, argvals)
-    elseif length(fexpr.args) > 2
-        argvals = fexpr.args[2:end]
-     #   println("\n\n")
-     #   @show "4" argvals
-        for val in argvals[1:end-1]
-            print_as_console_input(io, val)
-            print(io, ", ")
-        end
-        print_as_console_input(io, last(argvals))
-    else
-        throw("unexpected")
-    end
-    # The second output argument is hardly ever interesting,
-    # provided that we have implicit user grant. This
-    # is different when experimenting with app credentials
-    # only. So we keep the inelegant tuple output forms for now.
-    println(stdout, ")[1]")
-end
 
+"Called by `select_calls` after user interaction"
 function make_default_calls_and_print(fs::Vector{Symbol})
     names_by_func =  argumentnames_by_function_dic()
     result = (JSON3.Object(), 0)
@@ -267,8 +232,11 @@ function make_default_calls_and_print(fs::Vector{Symbol})
         argnames = get(names_by_func, f, ())
         argvals = default_values(argnames)
         fexpr = Expr(:call, f, argvals...)
+        # With:
         printstyled(stdout, "```julia-repl\n", color = :blue)
-        print_as_console_input(stdout, fexpr)
+        printstyled(stdout, "julia> ", color = :blue)
+        print(stdout, lstrip(colored_function_call_string(f, argvals)))
+        println(stdout, "[1]")
         result = Main.eval(fexpr)
         display(result[1])
         if result[2] > 0
@@ -290,8 +258,8 @@ end
 """
     select_calls()
 
-Open an interactive menu in the console. User picks modules, then functions 
-in those. Calls are made with default arguments, defined in 
+Open an interactive menu in the console. User picks modules, then functions
+in those. Calls are made with default arguments, defined in
 `src/lookup/paramname_default_dic`.
 
 Console output is formatted for pasting  into inline documentation.

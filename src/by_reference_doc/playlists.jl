@@ -2,7 +2,9 @@
     playlist_get(playlist_id; additional_types = "track", fields = "",
     market = "")
 
-  **Summary**: Get details about a playlist owned by a Spotify user.
+  **Summary**: Get details about a playlist owned by a Spotify user. 
+      NOTE 1: For private playlists with > 100 tracks, use `playlist_get_tracks` instead.
+      NOTE 2: For public playlists with > 50 tracks, don't expect to see beyound 50.
 
   # Arguments
   - `playlist_id` : Alphanumeric ID of the playlist
@@ -18,6 +20,9 @@
                       Default is set to "US".
 
   # Example
+
+  This works with severe limitations to the number of tracks returned.
+
   ```julia-repl
   julia> using Spotify, Spotify.Playlists
   julia> playlist_get("37i9dQZF1E4vUblDJbCkV3")[1]
@@ -39,6 +44,31 @@
     :uri           => "spotify:playlist:37i9dQZF1E4vUblDJbCkV3"
   ```
 
+    # Example, general use
+
+    ```julia-repl
+    julia> @time let
+        playlist_id = SpPlaylistId("37i9dQZF1E4vUblDJbCkV3") # public, meets limitations.
+        playlist_id = SpPlaylistId("3FyJWXqFocKq2SYGjGoelU") # private, this works with up to 100 tracks.
+        fields = "name,tracks(total)"
+        pll = playlist_get(playlist_id; fields)[1];
+        # This returns 50 in longer playlists, except when the playlist is your own.
+        ntot = pll.tracks.total  
+        if ntot < 101
+            println("Retrieving all ", ntot, " tracks from ", pll.name)
+        else
+            println("Unable to retrieva all ", ntot, " tracks. Refer to `playlist_get_tracks`")
+        end
+        # We unnecessarily limit the data returned here. It does not help with the upper limit.
+        fields = "tracks(items(track(id,name)),next)"
+        o, waitsec = playlist_get(playlist_id; fields);
+        track_names = o.tracks.items .|> i -> i.track.name |> string
+        track_ids = o.tracks.items .|> i -> i.track.id |> SpTrackId
+    end;
+    Unable to retrieva all 529 tracks. Refer to `playlist_get_tracks`
+  0.837955 seconds (612.52 k allocations: 30.531 MiB, 1.90% gc time, 17.00% compilation time)
+    ```
+
 [Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-playlist)
 """
 function playlist_get(playlist_id; additional_types = "track", fields = "",
@@ -47,19 +77,46 @@ function playlist_get(playlist_id; additional_types = "track", fields = "",
     u = "playlists/$pli"
     a  = urlstring(;additional_types, fields, market)
     url = build_query_string(u, a)
-    spotify_request(url)
+    spotify_request(url, scope = "playlist-read-private", additional_scope = "playlist-read-collaborative")
 end
 
 
-# TODO playlist_change_details()
-# https://developer.spotify.com/documentation/web-api/reference/#/operations/change-playlist-details
+"""
 
+**Summary**: Change a playlist's name and public/private state. (The user must, of course, own the playlist.)
+
+# Arguments
+- `playlist_id`   : Alphanumeric ID of the playlist
+
+# Optional keywords
+
+- `name`           The new name for the playlist. Default: Argument not sent.
+- `public`         If true the playlist will be public, if false it will be private. Default: Argument not sent.
+- `collaborative`  If true, the playlist will become collaborative and other users will be able to modify the playlist in their Spotify client.
+                   Note: You can only set collaborative to true on non-public playlists. Default: Argument not sent.
+- `description`    Value for playlist description as displayed in Spotify Clients and in the Web API. Default: Argument not sent.
+
+[Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/change-playlist-details)
+"""
+function playlist_change_details(playlist_id; name = "", public = "", collaborative = "", description = "")
+    method = "PUT"
+    if name == "" && public == "" && collaborative == "" && description == ""
+        @warn "At least one keyword argument must be given: name, public, collaborative or description"
+        return JSON3.Object(), 0
+    end
+    pli = SpPlaylistId(playlist_id)
+    url = "playlists/$pli"
+    body = body_string(;name, public, collaborative, description)
+    spotify_request(url, method; body,
+        scope = "playlist-modify-public",
+        additional_scope = "playlist-modify-private")
+end
 
 """
     playlist_get_tracks(playlist_id; additional_types = "track", limit = 50,
     offset = 0, market = "")
 
-**Summary**: Get details about the items of a playlist.
+**Summary**: Get details about the items of a playlist. NOTE: requires several calls for long lists.
 
 # Arguments
 - `playlist_id`   : Alphanumeric ID of the playlist
@@ -77,6 +134,8 @@ end
                     Default is set to "US".
 
 # Example
+
+For fewer than 21 tracks:
 ```julia-repl
 julia> playlist_get_tracks("37i9dQZF1E4vUblDJbCkV3")[1]
 JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
@@ -89,6 +148,39 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
 :total    => 50
 ```
 
+# Example, general use
+
+For longer playlists, we should ask for the fields we need only. The rate limits should be returned in 'waitsec', but this
+does not seem to work as documented  with long playlists not owned by user.
+
+```julia-repl
+julia> @time let
+    playlist_id = SpPlaylistId("37i9dQZF1E4vUblDJbCkV3") # public, meets limitations at 50 items.
+    playlist_id = SpPlaylistId("3FyJWXqFocKq2SYGjGoelU") # private, this works well.
+    fields = "name,tracks(total)"
+    pll = playlist_get(playlist_id; fields)[1];
+    ntot = pll.tracks.total
+    println("Retrieving all ", ntot, " tracks from ", pll.name)
+    fields = "items(track(name,id)),total, next"
+    o, waitsec = playlist_get_tracks(playlist_id; fields, limit=100);
+    track_ids = o.items .|> i -> i.track.id |> SpTrackId
+    while o.next !== nothing
+        if waitsec > 0
+            println("waiting ", waitsec, " s")
+            sleep(waitsec)
+        else
+            print(".")
+        end
+        o, waitsec = playlist_get_tracks(playlist_id; offset = length(track_ids), fields, limit=100);
+        append!(track_ids, o.items .|> i -> i.track.id |> SpTrackId)
+    end
+    println("Found ", length(track_ids), " tracks")
+    track_ids
+end;
+Retrieving all 529 tracks from -- Liked from Radio --
+.....Found 529 tracks
+  2.669471 seconds (645.63 k allocations: 32.448 MiB, 4.26% compilation time)
+```
 [Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-playlists-tracks)
 """
 function playlist_get_tracks(playlist_id; additional_types = "track", fields = "",
@@ -97,7 +189,7 @@ function playlist_get_tracks(playlist_id; additional_types = "track", fields = "
     u = "playlists/$pli/tracks"
     a = urlstring(;additional_types, fields, limit, offset, market)
     url = build_query_string(u, a)
-    spotify_request(url; scope = "playlist-read-private")
+    spotify_request(url; scope = "playlist-read-private", additional_scope = "playlist-read-collaborative")
 end
 
 
@@ -191,11 +283,12 @@ julia> # Cleanup: This example is continued under `Spotify.Users.users_unfollow_
 [Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/remove-tracks-playlist)
 """
 function playlist_remove_playlist_item(playlist_id, track_ids)
+    method = "DELETE"
     pli = SpPlaylistId(playlist_id)
     url = "playlists/$pli/tracks"
     uris = SpTrackId.(track_ids)
     body = body_string(;uris)
-    spotify_request(url, "DELETE"; body, scope= "playlist-modify-private")
+    spotify_request(url, method; body, scope= "playlist-modify-private")
 end
 
 

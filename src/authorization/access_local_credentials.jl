@@ -3,6 +3,7 @@ function credentials_contain_scope(single_scope::String)
     @assert single_scope ∈ ALLSCOPES || single_scope == ""  "Not valid scope: $single_scope."
     single_scope ∈ spotcred().ig_scopes || single_scope == ""
 end
+credentials_contain_scope(scopes::Vector) = all(credentials_contain_scope.(scopes))
 
 
 """

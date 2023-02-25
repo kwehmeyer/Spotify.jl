@@ -47,60 +47,60 @@ JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 18 entries:
 ```
 
 # Result parameters
-acousticness
+## acousticness
 A confidence measure from 0.0 to 1.0 of whether the track is acoustic. 1.0 represents high confidence the track is acoustic.
 
-analysis_url
+## analysis_url
 A URL to access the full audio analysis of this track. An access token is required to access this data.
 
-danceability
+## danceability
 Danceability describes how suitable a track is for dancing based on a combination of musical elements including tempo, rhythm stability, beat strength, and overall regularity. A value of 0.0 is least danceable and 1.0 is most danceable.
 
-duration_ms
+## duration_ms
 The duration of the track in milliseconds.
 
-energy
+## energy
 Energy is a measure from 0.0 to 1.0 and represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy. For example, death metal has high energy, while a Bach prelude scores low on the scale. Perceptual features contributing to this attribute include dynamic range, perceived loudness, timbre, onset rate, and general entropy.
 
-id
+## id
 The Spotify ID for the track.
 
-instrumentalness
+## instrumentalness
 Predicts whether a track contains no vocals. "Ooh" and "aah" sounds are treated as instrumental in this context. Rap or spoken word tracks are clearly "vocal". The closer the instrumentalness value is to 1.0, the greater likelihood the track contains no vocal content. Values above 0.5 are intended to represent instrumental tracks, but confidence is higher as the value approaches 1.0.
 
-key
+## key
 >= -1, <= 11
 The key the track is in. Integers map to pitches using standard Pitch Class notation. E.g. 0 = C, 1 = C♯/D♭, 2 = D, and so on. If no key was detected, the value is -1.
 
-liveness
+## liveness
 Detects the presence of an audience in the recording. Higher liveness values represent an increased probability that the track was performed live. A value above 0.8 provides strong likelihood that the track is live.
 
-loudness
+## loudness
 The overall loudness of a track in decibels (dB). Loudness values are averaged across the entire track and are useful for comparing relative loudness of tracks. Loudness is the quality of a sound that is the primary psychological correlate of physical strength (amplitude). Values typically range between -60 and 0 db.
 
-mode
+## mode
 Mode indicates the modality (major or minor) of a track, the type of scale from which its melodic content is derived. Major is represented by 1 and minor is 0.
 
-speechiness
+## speechiness
 Speechiness detects the presence of spoken words in a track. The more exclusively speech-like the recording (e.g. talk show, audio book, poetry), the closer to 1.0 the attribute value. Values above 0.66 describe tracks that are probably made entirely of spoken words. Values between 0.33 and 0.66 describe tracks that may contain both music and speech, either in sections or layered, including such cases as rap music. Values below 0.33 most likely represent music and other non-speech-like tracks.
 
-tempo
+## tempo
 The overall estimated tempo of a track in beats per minute (BPM). In musical terminology, tempo is the speed or pace of a given piece and derives directly from the average beat duration.
 
-time_signature
+## time_signature
 >= 3, <= 7
 An estimated time signature. The time signature (meter) is a notational convention to specify how many beats are in each bar (or measure). The time signature ranges from 3 to 7 indicating time signatures of "3/4", to "7/4".
 
-track_href
+## track_href
 A link to the Web API endpoint providing full details of the track.
 
-type
+## type
 The object type. Allowed value: "audio_features"
 
-uri
+## uri
 The Spotify URI for the track.
 
-valence
+## valence
 >= 0, <= 1
 A measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry).
 
@@ -149,12 +149,12 @@ end
 
 
 """
-    tracks_get_multiple(; track_ids, market = "")
+    tracks_get_multiple(track_ids, market = "")
 
 **Summary**: Get Spotify catalog information for multiple tracks based on their Spotify IDs.
 
-# Keyword arguments
-- `ids` : A comma-separated list of the Spotify IDs.
+# Arguments
+- `track_ids` : A comma-separated list of the Spotify IDs.
 
 # Optional keywords
 - `market`         : An ISO 3166-1 alpha-2 country code. If a country code is specified,
@@ -162,14 +162,14 @@ end
 
 # Example
 ```julia-repl
-julia> tracks_get_multiple(ids = "4iV5W9uYEdYUVa79Axb7Rh,1301WleyT98MSxVHPZCA6")[1]
+julia> tracks_get_multiple(["7ouMYWpwJ422jRcDASZB7P", "4VqPOruhp5EdPBeR92t6lQ", "2takcwOaAZWiXQijPHIx7B"])[1]
 JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 1 entry:
   :tracks => Union{Nothing, JSON3.Object}[{…
 ```
 
 [Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-several-tracks)
 """
-function tracks_get_multiple(;track_ids, market = "")
+function tracks_get_multiple(track_ids; market = "")
     ids = SpTrackId.(track_ids)
     u = "tracks"
     a = urlstring(; ids, market)

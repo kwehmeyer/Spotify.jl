@@ -1,8 +1,7 @@
+# TODO: fix this: tempo 75.942 is assigned to 77-78 playlist.
 using Spotify
 using Spotify.Playlists
 using Spotify.Tracks
-LOGSTATE.request_string = false
-LOGSTATE.authorization = false
 const batchsize = 50 # max
 # My very slowest jogging pace
 const minBPM = 63 
@@ -12,52 +11,30 @@ const maxBPM = minBPM * 2 - 1
 # which feels identical.
 const deltaBPM = 2
 
+include("playlist_and_library_utilties.jl")
 ########################################
 # Collect the playlists created by user.
 ########################################
-playlists = Vector{SpPlaylistId}()
-playlistnames = Vector{String}()
-for batchno = 0:200
-    offset = batchno * batchsize
-    json, waitsec = playlist_get_current_user(limit = batchsize, offset = batchno * batchsize)
-    isempty(json) && break
-    waitsec > 0 && throw("Too fast, whoa!")
-    l = length(json.items)
-    l == 0 && break
-    for item in json.items
-        if item.owner.display_name == get_user_name()
-            println(item.name)
-            push!(playlists, SpPlaylistId(item.id))
-            push!(playlistnames, item.name)
-        else
-            printstyled("We're not including $(item.name), which is owned by $(item.owner.id)\n", color= :176)
-        end
-    end
-end
-###############################################################
-# Make a set of the unique tracks contained in those playlists.
-###############################################################
-track_set = Set{Tuple{SpId, String}}()
-for (playlistid, playlistname) in zip(playlists, playlistnames)
-    @show playlistname
-    for batchno = 0:1000
-        offset = batchno * batchsize
-        json, waitsec = playlist_get_tracks(playlistid, limit = batchsize, offset = batchno * batchsize)
-        waitsec > 0 && throw("Too fast, whoa!")
-        l = length(json.items)
-        l == 0 && break
-        for item in json.items
-            if item.track.id !== nothing # Some are no longer available
-                push!(track_set, (SpId(item.track.id), item.track.name))
-            end
-        end
-        println("")
-    end
-end
-track_collection = collect(track_set)
-n = length(track_collection)
-printstyled("$n unique tracks identified from 'playlistnames'\n", color= :176)
+playlist_ids, playlist_names = get_owned_playlist_ids_and_names(;silent=true);
 
+#####################################################
+# Collect all tracks contained in all those playlists
+#####################################################
+
+track_ids = SpTrackId[]
+track_names = String[]
+for (playlist_id, playlist_name) in zip(playlist_ids, playlist_names)
+    playlist_description = "\"" * playlist_details_string(playlist_id) * " \""
+    print("Collecting ")
+    ts, ns  = track_ids_and_names_in_playlist(playlist_id)
+    append!(track_ids, ts)
+    append!(track_names, ns)
+    println("$(length(ts)) tracks from $(playlist_description)")
+end
+clean_track_ids, clean_track_names = track_ids_and_names_cleaned_of_duplicates(track_ids, track_names)
+n = length(track_ids) - length(clean_track_ids)
+
+printstyled("$(length(clean_track_ids)) unique tracks identified, $n were duplicates\n", color= :176)
 
 ######################################################################################
 # Order the tracks by categories or buckets. Each bucket is intended for new playlist.
@@ -70,7 +47,7 @@ bucketmax = [i+deltaBPM - 1 for i in minBPM:deltaBPM:maxBPM]
 bucketnames = ["$mi-$(ma)spm" for (mi, ma) in zip(bucketmin, bucketmax)]
 
 # Prepare some containers we'll need
-Idbucket = Vector{SpId}
+Idbucket = Vector{SpTrackId}
 Namebucket = Vector{String}
 tracknamebuckets = Vector{Namebucket}()
 idbuckets = Vector{Idbucket}()
@@ -80,15 +57,19 @@ for i = 1:length(bucketnames)
     push!(idbuckets, Idbucket())
 end
 
-# Now loop through track_collection, ask Spotify for the tempo, and drop in the right container.
-# Expect some temporary holdups since we're making a potentially large number of requests.
-i = 0
-for (trackid, trackname) in track_collection
+
+################################################
+# Loop through track_collection, ask Spotify for
+# the tempo, drop track in the right container.
+# No playlists are created yet.
+################################################
+trackno = 0
+for (trackid, trackname) in zip(clean_track_ids, clean_track_names)
     af, waitsec =  tracks_get_audio_features(trackid)
-    waitsec > 0 && throw("Too fast, whoa!")
+    waitsec > 0 && throw("Too fast, unexpedet. Add sleep(waitsec)?")
     # There's a lot of audio features! We use one.
-    # https://developer.spotify.com/documentation/web-api/reference/#/operations/get-several-audio-features
     tempo = af.tempo
+    # We halve or double the tempo if outside normal pacing.
     while tempo >= maxBPM
         tempo /= 2
     end
@@ -96,9 +77,9 @@ for (trackid, trackname) in track_collection
         tempo *= 2
     end
     tempo = min(tempo, maxBPM)
-    bucketno = findfirst(x-> x >= tempo, bucketmin)
-    i += 1
-    printstyled(rpad(round(i / n, digits = 3), 10), 
+    bucketno = findfirst(x-> x > tempo, bucketmin) - 1
+    trackno += 1
+    printstyled(rpad(round(trackno / n, digits = 3), 10), 
         rpad(" Tempo: $(round(tempo, digits = 0))  Bucket no.: $bucketno ", 35), 
         "$trackname \n", color = :176)
     push!(tracknamebuckets[bucketno], trackname)
@@ -109,35 +90,46 @@ for bucketno in 1:length(bucketnames)
     println(rpad(bucketnames[bucketno], 25), "No. of tracks: ", length(idbuckets[bucketno]))
 end
 
-#####################################################
-# Create additional playlists (for non-empty buckets)
-#####################################################
+############################################################
+# Create additional, empty playlists (for non-empty buckets)
+############################################################
 for (bucket_list_name, tracknamebucket, trackidbucket) in zip(bucketnames, tracknamebuckets, idbuckets)
     if length(tracknamebucket) > 1 # Only create non-empty playlists
-        @show bucket_list_name
         # Use existing playlistname if possible
-        existingno = findfirst(x -> x == bucket_list_name, playlistnames)
+        existingno = findfirst(x -> x == bucket_list_name, playlist_names)
         if existingno !== nothing
-            playlistid = playlists[existingno]
+            playlist_id = playlist_ids[existingno]
         else
             # Create a new playlist
+            println("Creating new playlist $(bucket_list_name)")
             json, waitsec = playlist_create_playlist(bucket_list_name, public = false)
-            playlistid  = SpPlaylistId(json.id)
+            playlist_id  = SpPlaylistId(json.id)
+            println("    Created  ", repr(playlist_id))
             # Add it to the in-memory store
-            push!(playlists, playlistid)
-            push!(playlistnames, bucket_list_name)
+            push!(playlist_ids, playlist_id)
+            push!(playlist_names, bucket_list_name)
         end
+    end
+end
+###########################################################################
+# Fill the empty playlists. Don't add more tracks to playlists with content
+###########################################################################
+for (bucket_list_name, tracknamebucket, trackidbucket) in zip(bucketnames, tracknamebuckets, idbuckets)
+    if length(tracknamebucket) > 1 
+        existingno = findfirst(x -> x == bucket_list_name, playlist_names)
+        playlist_id = playlist_ids[existingno]
         # Check that the tracklist is actually empty (we don't want to duplicate tracks)
-        json, waitsec = playlist_get_tracks(playlistid)
-        waitsec > 0 && throw("Too fast, whoa!")
+        json, waitsec = playlist_get_tracks(playlist_id)
+        waitsec > 0 && throw("Too fast, whoa! Unexpected, add sleep(waitsec)!")
         l = length(json.items)
         if l == 0
             # Now fill this playlist with what's in trackidbucket
-            display(playlistid)
+            display(playlist_id)
+            display(bucket_list_name)
             display(trackidbucket)
-            playlist_add_tracks_to_playlist(playlistid, trackidbucket)
+            playlist_add_tracks_to_playlist(playlist_id, trackidbucket)
         else
-            @warn "Beware, we were almost going to add tracks to non-empty playlist $bucket_list_name"
+            @info "Not adding tracks to non-empty playlist $(bucket_list_name)"
         end
     end
 end

@@ -55,6 +55,8 @@ end
     track_ids = SpTrackId.(["4m6P9J3czb5hiMIuNsWeVO", "619OpJGKpAOrp5rM4Gcs65"])
     snapshot = playlist_add_tracks_to_playlist(myownplaylistid, track_ids)[1]
     @test ! isempty(snapshot)
+    noresp = playlist_change_details(myownplaylistid, description = "Going to remove everything soon")[1]
+    @test isempty(noresp)
     snapshot = playlist_remove_playlist_item(myownplaylistid, track_ids)[1]
     @test ! isempty(snapshot)
     noresponse = users_unfollow_playlist(myownplaylistid)[1]

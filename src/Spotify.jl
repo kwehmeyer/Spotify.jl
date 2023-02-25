@@ -30,23 +30,25 @@ module Spotify
     This makes source code hard to search in.  withenv("LINES" => 10, "COLUMNS" => 80) do
                     select_calls()
                 end
-✓. Drop 'return' in in all request wrapping functions.
-✓.  Drop unnecessary dependencies URIs and Parameters
-✓. Use the name-based parameter defaults in tests. See paramname_default_dic.jl
-✓. For tests, include "" as well as eg. "DE"
-✓. Revisit paramname_default. Check select_calls() for all.
-✓. Drop Spotify. in tests.
-✓. Shows, too, need the 'market' argument. Consider renaming to 'homemarket', and provide
-    the 'artist_top_tracks' default argument. Use 'homemarket' both places, if this is thought to be smart.
-✓. Finish debugging and delete CHECKUSED constant after running everything in 'select_calls'.
-22. Add feature to miniplayer: 0-9 select position in current song.
-✓. Add reference link to inline docs. Regex replacement. See 'users_unfollow_artists_users'.
-24. print_as_console_input should type vectors with brackets. Eg. album_get_multiple("5XgEM5g3xWEwL4Zr6UjoLo, 2rpT0freJsmUmmPluVWqg5")
-    is not OK.
-    Mostly fixed, but double brackets appear with vectors of strings.
-25. Add example, uniquify playlist entries.
-✓.  Include color in type definition, not show methods?
-27. Print calls in menus in the same manner as after they've run, with colours.
+✓.   Drop 'return' in in all request wrapping functions.
+✓.   Drop unnecessary dependencies URIs and Parameters
+✓.   Use the name-based parameter defaults in tests. See paramname_default_dic.jl
+✓.   For tests, include "" as well as eg. "DE"
+✓.   Revisit paramname_default. Check select_calls() for all.
+✓.   Drop Spotify. in tests.
+✓.   Shows, too, need the 'market' argument. Consider renaming to 'homemarket', and provide
+      the 'artist_top_tracks' default argument. Use 'homemarket' both places, if this is thought to be smart.
+✓.   Finish debugging and delete CHECKUSED constant after running everything in 'select_calls'.
+✓.   Add feature to miniplayer: 0-9 select position in current song.
+✓.   Add reference link to inline docs. Regex replacement. See 'users_unfollow_artists_users'.
+✓.   print_as_console_input should type vectors with brackets.
+✓.   Add example, uniquify playlist entries.
+✓.   Include color in type definition, not show methods?
+✓.   Print calls in menus in the same manner as after they've run, with colours.
+✓.   Silent LOGSTATE default.
+29.  Cut out or keep `argument` brackets, inline docs. _Required_ as heading or prefix? This is obsolete info. 
+✓.  Cover Library and Categories with tests. ('Library' is just aliases - not covered!)
+31.  Make sure all examples are indented to display properly.  (no: examples display fine as help texts everywhere?)
 =#
 using HTTP, Dates, IniFile, HTTP, JSON3, Sockets
 using Logging: with_logger, NullLogger
@@ -54,9 +56,15 @@ import Dates
 import Base64
 using Base64: base64encode
 using REPL.TerminalMenus
-import Base: show, show_vector, typeinfo_implicit
+# This enables methods like `write(t <: SpType`
+using JSON3: write 
+using StructTypes
+import StructTypes: StructType, lower #, lowertype
+#
+import Base: show, show_vector, isempty 
 export authorize, apply_and_wait_for_implicit_grant, get_user_name
-export select_calls, strip_embed_code, LOGSTATE
+export select_calls, parse_copied_link, LOGSTATE
+
 export SpId, SpCategoryId, SpPlaylistId, SpAlbumId, SpTrackId
 export SpArtistId, SpShowId, SpEpisodeId
 export JSON3
@@ -69,10 +77,10 @@ const NOT_ACTUAL = "Paste_32_bytes_in_inifile"
 "A list of potentially available browsers, to be tried in succession if present"
 const BROWSERS = ["chrome", "firefox", "edge", "safari", "phantomjs"]
 
-mutable struct Logstate
-    authorization::Bool
-    request_string::Bool
-    empty_response::Bool
+Base.@kwdef mutable struct Logstate
+    authorization::Bool = false
+    request_string::Bool = false
+    empty_response::Bool = false
 end
 
 
@@ -87,24 +95,21 @@ making inline docs or new interfaces.
 This global can also be locally overruled with
 keyword argument to `spotify_request`.
 """
-const LOGSTATE = Logstate(true, true, false)
+const LOGSTATE = Logstate()
 
 "Stored credentials"
-mutable struct SpotifyCredentials
-    client_id::String
-    client_secret::String
-    encoded_credentials::String
-    access_token::String
-    token_type::String
-    expires_at::String
-    redirect::String
-    ig_access_token::String
-    ig_scopes::Vector{String}
+Base.@kwdef mutable struct SpotifyCredentials 
+    client_id::String = ""
+    client_secret::String = ""
+    encoded_credentials::String = ""
+    access_token::String = ""
+    token_type::String = ""
+    expires_at::String = string(Dates.DateTime(0))
+    redirect::String = ""
+    ig_access_token::String = ""
+    ig_scopes::Vector{String} = String[]
 end
-function SpotifyCredentials(; client_id = "", client_secret = "", encoded_credentials = "", access_token = "", token_type = "",
-                            expires_at = string(Dates.DateTime(0)), redirect = "", ig_access_token = "", ig_scopes= String[]) 
-    SpotifyCredentials(client_id, client_secret, encoded_credentials, access_token, token_type, expires_at, redirect, ig_access_token, ig_scopes)
-end
+
 "Current stored credentials, access by spotcred()"
 const SPOTCRED  = Ref{SpotifyCredentials}(SpotifyCredentials())
 
@@ -139,6 +144,7 @@ include("authorization/access_local_credentials.jl")
 # Util
 include("util/utilities.jl")
 include("util/lenient_conversion_to_string.jl")
+include("util/parse_copied_link.jl")
 
 # The below are structured by 'Docs' / 'Web api':
 #https://developer.spotify.com/documentation/web-api/reference/#/

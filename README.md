@@ -20,7 +20,7 @@ You can
   * play music through a mini-player REPL mode
   * organize playlists based on audio analysis or each track's popularity in Japan
   * control your music bias with the algorithm 
-  * build various social graphs or analyze statistics
+  * build social graphs for artists, playlists or users, analyze popularity
   * clean duplicates, tracks or you've come to dislike from all your playlists and the library
   * search podcast metadata, cont podcast
   * create your own visualizations from beat data

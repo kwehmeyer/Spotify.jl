@@ -1,12 +1,12 @@
 using Test
 using Spotify: body_string
-using Spotify: SpTestId, SpPlaylistId, SpTrackId, SpArtistId, SpAlbumId, SpCategoryId,
+using Spotify: SpPlaylistId, SpTrackId, SpArtistId, SpAlbumId, SpCategoryId,
     SpEpisodeId, SpShowId, SpId
 using Spotify.StructTypes, Spotify.JSON3
 
 @testset "Creation and string representations" begin
     s = "6rqhFgbbKwnb9MLmUQDhG6"
-    types = [SpTestId, SpPlaylistId, SpTrackId, SpArtistId, SpId, SpAlbumId, SpCategoryId, 
+    types = [SpPlaylistId, SpTrackId, SpArtistId, SpId, SpAlbumId, SpCategoryId, 
         SpEpisodeId, SpShowId]
     for typ in types
         instance = typ(s)

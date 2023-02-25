@@ -34,6 +34,8 @@ end
         @test_logs (:info, msg) match_mode=:any player_pause()
         @test isempty(player_resume_playback()[1])
         sleep(2)
+        @test isempty(player_seek(25000)[1])
+        sleep(2)
         @test isempty(player_skip_to_next()[1])
         sleep(2)
         @test isempty(player_skip_to_previous()[1])

@@ -16,6 +16,7 @@ Dict{Symbol, Any}(
     :market => get_user_country(),
     :noffset => 0,
     :offset => 0,
+    :position_ms => 25000,
     :playlist_name => "Playlist name",
     :playlist_id => SpPlaylistId("3cEYpjA9oz9GiPac4AsH4n"),
     :q => "Coldplay",
