@@ -12,19 +12,19 @@
 
 
 ## Progress...
-Right now, 65 API wrapper functions and 12 aliases have been written, tested and organized by sub-modules as defined in Spotify's [documentation](https://developer.spotify.com/documentation/general/):
+Right now, 66 API wrapper functions and 12 aliases have been written, tested and organized by sub-modules as defined in Spotify's [documentation](https://developer.spotify.com/documentation/general/):
 
 ## What can you use this for?
 
 You can 
-  * play music through a mini-player REPL mode
+  * play music and prune your playlists through a mini-player REPL mode
   * organize playlists based on audio analysis or each track's popularity in Japan
-  * control your music bias with the algorithm 
+  * fix your taste profile after that kid's party 
   * build social graphs for artists, playlists or users, analyze popularity
-  * clean duplicates, tracks or you've come to dislike from all your playlists and the library
-  * search podcast metadata, cont podcast
+  * clean duplicates
+  * search podcast metadata
   * create your own visualizations from beat data
-  * make player interfaces
+  * play with popularity and genre statistics
 
 Easily find the right functions with the `select_calls` menu and the submodules:
 

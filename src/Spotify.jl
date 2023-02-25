@@ -12,44 +12,7 @@ and the overlapping [console structure](https://developer.spotify.com/console/).
 
 """
 module Spotify
-# TODO:
-#=
-✓. Add more fields to Logstate
-✓. Replace code with 'urlstring', 'bodystring'. 
-✓. Change function arguments to optional. 
-✓. Refine DEFAULT_IMPLICIT_GRANT, check from fresh start using select_calls()
-✓. Possibly delete help text, refer to Spotify instead? OR update properly.
-✓. Revisit the type system. Delete it, or decide on if it needs to contain prefixes.
-✓. Use duck typing in all request wrapping functions. Because 'body_string' and 'urlstring' 
-   methods specialize on types, and names / defaults provide user the info actually needed.
-✓. Add spaces around '='. Not obvious choice, but easier to maintain: Same rule everywhere.
-✓. Move by_console_doc/follow to by_reference_doc/users
-✓. Drop default values: country = "US", locale = "en" 
-✓. Standardize Dates.now usage. Utilities?
-✓. In inline docs, use a short form of JSON display that doesn't include request strings.
-    This makes source code hard to search in.  withenv("LINES" => 10, "COLUMNS" => 80) do
-                    select_calls()
-                end
-✓.   Drop 'return' in in all request wrapping functions.
-✓.   Drop unnecessary dependencies URIs and Parameters
-✓.   Use the name-based parameter defaults in tests. See paramname_default_dic.jl
-✓.   For tests, include "" as well as eg. "DE"
-✓.   Revisit paramname_default. Check select_calls() for all.
-✓.   Drop Spotify. in tests.
-✓.   Shows, too, need the 'market' argument. Consider renaming to 'homemarket', and provide
-      the 'artist_top_tracks' default argument. Use 'homemarket' both places, if this is thought to be smart.
-✓.   Finish debugging and delete CHECKUSED constant after running everything in 'select_calls'.
-✓.   Add feature to miniplayer: 0-9 select position in current song.
-✓.   Add reference link to inline docs. Regex replacement. See 'users_unfollow_artists_users'.
-✓.   print_as_console_input should type vectors with brackets.
-✓.   Add example, uniquify playlist entries.
-✓.   Include color in type definition, not show methods?
-✓.   Print calls in menus in the same manner as after they've run, with colours.
-✓.   Silent LOGSTATE default.
-29.  Cut out or keep `argument` brackets, inline docs. _Required_ as heading or prefix? This is obsolete info. 
-✓.  Cover Library and Categories with tests. ('Library' is just aliases - not covered!)
-31.  Make sure all examples are indented to display properly.  (no: examples display fine as help texts everywhere?)
-=#
+
 using HTTP, Dates, IniFile, HTTP, JSON3, Sockets
 using Logging: with_logger, NullLogger
 import Dates
