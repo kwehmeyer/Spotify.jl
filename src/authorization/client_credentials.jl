@@ -91,12 +91,26 @@ end
 
 function get_user_name()
     container = read(Inifile(), _get_ini_fnam())
-    get(container, "Spotify user id", "user_name",  "")
+    s = get(container, "Spotify user id", "user_name",  "")
+    if s == ""
+        @warn "Missing info in $(_get_ini_fnam()). Example:
+            [Spotify user_id]
+            user_name=slartibartfast
+            user_country=US"
+    end
+    s
 end
 
 function get_user_country()
     container = read(Inifile(), _get_ini_fnam())
-    get(container, "User's country code", "user_country",  "")
+    s = get(container, "Spotify user id", "user_country",  "")
+    if s == ""
+        @warn "Missing info in $(_get_ini_fnam()). Example:
+            [Spotify user_id]
+            user_name=slartibartfast
+            user_country=US"
+    end
+    s
 end
 
 "Get an existing, readable ini file name, create it if necessary"
@@ -124,7 +138,7 @@ function _prepare_init_file_with_instructions(io)
     set(conta, "Spotify developer's credentials", "CLIENT_SECRET", NOT_ACTUAL)
     set(conta, "Spotify developer's credentials", "REDIRECT_URI", "http://127.0.0.1:8080")
     set(conta, "Spotify user id", "user_name", "Slartibartfast")
-    set(conta, "User's country code", "user_country", "US")
-    write(io, conta)
+    set(conta, "Spotify user id", "user_country", "US")
+    println(io, conta)
 end
 

@@ -207,20 +207,29 @@ function browser_path_windows(shortname)
     trypath = ""
     homdr = ENV["HOMEDRIVE"]
     path64 = homdr * "/Program Files/"
+    path32 = homdr * "/Program Files (x86)/"
     if shortname == "chrome"
         trypath = path64 * "Google/Chrome/Application/chrome.exe"
+        isfile(trypath) && return trypath
+        trypath = path32 * "Google/Chrome/Application/chrome.exe"
         isfile(trypath) && return trypath
     end
     if shortname == "firefox"
         trypath = path64 * "Mozilla Firefox/firefox.exe"
         isfile(trypath) && return trypath
+        trypath = path32 * "Mozilla Firefox/firefox.exe"
+        isfile(trypath) && return trypath
     end
     if shortname == "safari"
         trypath = path64 * "Safari/Safari.exe"
         isfile(trypath) && return trypath
+        trypath = path32 * "Safari/Safari.exe"
+        isfile(trypath) && return trypath
     end
     if shortname == "iexplore"
         trypath = path64 * "Internet Explorer/iexplore.exe"
+        isfile(trypath) && return trypath
+        trypath = path32 * "Internet Explorer/iexplore.exe"
         isfile(trypath) && return trypath
     end
     return ""
