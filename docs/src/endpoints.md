@@ -85,16 +85,6 @@ Filter = t -> contains(String(Symbol(t)), "markets") == true
 Private = true
 ```
 
-## Personalization
-
-
-```@autodocs
-Modules = [Spotify]
-Order = [:function]
-Filter = t -> contains(String(Symbol(t)), "top") == true
-Private = true
-```
-
 ## Playlists
 
 

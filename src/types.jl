@@ -1,149 +1,168 @@
-export SpUri, SpId, SpCategoryId, SpUserId, SpUrl, SpPlaylistId, SpAlbumId, 
-       SpArtistId, SpShowId, SpEpisodeId
 """
-All web API arguments are strings, but types 
-`SpUri`, `SpId`, `CategoryId`, `SpUserId`, `SpUrl` 
-aids in picking default values. [format](
-https://developer.spotify.com/documentation/web-api/#spotify-uris-and-ids)
+All web API arguments are simple strings. Spotify.jl defines
+some types that have context-aware representations. Type
+names are `Sp____Id`. 
+
+# Examples
+
+Make an instance 
+```jula-repl
+julia> track_id = SpTrackId()        # output is colored
+spotify:track:0WdUHon5tYn2aKve13psfy
+```
+
+In simple web API function calls like "audio-analysis" below, the type of the argument is 
+obvious from the context; "spotify:track" is superfluous. 
+
+```jula-repl
+julia>"audio-analysis/\$track_id"
+"audio-analysis/0WdUHon5tYn2aKve13psfy"
+```
+The actual Julia wrapper function is duck typed, meaning that the 'track_id' argument
+type can be both String or SpTrackId. Numbers on the other hand, would produce an error.
+
+```jula-repl
+function tracks_get_audio_analysis(track_id)
+    tid = SpTrackId(track_id)
+    spotify_request("audio-analysis/\$tid")
+end
+```
+
+Other API calls need more type information. Spotify understands the ['Spotify URI'](https://developer.spotify.com/documentation/web-api/#spotify-uris-and-ids)
+) format, where type is denoted by string prefixes. Such functions use a 'request body' to pass arguments. Request bodies 
+often contain several arguments in a structure, for example a list or a dictionary. Request bodies 
+comply with the JSON format.
+
+So in a 'request body', we would represent 'track_id' like this:
+
+```jula-repl
+julia> Spotify.JSON3.write(track_id)
+"\\"spotify:track:0WdUHon5tYn2aKve13psfy\\""
+```
 
 
-PARAMETER  | DESCRIPTION | VALUE 
-:----------:| :---------- |:------------:
-SpUri       |The resource identifier that you can enter, for example, in the |
-            | Spotify Desktop client’s search box to locate an artist,| 
-            | album, or track. To find a Spotify URI simply right-|
-            | click (on Windows) or Ctrl-Click (on a Mac) on |spotify:track:
-            | the artist’s or album’s or track’s name.| 6rqhFgbbKwnb9MLmUQDhG6|
-SpId        |The base-62 identifier that you can find at the end of the |
-            | Spotify URI (see above) for an artist, track, album, |
-            | playlist, etc. Unlike a Spotify URI, a Spotify ID does| 
-            | not clearly identify the type of resource; that information is | 
-            | provided elsewhere in the call.| 6rqhFgbbKwnb9MLmUQDhG6
-SpCategoryId|The unique string identifying the Spotify category.| party|
-SpUserId    |The unique string identifying the Spotify user that you can |
-            | find at the end of the Spotify URI for the user. The ID | 
-            | of the current user can be obtained via the Web API endpoint.| wizzler
-SpUrl       |An HTML link that opens a track, album, app, playlist or other |
-            | Spotify resource in a Spotify client (which  client |
-            | is determined by the user’s device and |  http://open.spotify.com/
-            | account settings at play.spotify.com. |   track/6rqhFgbbKwnb9MLmUQDhG6
-        
 """
-SpUri, SpId, SpCategoryId, SpUserId, SpUrl, SpPlaylistId, SpAlbumId, SpArtistId, SpShowId, SpEpisodeId
+SpPlaylistId, SpTrackId, SpArtistId, SpId, SpAlbumId, SpCategoryId, SpEpisodeId, SpShowId
 
-mutable struct SpUri
-    s::String
-    SpUri(s) = isuri(s) ? new(s) : error("must be 'spotify:track:<base 62 string>")
+
+abstract type SpType end
+StructType(::Type{<:SpType}) = StructTypes.CustomStruct()
+lower(x::T) where {T <:SpType} = x.prefix * x.s
+isempty(x::T) where {T <:SpType} = isempty(x.s)
+
+function checked_id_string(ls::AbstractString, allowed_prefix)
+    s =  startswith(ls, allowed_prefix) ? ls[length(allowed_prefix) + 1 : end] : ls
+    if length(s) == 22
+        if isid(s)
+            s
+        else
+            error("unrecognized format of base 62 id string: $s")
+        end
+    else 
+        error("id must be length 22, but is $(length(s))")
+    end
 end
-SpUri() = SpUri("spotify:track:6rqhFgbbKwnb9MLmUQDhG6")
+checked_id_string(ls::SpType, allowed_prefix) = checked_id_string(string(ls), allowed_prefix)
+# REPL, instead of Sp____Id("6rqhFgbbKwnb9MLmUQDhG6")
+show(io::IO,  ::MIME"text/plain", x::SpType) =   printstyled(io, x.prefix * x.s ; color = x.displaycolor)
+# String interpolation, also `urlstring`, `println`
+show(io::IO, x::SpType) =        printstyled(io, x.s; color = x.displaycolor)
 
-mutable struct SpId
+####
+struct SpPlaylistId <: SpType
     s::String
-    SpId(s) =  isid(s) ? new(s) : error("must be <base 62 string>")
-end
-SpId() = SpId("6rqhFgbbKwnb9MLmUQDhG6")
-
-mutable struct SpCategoryId
-    s::String
-end
-SpCategoryId() = SpCategoryId("party")
-
-mutable struct SpUserId
-    s::String
-end
-SpUserId() = get_user_name() == "" ? throw(".ini file has no user name") : SpUserId(get_user_name())
-
-mutable struct SpUrl
-    s::String
-    SpUrl(s) = isurl(s) ? new(s) : error("must be an url")
-end
-SpUrl() =  SpUrl("http://open.spotify.com/track/6rqhFgbbKwnb9MLmUQDhG6")
-
-mutable struct SpPlaylistId
-    s::String
-    SpPlaylistId(s) = isid(s) ? new(s) : error("must be <base 62 string> playlist ID")
+    prefix::String
+    displaycolor::Union{Symbol, Int}
+    function SpPlaylistId(ls)
+        pref = "spotify:playlist:"
+        new(checked_id_string(ls, pref), pref, :light_red)
+    end
 end
 SpPlaylistId() = SpPlaylistId("37i9dQZF1E4vUblDJbCkV3")
-
-mutable struct SpAlbumId
+####
+struct SpTrackId <: SpType
     s::String
-    SpAlbumId(s) = isid(s) ? new(s) : error("must be <base 62 string> album ID")
+    prefix::String
+    displaycolor::Union{Symbol, Int}
+    function SpTrackId(ls)
+        pref = "spotify:track:"
+        new(checked_id_string(ls, pref), pref, 176)
+    end
 end
-SpAlbumId() = SpAlbumId("5XgEM5g3xWEwL4Zr6UjoLo")
-
-mutable struct SpArtistId
+SpTrackId() = SpTrackId("0WdUHon5tYn2aKve13psfy")
+####
+struct SpArtistId <: SpType
     s::String
-    SpArtistId(s) = isid(s) ? new(s) : error("must be <base 62 string> artist ID")
+    prefix::String
+    displaycolor::Union{Symbol, Int}
+    function SpArtistId(ls)
+        pref = "spotify:artist:"
+        new(checked_id_string(ls, pref), pref, :light_magenta)
+    end
 end
 SpArtistId() = SpArtistId("0YC192cP3KPCRWx8zr8MfZ")
-
-mutable struct SpShowId
+####
+struct SpId <: SpType
     s::String
-    SpShowId(s) = isid(s) ? new(s) : error("must be <base 62 string> show ID")
+    prefix::String
+    displaycolor::Union{Symbol, Int}
+    function SpId(ls)
+        pref = ""
+        new(checked_id_string(ls, pref), pref, :cyan)
+    end
+end
+SpId() = SpId("6rqhFgbbKwnb9MLmUQDhG6")
+####
+struct SpAlbumId <: SpType
+    s::String
+    prefix::String
+    displaycolor::Union{Symbol, Int}
+    function SpAlbumId(ls)
+        pref = "spotify:album:"
+        new(checked_id_string(ls, pref), pref, :light_yellow)
+    end
+end
+SpAlbumId() = SpAlbumId("5XgEM5g3xWEwL4Zr6UjoLo")
+####
+struct SpCategoryId <: SpType
+    s::String
+    prefix::String
+    displaycolor::Union{Symbol, Int}
+    function SpCategoryId(ls)
+        pref = "spotify:category:"
+        new(checked_id_string(ls, pref), pref, 172)
+    end
+end
+SpCategoryId() = SpCategoryId("0JQ5DAqbMKFAXlCG6QvYQ4")
+####
+struct SpEpisodeId <: SpType
+    s::String
+    prefix::String
+    displaycolor::Union{Symbol, Int}
+    function SpEpisodeId(ls)
+        pref = "spotify:episode:"
+        new(checked_id_string(ls, pref), pref, :yellow)
+    end
+end
+SpEpisodeId() = SpEpisodeId("512ojhOuo1ktJprKbVcKyQ")
+####
+struct SpShowId <: SpType
+    s::String
+    prefix::String
+    displaycolor::Union{Symbol, Int}
+    function SpShowId(ls)
+        pref = "spotify:show:"
+        new(checked_id_string(ls, pref), pref, :yellow)
+    end
 end
 SpShowId() = SpShowId("2MAi0BvDc6GTFvKFPXnkCL")
 
-mutable struct SpEpisodeId
-    s::String
-    SpEpisodeId(s) = isid(s) ? new(s) : error("must be <base 62 string> episode ID")
-end
-SpEpisodeId() = SpEpisodeId("512ojhOuo1ktJprKbVcKyQ")
+
 
 # Verify if the url, id and uri have the correct structure
-isurl(s) = !isnothing(match(r"(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)", s))
-isid(s) = !isnothing(match(r"\b[a-zA-Z0-9]{22}", s))
-isuri(s) = count(==( ':'), s) == 2 && length(s) - findlast(':', s) == 22
-
-# These types should work with string interpolation using $. 
-# So we need to alter their undecorated representations.
-# For argument inspection, we don't want to hide them not 
-# being ordinary strings, so we add color. The color will
-# not be used in contexts which can't display color (i.e. 
-# when used as an url)
-show(io::IO, s::SpUri) =        printstyled(io, s.s; color = :blue)
-show(io::IO, s::SpId) =         printstyled(io, s.s; color = 176)
-show(io::IO, s::SpCategoryId) = printstyled(io, s.s; color = 172)
-show(io::IO, s::SpUrl) =        printstyled(io, s.s; color = :blue, bold = true)
-show(io::IO, s::SpUserId) =     printstyled(io, s.s; color = :green)
-show(io::IO, s::SpPlaylistId) =     printstyled(io, s.s; color = :light_red)
-show(io::IO, s::SpAlbumId) =     printstyled(io, s.s; color = :light_yellow)
-show(io::IO, s::SpArtistId) =     printstyled(io, s.s; color = :light_magenta)
-show(io::IO, s::SpShowId) =     printstyled(io, s.s; color = :light_cyan)
-show(io::IO, s::SpEpisodeId) =     printstyled(io, s.s; color = :yellow)
-
-# Add quotes "" around the String representation
-show(io::IO,  ::MIME"text/plain", s::SpUri) =       printstyled(io, '"' * s.s * '"'; color = :blue)
-show(io::IO, ::MIME"text/plain", s::SpId) =         printstyled(io, '"' * s.s * '"'; color = 176)
-show(io::IO, ::MIME"text/plain", s::SpCategoryId) = printstyled(io, '"' * s.s * '"'; color = 172)
-show(io::IO, ::MIME"text/plain", s::SpUrl) =        printstyled(io, '"' * s.s * '"'; color = :blue, bold = true)
-show(io::IO, ::MIME"text/plain", s::SpUserId) =     printstyled(io, '"' * s.s * '"'; color = :green)
-show(io::IO, ::MIME"text/plain", s::SpPlaylistId) =     printstyled(io, '"' * s.s * '"'; color = :light_red)
-show(io::IO, ::MIME"text/plain", s::SpAlbumId) =     printstyled(io, '"' * s.s * '"'; color = :light_yellow)
-show(io::IO, ::MIME"text/plain", s::SpArtistId) =     printstyled(io, '"' * s.s * '"'; color = :light_magenta)
-show(io::IO, ::MIME"text/plain", s::SpShowId) =     printstyled(io, '"' * s.s * '"'; color = :light_cyan)
-show(io::IO, ::MIME"text/plain", s::SpEpisodeId) =     printstyled(io, '"' * s.s * '"'; color = :yellow)
-
-show(io::IO, v::Vector{SpUri}) =        show_vector(io, v, "", "")
-show(io::IO, v::Vector{SpId}) =         show_vector(io, v, "", "")
-show(io::IO, v::Vector{SpCategoryId}) = show_vector(io, v, "", "")
-show(io::IO, v::Vector{SpUrl}) =        show_vector(io, v, "", "")
-show(io::IO, v::Vector{SpUserId}) =     show_vector(io, v, "", "")
-show(io::IO, v::Vector{SpPlaylistId}) = show_vector(io, v, "", "")
-show(io::IO, v::Vector{SpAlbumId}) =    show_vector(io, v, "", "")
-show(io::IO, v::Vector{SpArtistId}) =   show_vector(io, v, "", "")
-show(io::IO, v::Vector{SpShowId}) =     show_vector(io, v, "", "")
-show(io::IO, v::Vector{SpEpisodeId}) =  show_vector(io, v, "", "")
-
-typeinfo_implicit(::Type{SpUri}) = true
-typeinfo_implicit(::Type{SpId}) = true
-typeinfo_implicit(::Type{SpCategoryId}) = true
-typeinfo_implicit(::Type{SpUrl}) = true
-typeinfo_implicit(::Type{SpUserId}) = true
-typeinfo_implicit(::Type{SpPlaylistId}) = true
-typeinfo_implicit(::Type{SpAlbumId}) = true
-typeinfo_implicit(::Type{SpArtistId}) = true
-typeinfo_implicit(::Type{SpShowId}) = true
-typeinfo_implicit(::Type{SpEpisodeId}) = true
-
-
-
+isid(s::AbstractString) = !isnothing(match(r"\b[a-zA-Z0-9]{22}", s)) && length(s) == 22
+# Not currently used, could be nice for parsing returned objects, consider drop.
+isurl(s::String) = !isnothing(match(r"(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)", s))
+isuri(s::String) = count(==( ':'), s) == 2 && length(s) - findlast(':', s) == 22
+is_string_vector(s::String) = startswith(s, '[') && endswith(s, ']')
+is_string_separable(s::String) = (length(split(s, ',')) > 1)

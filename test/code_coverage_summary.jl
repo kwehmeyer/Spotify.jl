@@ -18,7 +18,7 @@ error_message(e, stage::String) = @info "Unable to $(stage) coverage data \n Che
 
 # Generate coverage summary and html data
 try
-    generate_coverage("Spotify", genhtml=true, show_summary=true, genxml=false)        
+    generate_coverage("Spotify", genhtml = true, show_summary = true, genxml = false)        
 catch e
     error_message(e, "generate")
 end
@@ -32,7 +32,7 @@ end
 
 # Clean up .cov files but keep coverage directory
 try
-    clean_coverage("Spotify", rm_directory=false)      
+    clean_coverage("Spotify", rm_directory = false)      
 catch e
     error_message(e, "clean up")
 end

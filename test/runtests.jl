@@ -12,7 +12,6 @@ quiet = length(ARGS) > 0 && ARGS[1] == "q"
 errors = false
 
 all_tests = ["test_int_format_strings.jl", 
-             "generalize_calls.jl",
              "test_playlists.jl",
              "test_users.jl",
              "test_search.jl",
@@ -23,14 +22,18 @@ all_tests = ["test_int_format_strings.jl",
              "test_artist.jl",
              "test_tracks.jl",
              "test_shows.jl",
-             "test_browse.jl",
              "test_episodes.jl"]
+   
 
-Spotify.refresh_spotify_credentials()             
+println("NOTE: Have an active and playing player running on some device. Running full test suite....")
 
-println("Running full test suite:")
+apply_and_wait_for_implicit_grant(;scopes= Spotify.ALLSCOPES)
+
+# LOGSTATE.authorization=false;LOGSTATE.request_string=false;LOGSTATE.empty_response=false
+
 
 @time for file in all_tests
+    println("\nNext: $file")
     try
         include(file)
         println("\t\033[1m\033[32mPASSED\033[0m: $(file)")

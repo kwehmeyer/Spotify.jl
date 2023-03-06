@@ -1,3 +1,4 @@
-Each file in this folder corresponds to ['Reference'](https://developer.spotify.com/documentation/web-api/reference/) structure.
+Each file in this folder corresponds to ['Console'](https://developer.spotify.com/console/) left 'Endpoints' menu structure.
 
-Some categories are missing.
+Categories not covered: 'Audiobooks' and 'Chapters'.
+
