@@ -49,23 +49,21 @@ end
 # Example
 ```julia-repl
 julia> artist_get_albums("0YC192cP3KPCRWx8zr8MfZ")[1]
-JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 10 entries:
-  :external_urls => {…
-  :followers     => {…
-  :genres        => ["german soundtrack", "orchestral soundtrack", "soundtrack"]
-  :href          => "https://api.spotify.com/v1/artists/0YC192cP3KPCRWx8zr8MfZ"
-  :id            => "0YC192cP3KPCRWx8zr8MfZ"
-  :images        => JSON3.Object[{…
-  :name          => "Hans Zimmer"
-  :popularity    => 79
-  ⋮              => ⋮
+JSON3.Object{Base.CodeUnits{UInt8, String}, Vector{UInt64}} with 7 entries:
+  :href     => "https://api.spotify.com/v1/artists/0YC192cP3KPCRWx8zr8MfZ/albums?offset=0&limit=20&include_groups=album…
+  :items    => Object[{…
+  :limit    => 20
+  :next     => "https://api.spotify.com/v1/artists/0YC192cP3KPCRWx8zr8MfZ/albums?offset=20&limit=20&include_groups=albu…
+  :offset   => 0
+  :previous => nothing
+  :total    => 663
 ```
 
 [Reference](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-an-artists-albums)
 """
 function artist_get_albums(artist_id; include_groups = "", country = "", limit = 20, offset = 0)
     arid = SpArtistId(artist_id)
-    u = "artists/$arid"
+    u = "artists/$arid/albums"
     a = urlstring(; include_groups, country, limit, offset)
     url = build_query_string(u, a)
     spotify_request(url)
