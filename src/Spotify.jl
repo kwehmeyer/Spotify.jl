@@ -166,7 +166,11 @@ let
 end
 
 function __init__()
-    apply_and_wait_for_implicit_grant()
+    # If the environmental variable "SPOTIFY_NOINIT" == "true",
+    # we skip the initial authorization and retrieving of grants.
+    if lowercase(get(ENV, "SPOTIFY_NOINIT", "false")) !== "true"
+        apply_and_wait_for_implicit_grant()
+    end
 end
 
 end # module
