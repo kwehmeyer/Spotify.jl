@@ -287,7 +287,8 @@ function playlist_remove_playlist_item(playlist_id, track_ids)
     pli = SpPlaylistId(playlist_id)
     url = "playlists/$pli/tracks"
     uris = SpTrackId.(track_ids)
-    body = body_string(;uris)
+    tracks = ["uri"=>uri for uri in uris]
+    body = body_string(;tracks)
     spotify_request(url, method; body, scope= "playlist-modify-private")
 end
 
